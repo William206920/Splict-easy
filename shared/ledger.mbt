@@ -46,7 +46,7 @@ pub(all) struct Ledger {
 pub extend Ledger with @debug.Debug::{to_repr}
 
 ///|
-/// Declared for the shared contract; settlement is implemented in stage 3.
+/// A positive transfer from a debtor to a creditor, expressed in integer cents.
 pub(all) struct Transfer {
   from : String
   to : String
@@ -55,3 +55,35 @@ pub(all) struct Transfer {
 
 ///|
 pub extend Transfer with @debug.Debug::{to_repr}
+
+///|
+/// Always follows Ledger.people order. Positive balance means receivable.
+pub(all) struct PersonBalance {
+  person : String
+  paid_cents : Int64
+  owed_cents : Int64
+  balance_cents : Int64
+} derive(Debug)
+
+///|
+pub extend PersonBalance with @debug.Debug::{to_repr}
+
+///|
+pub(all) struct BalanceSheet {
+  total_cents : Int64
+  balances : Array[PersonBalance]
+} derive(Debug)
+
+///|
+pub extend BalanceSheet with @debug.Debug::{to_repr}
+
+///|
+/// Core settlement data only; formatted reports belong to stage 5.
+pub(all) struct Settlement {
+  total_cents : Int64
+  balances : Array[PersonBalance]
+  transfers : Array[Transfer]
+} derive(Debug)
+
+///|
+pub extend Settlement with @debug.Debug::{to_repr}
