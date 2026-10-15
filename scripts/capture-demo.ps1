@@ -8,6 +8,8 @@ public static class SplitEasyCapture {
  [StructLayout(LayoutKind.Sequential)] public struct RECT { public int left,top,right,bottom; }
  [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr window,out RECT rect);
  [DllImport("user32.dll")] public static extern bool PrintWindow(IntPtr window,IntPtr dc,uint flags);
+ [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr window,int show);
+ [DllImport("user32.dll")] public static extern bool RedrawWindow(IntPtr window,IntPtr rect,IntPtr region,uint flags);
  [DllImport("user32.dll")] private static extern bool EnumWindows(EnumWindow callback,IntPtr data);
  [DllImport("user32.dll")] private static extern uint GetWindowThreadProcessId(IntPtr window,out uint process);
  [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr window,uint message,IntPtr w,IntPtr l);
@@ -32,6 +34,10 @@ try {
     # Process.MainWindowHandle excludes hidden windows; target this process explicitly.
     $window = [SplitEasyCapture]::WindowForProcess($process.Id)
     if ($window -eq [IntPtr]::Zero) { throw 'Demo window unavailable.' }
+    # A hidden native window has no painted surface. Show without activation only
+    # for this CI capture, then force all standard controls to finish painting.
+    $null = [SplitEasyCapture]::ShowWindow($window,4)
+    $null = [SplitEasyCapture]::RedrawWindow($window,[IntPtr]::Zero,[IntPtr]::Zero,0x0185)
     $rect = New-Object SplitEasyCapture+RECT
     if (-not [SplitEasyCapture]::GetWindowRect($window,[ref]$rect)) { throw 'Window rectangle unavailable.' }
     $bitmap = New-Object System.Drawing.Bitmap ($rect.right-$rect.left),($rect.bottom-$rect.top)
@@ -40,6 +46,13 @@ try {
     try {
         if (-not [SplitEasyCapture]::PrintWindow($window,$dc,2)) { throw 'Native screenshot failed.' }
     } finally { $graphics.ReleaseHdc($dc) }
+    $colors = [System.Collections.Generic.HashSet[int]]::new()
+    for ($py=20; $py -lt $bitmap.Height; $py+=30) {
+        for ($px=20; $px -lt $bitmap.Width; $px+=30) {
+            $null = $colors.Add($bitmap.GetPixel($px,$py).ToArgb())
+        }
+    }
+    if ($colors.Count -lt 8) { throw 'Screenshot is blank or unpainted.' }
     $bitmap.Save((Join-Path (Get-Location) "dist/package/$($screen.Name).png"),[System.Drawing.Imaging.ImageFormat]::Png)
     $graphics.Dispose();$bitmap.Dispose()
     Write-Host "PASS: native screenshot $($screen.Name) (synthetic ledger, no API key)"

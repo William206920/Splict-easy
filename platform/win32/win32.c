@@ -48,7 +48,7 @@ static LRESULT CALLBACK se_proc(HWND window, UINT message, WPARAM w, LPARAM l) {
         if((wcscmp(cls,L"Edit")==0&&note==EN_SETFOCUS)||(wcscmp(cls,L"ListBox")==0&&note==LBN_SETFOCUS)||(wcscmp(cls,L"Button")==0&&note==BN_SETFOCUS)||(wcscmp(cls,L"ComboBox")==0&&note==CBN_SETFOCUS))se_reveal((HWND)l);
     }
     if(message==WM_DRAWITEM)return se_draw((DRAWITEMSTRUCT*)l);
-    if(message==WM_MEASUREITEM){MEASUREITEMSTRUCT *m=(MEASUREITEMSTRUCT*)l;m->itemHeight=se_scaled(m->CtlID==10?58:68);return TRUE;}
+    if(message==WM_MEASUREITEM){MEASUREITEMSTRUCT *m=(MEASUREITEMSTRUCT*)l;m->itemHeight=se_scaled(m->CtlID==10?44:m->CtlID==41?48:68);return TRUE;}
     if(message==WM_ERASEBKGND){RECT r;GetClientRect(window,&r);se_fill((HDC)w,r,SE_CANVAS);return 1;}
     if(message==WM_CTLCOLORSTATIC || message==WM_CTLCOLOREDIT || message==WM_CTLCOLORLISTBOX || message==WM_CTLCOLORBTN){
         HDC dc=(HDC)w;SetTextColor(dc,SE_INK);SetBkColor(dc,SE_WHITE);return (LRESULT)se_white_brush;

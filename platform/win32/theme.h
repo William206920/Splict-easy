@@ -69,18 +69,19 @@ static void se_draw_list(const DRAWITEMSTRUCT *d) {
     if(d->itemState&ODS_SELECTED)se_round(d->hDC,inside,SE_SOFT,SE_SOFT,10);
     WCHAR *meta=wcschr(s,L'\t'),*amount=NULL;
     if(meta){*meta++=0;amount=wcschr(meta,L'\t');if(amount)*amount++=0;}
-    RECT avatar={r.left+se_scaled(12),r.top+se_scaled(14),r.left+se_scaled(46),r.top+se_scaled(48)};
+    int transfer=d->CtlID==41;
+    int top=d->CtlID==10?5:transfer?7:14;
+    RECT avatar={r.left+se_scaled(12),r.top+se_scaled(top),r.left+se_scaled(46),r.top+se_scaled(top+34)};
     se_round(d->hDC,avatar,SE_SOFT,SE_SOFT,16);
     WCHAR mark[3]={s[0],0,0};if(s[0]>=0xd800 && s[0]<=0xdbff)mark[1]=s[1];
     se_text(d->hDC,mark,avatar,0,SE_BLUE,DT_CENTER|DT_VCENTER|DT_SINGLELINE);
-    RECT title={r.left+se_scaled(60),r.top+se_scaled(10),r.right-se_scaled(12),r.top+se_scaled(34)};
-    int transfer=d->CtlID==41;
+    RECT title={r.left+se_scaled(60),r.top+se_scaled(transfer?2:10),r.right-se_scaled(12),r.top+se_scaled(transfer?24:34)};
     if(amount && !transfer)title.right-=se_scaled(150);
     if(!meta){title.top=r.top;title.bottom=r.bottom;}
     se_text(d->hDC,s,title,0,SE_INK,DT_LEFT|DT_VCENTER|DT_SINGLELINE|DT_END_ELLIPSIS);
-    if(meta){RECT sub={title.left,r.top+se_scaled(36),r.right-se_scaled(12),r.bottom-se_scaled(6)};
+    if(meta){RECT sub={title.left,r.top+se_scaled(transfer?26:36),r.right-se_scaled(12),r.bottom-se_scaled(4)};
         se_text(d->hDC,meta,sub,1,SE_MUTED,DT_SINGLELINE|DT_END_ELLIPSIS);}
-    if(amount){RECT money={transfer?title.left:title.right,r.top+se_scaled(transfer?36:12),r.right-se_scaled(14),r.top+se_scaled(transfer?60:36)};
+    if(amount){RECT money={transfer?title.left:title.right,r.top+se_scaled(transfer?24:12),r.right-se_scaled(14),r.top+se_scaled(transfer?46:36)};
         /* Never truncate a financial amount: use the full row's second line for long Int64 values. */
         SIZE size;HGDIOBJ old=SelectObject(d->hDC,se_fonts[0]);GetTextExtentPoint32W(d->hDC,amount,(int)wcslen(amount),&size);SelectObject(d->hDC,old);
         if(size.cx>money.right-money.left){money.left=title.left;money.top=r.top+se_scaled(35);money.bottom=r.bottom-se_scaled(5);}
@@ -89,7 +90,7 @@ static void se_draw_list(const DRAWITEMSTRUCT *d) {
     free(s);
 }
 static LRESULT se_draw(const DRAWITEMSTRUCT *d) {
-    if(d->CtlType==ODT_LISTBOX){se_draw_list(d);return TRUE;}
+    if(d->CtlType==ODT_LISTBOX){int saved=SaveDC(d->hDC);se_draw_list(d);RestoreDC(d->hDC,saved);return TRUE;}
     int k=se_kind(d->hwndItem),button=d->CtlType==ODT_BUTTON;
     RECT r=d->rcItem;int saved=SaveDC(d->hDC);
     WCHAR s[2048];GetWindowTextW(d->hwndItem,s,2048);
