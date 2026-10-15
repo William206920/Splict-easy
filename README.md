@@ -2,13 +2,15 @@
 
 使用 MoonBit Native 与 Windows 原生控件开发的 MIT 开源应用。目标是混合记录平均与实际金额消费，统一生成结算清单。
 
-**当前仅新阶段 1：启动窗口、中文文本及按钮事件。账单、分账、保存和 AI 尚未实现。**
+**当前仅新阶段 1：启动窗口、中文文本及按钮事件。Windows 原生构建和隐藏窗口集成检查已通过；账单、分账、保存和 AI 尚未实现。**
 
 - [完整方案 V4.0](docs/PROJECT_PLAN.md)
 - [阶段 1 报告和实际验证](docs/STAGE1_REPORT.md)
 - [Windows 自动构建](../../actions/workflows/native-windows.yml)
 
 旧网页代码已应用户要求移除，历史仍可追溯。旧版测试不适用于当前实现。
+
+[下载阶段 1 Windows 可执行文件 ZIP](https://github.com/William206920/Splict-easy/actions/runs/38719888097/artifacts/11964670982)（GitHub Actions artifact，需登录 GitHub；当前只有启动窗口）。
 
 ## 构建与启动
 

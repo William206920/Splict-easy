@@ -62,14 +62,16 @@ $env:PATH = "$env:USERPROFILE\.moon\bin;$env:PATH"
 | shared 的 JS 检查 | 通过，没有构建网页 |
 | Native 业务单元测试 | 0 项；阶段 1 暂无金额算法 |
 | Linux 运行 GUI/smoke | 均拒绝运行，退出 1，符合预期 |
-| Windows CI 编译与隐藏窗口检查 | 待远端运行，结果在后续记录中更新 |
+| Windows CI 编译与隐藏窗口检查 | 已通过，Windows Server 2025 x64，真实 Win32 窗口检查 |
 | 用户 Windows 桌面实测 | 未验证 |
+
+Windows 运行：[38719888097](https://github.com/William206920/Splict-easy/actions/runs/38719888097)，验证源码提交 48a17f45b81b54df95dc6aeeaabfe4d181ca6f1d。输出 `PASS: Win32 Unicode + MoonBit event + shared core + close`。可执行文件已生成并作为 Actions artifact 上传；这不是最终安装包。完整 Windows 证据见 verification-windows.json。
 
 完整本地记录：verification-linux.json。Linux 的 .exe 后缀来自构建器命名，并不代表生成了 Windows PE 程序。
 
 ## 7. 未验证事项
 
-Windows CI 尚待读取结果；用户 Windows 桌面、真实鼠标键盘、中文输入法、DPI、便携依赖与安装卸载未验收。第一阶段只有文本和按钮，还未提供账单输入。
+Windows CI 已通过；用户 Windows 10/11 桌面、真实鼠标键盘、中文输入法、DPI、便携依赖与安装卸载未验收。第一阶段只有文本和按钮，还未提供账单输入。
 
 ## 8. 错误与修复
 
@@ -84,13 +86,13 @@ MoonBit 程序是入口。它调用 Windows 系统创建控件，Windows 把按�
 
 ## 10. 阶段验收门槛
 
-代码与 Linux 构建完成不等于 Windows 验收。必须取得 Windows 构建和隐藏窗口检查结果，并继续由用户桌面验证显示与操作。未取得 Windows 结果时，阶段状态保持待验收，不进入阶段 2。
+阶段 1 的技术路线自动验收已通过：取得 Windows 原生构建、Unicode、按钮事件、更新和关闭的实际成功记录。用户桌面显示、输入与 DPI 继续单列待验证。当前停止，等待用户确认后才进入阶段 2。
 
 ## 11. Git 提交
 
 - 重置：cda8e70db40d50acc9059737bfc9a0badee54606。
-- 新阶段提交建议：`feat: bootstrap MoonBit native Windows desktop application`。
-- 实际同步结果以 GitHub 提交及后续状态记录为准。
+- 新阶段源码：48a17f45b81b54df95dc6aeeaabfe4d181ca6f1d，`feat: bootstrap MoonBit native Windows desktop application`。
+- 重置、新方案与阶段 1 源码均已同步 main，之后的文档提交补录 Windows 通过证据。
 
 ## 12. 下一阶段
 

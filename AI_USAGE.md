@@ -6,4 +6,4 @@
 
 技术依据：MoonBit 官方 C FFI/包配置与 Microsoft Win32 文档，见 docs/PROJECT_PLAN.md 和阶段报告。C 桥接为本次实现，不复制旧网页代码。
 
-实际验证结果与未验证项以 docs/STAGE1_REPORT.md 为准，不将旧 Native/JS 各 121 项测试当作新成果。用户尚未人工验收当前 Windows UI，AI 不替用户声称已理解或审核全部代码。
+实际 Windows CI 已在提交 48a17f45b81b54df95dc6aeeaabfe4d181ca6f1d 上通过原生编译及隐藏窗口集成检查（运行 38719888097）。实际验证结果与未验证项以 docs/STAGE1_REPORT.md 为准，不将旧 Native/JS 各 121 项测试当作新成果。用户尚未人工验收当前 Windows UI，AI 不替用户声称已理解或审核全部代码。
