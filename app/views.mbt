@@ -6,6 +6,14 @@ fn panel(id : Int32, x : Int32, y : Int32, w : Int32, h : Int32) -> Unit {
 }
 
 ///|
+fn display_line(text : String) -> String {
+  text
+  .replace_all(old="\t", new=" ")
+  .replace_all(old="\r", new=" ")
+  .replace_all(old="\n", new=" ")
+}
+
+///|
 fn Desktop::shell(
   self : Desktop,
   title : String,
@@ -266,7 +274,7 @@ fn Desktop::overview_view(self : Desktop, x : Int32, w : Int32) -> Unit {
   for p in self.session.ledger.payments {
     @win32.list_add(
       20,
-      p.description +
+      display_line(p.description) +
       "\t" +
       p.payer +
       " 付款 · " +

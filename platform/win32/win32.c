@@ -23,6 +23,15 @@ static int se_dpi=96, se_scroll=0;
 static int se_scaled(int n){return MulDiv(n,se_dpi,96);}
 #include "theme.h"
 
+/* Bring a keyboard-focused control into the scrolled viewport. */
+static void se_reveal(HWND control){
+    if(!control || GetParent(control)!=se_window)return;
+    RECT r,client;GetWindowRect(control,&r);MapWindowPoints(NULL,se_window,(POINT*)&r,2);GetClientRect(se_window,&client);
+    int delta=r.top<0?r.top-se_scaled(20):r.bottom>client.bottom?r.bottom-client.bottom+se_scaled(20):0;
+    if(delta){int old=se_scroll;SetScrollPos(se_window,SB_VERT,old+delta,TRUE);se_scroll=GetScrollPos(se_window,SB_VERT);
+        ScrollWindowEx(se_window,0,old-se_scroll,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN|SW_INVALIDATE|SW_ERASE);UpdateWindow(se_window);}
+}
+
 /* MoonBit strings have a length, not a guaranteed terminating NUL. */
 static WCHAR *se_wide(moonbit_string_t text) {
     int32_t length = Moonbit_array_length(text);
@@ -34,6 +43,10 @@ static WCHAR *se_wide(moonbit_string_t text) {
 }
 
 static LRESULT CALLBACK se_proc(HWND window, UINT message, WPARAM w, LPARAM l) {
+    if(message==WM_COMMAND && l){
+        WCHAR cls[32];GetClassNameW((HWND)l,cls,32);int note=HIWORD(w);
+        if((wcscmp(cls,L"Edit")==0&&note==EN_SETFOCUS)||(wcscmp(cls,L"ListBox")==0&&note==LBN_SETFOCUS)||(wcscmp(cls,L"Button")==0&&note==BN_SETFOCUS)||(wcscmp(cls,L"ComboBox")==0&&note==CBN_SETFOCUS))se_reveal((HWND)l);
+    }
     if(message==WM_DRAWITEM)return se_draw((DRAWITEMSTRUCT*)l);
     if(message==WM_MEASUREITEM){MEASUREITEMSTRUCT *m=(MEASUREITEMSTRUCT*)l;m->itemHeight=se_scaled(m->CtlID==10?58:68);return TRUE;}
     if(message==WM_ERASEBKGND){RECT r;GetClientRect(window,&r);se_fill((HDC)w,r,SE_CANVAS);return 1;}
@@ -101,7 +114,7 @@ int32_t se_win_add(int32_t kind, int32_t id, moonbit_string_t text,
     if (!label) return 0;
     DWORD style=WS_CHILD|WS_VISIBLE|WS_CLIPSIBLINGS;
     const WCHAR *cls=L"STATIC";
-    if(kind==1||kind==13||kind==14||kind==17){cls=L"BUTTON";style|=WS_TABSTOP|BS_OWNERDRAW;}
+    if(kind==1||kind==13||kind==14||kind==17){cls=L"BUTTON";style|=WS_TABSTOP|BS_OWNERDRAW|BS_NOTIFY;}
     else if(kind==2||kind==8){cls=L"EDIT";style|=WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL|(kind==8?ES_PASSWORD:0);}
     else if(kind==3||kind==7){cls=L"EDIT";style|=WS_TABSTOP|WS_BORDER|ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL|(kind==7?ES_READONLY:ES_WANTRETURN);}
     else if(kind==4){cls=L"BUTTON";style|=WS_TABSTOP|BS_AUTOCHECKBOX;}
@@ -185,7 +198,7 @@ int32_t se_win_flag(int32_t id,int32_t op,int32_t value){
  if(op==4){EnableWindow(c,value);return 1;}
  if(op==5)return IsWindowEnabled(c);
  if(op==6)return (int32_t)SendMessageW(c,EM_GETPASSWORDCHAR,0,0);
- if(op==7){SetFocus(c);return 1;}
+ if(op==7){se_reveal(c);SetFocus(c);return 1;}
  if(op==8){RECT r;GetWindowRect(c,&r);return r.right-r.left>0&&r.bottom-r.top>0;}
  if(op==9){RECT r,client;GetWindowRect(c,&r);MapWindowPoints(NULL,se_window,(POINT*)&r,2);GetClientRect(se_window,&client);return r.left>=0&&r.right<=client.right&&r.right>r.left;}
  return -1;
