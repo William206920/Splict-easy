@@ -129,3 +129,24 @@ test "checked addition rejects overflow and negatives" {
     }
   }
 }
+
+///|
+test "money display exact decimals and signed zero" {
+  for
+    (amount, expected) in [
+      (0L, "0.00"),
+      (1L, "0.01"),
+      (29L, "0.29"),
+      (100L, "1.00"),
+      (1230L, "12.30"),
+      (-1L, "-0.01"),
+      (-101L, "-1.01"),
+      (9223372036854775807L, "92233720368547758.07"),
+      (-9223372036854775808L, "-92233720368547758.08"),
+    ] {
+    assert_eq(@shared.format_money(amount), expected)
+  }
+  assert_eq(@shared.format_signed_money(1L), "+0.01")
+  assert_eq(@shared.format_signed_money(-1L), "-0.01")
+  assert_eq(@shared.format_signed_money(0L), "0.00")
+}

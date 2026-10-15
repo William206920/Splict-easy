@@ -61,3 +61,24 @@ pub fn checked_add_cents(a : Int64, b : Int64) -> Result[Int64, String] {
   }
   Ok(a + b)
 }
+
+///|
+/// Exact two-decimal yuan display, including Int64.MIN_VALUE, without negating it.
+pub fn format_money(amount : Int64) -> String {
+  let whole = amount / 100L
+  let remainder = amount % 100L
+  let major = if whole < 0L { -whole } else { whole }
+  let minor = if remainder < 0L { -remainder } else { remainder }
+  let sign = if amount < 0L { "-" } else { "" }
+  let padding = if minor < 10L { "0" } else { "" }
+  "\{sign}\{major}.\{padding}\{minor}"
+}
+
+///|
+pub fn format_signed_money(amount : Int64) -> String {
+  if amount > 0L {
+    "+" + format_money(amount)
+  } else {
+    format_money(amount)
+  }
+}

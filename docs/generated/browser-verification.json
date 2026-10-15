@@ -1,0 +1,177 @@
+{
+  "browser": "133.0.6943.16",
+  "engine": "Linux Chrome headless",
+  "realPhoneTested": false,
+  "cases": [
+    {
+      "profile": "desktop",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "dinner_html.html",
+      "offlineLoaded": true,
+      "noPageOverflow": true,
+      "noScriptOrImageInjection": true,
+      "externalRequests": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "profile": "desktop",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "mixed_html.html",
+      "offlineLoaded": true,
+      "noPageOverflow": true,
+      "noScriptOrImageInjection": true,
+      "externalRequests": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "profile": "desktop",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "special_html.html",
+      "offlineLoaded": true,
+      "noPageOverflow": true,
+      "noScriptOrImageInjection": true,
+      "externalRequests": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "profile": "desktop",
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "file": "no_transfer_html.html",
+      "offlineLoaded": true,
+      "noPageOverflow": true,
+      "noScriptOrImageInjection": true,
+      "externalRequests": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "profile": "mobile_emulation",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "dinner_html.html",
+      "offlineLoaded": true,
+      "noPageOverflow": true,
+      "noScriptOrImageInjection": true,
+      "externalRequests": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "profile": "mobile_emulation",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "mixed_html.html",
+      "offlineLoaded": true,
+      "noPageOverflow": true,
+      "noScriptOrImageInjection": true,
+      "externalRequests": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "profile": "mobile_emulation",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "special_html.html",
+      "offlineLoaded": true,
+      "noPageOverflow": true,
+      "noScriptOrImageInjection": true,
+      "externalRequests": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "profile": "mobile_emulation",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "file": "no_transfer_html.html",
+      "offlineLoaded": true,
+      "noPageOverflow": true,
+      "noScriptOrImageInjection": true,
+      "externalRequests": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "profile": "narrow_mobile_emulation",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "file": "dinner_html.html",
+      "offlineLoaded": true,
+      "noPageOverflow": true,
+      "noScriptOrImageInjection": true,
+      "externalRequests": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "profile": "narrow_mobile_emulation",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "file": "mixed_html.html",
+      "offlineLoaded": true,
+      "noPageOverflow": true,
+      "noScriptOrImageInjection": true,
+      "externalRequests": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "profile": "narrow_mobile_emulation",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "file": "special_html.html",
+      "offlineLoaded": true,
+      "noPageOverflow": true,
+      "noScriptOrImageInjection": true,
+      "externalRequests": [],
+      "errors": [],
+      "passed": true
+    },
+    {
+      "profile": "narrow_mobile_emulation",
+      "viewport": {
+        "width": 320,
+        "height": 640
+      },
+      "file": "no_transfer_html.html",
+      "offlineLoaded": true,
+      "noPageOverflow": true,
+      "noScriptOrImageInjection": true,
+      "externalRequests": [],
+      "errors": [],
+      "passed": true
+    }
+  ],
+  "errorHtmlSafeInAllProfiles": true,
+  "passed": true
+}

@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SplitEasy 结算单</title>
+<style>body{margin:0;background:#f4f7f8;color:#182b31;font:16px/1.6 system-ui,sans-serif}main{max-width:640px;margin:auto;padding:20px}article{background:white;border-radius:12px;padding:16px;margin:12px 0}h1,h2,h3,p,li,td,th{overflow-wrap:anywhere}table{width:100%;border-collapse:collapse;background:white}td,th{padding:8px;text-align:left;border-bottom:1px solid #dce5e8;vertical-align:top}th{white-space:nowrap}td:first-child,th:first-child{min-width:3em;white-space:pre-wrap}td:nth-child(2),td:nth-child(3){white-space:nowrap}td:last-child{overflow-wrap:normal}.table-scroll{overflow-x:auto}article h3,article p,li{white-space:pre-wrap}</style></head><body><main>
+<section class="spliteasy-report" aria-label="SplitEasy 结算单">
+<h1>SplitEasy 结算单</h1>
+<p>总消费：<strong>460.00 元</strong></p>
+<h2>消费明细</h2>
+<article><h3>第 1 笔：晚餐</h3>
+<p>付款人：小明；金额：300.00 元；分摊方式：平均分摊</p>
+<p>日期：未填写</p>
+<ul>
+<li>小明：75.00 元</li>
+<li>小红：75.00 元</li>
+<li>小刚：75.00 元</li>
+<li>小美：75.00 元</li>
+</ul></article>
+<article><h3>第 2 笔：加菜</h3>
+<p>付款人：小红；金额：120.00 元；分摊方式：平均分摊</p>
+<p>日期：未填写</p>
+<ul>
+<li>小明：30.00 元</li>
+<li>小红：30.00 元</li>
+<li>小刚：30.00 元</li>
+<li>小美：30.00 元</li>
+</ul></article>
+<article><h3>第 3 笔：饮料</h3>
+<p>付款人：小刚；金额：40.00 元；分摊方式：平均分摊</p>
+<p>日期：未填写</p>
+<ul>
+<li>小明：13.33 元</li>
+<li>小刚：13.33 元</li>
+<li>小美：13.34 元</li>
+</ul></article>
+<h2>每人净额</h2>
+<div class="table-scroll"><table><thead><tr><th>人员</th><th>已付（元）</th><th>应付（元）</th><th>净额（元）</th></tr></thead><tbody>
+<tr><td>小明</td><td>300.00</td><td>118.33</td><td style="color:#15803d">应收 +181.67</td></tr>
+<tr><td>小红</td><td>120.00</td><td>105.00</td><td style="color:#15803d">应收 +15.00</td></tr>
+<tr><td>小刚</td><td>40.00</td><td>118.33</td><td style="color:#b91c1c">应付 -78.33</td></tr>
+<tr><td>小美</td><td>0.00</td><td>118.34</td><td style="color:#b91c1c">应付 -118.34</td></tr>
+</tbody></table></div>
+<h2>转账清单</h2>
+<ol>
+<li>小美 → 小明：118.34 元</li>
+<li>小刚 → 小明：63.33 元</li>
+<li>小刚 → 小红：15.00 元</li>
+</ol>
+<p>结算计算完成。转账清单仅为建议，不代表已经完成付款。</p>
+</section>
+</main></body></html>

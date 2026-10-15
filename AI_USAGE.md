@@ -71,3 +71,25 @@ HTTP 页面断网刷新不支持，file:// 只在该测试环境通过，不能�
 文本语法的保留符号、空白规范、无日期/注释/转义/逗号简写等限制均明确写入 docs/text-format.md。
 样例文件随交付包提供；当前 shared 测试以相同文本字面量执行，不把它宣称成 CLI 文件 IO 测试。
 本阶段未实现输出格式、业务网页、完整 CLI、AI、CI 或部署；真实手机仍未验证。
+
+## 2026-10-15 · 阶段 5
+
+用户指示“下一阶段”，授权统一报表、渲染和总装。
+AI 实现 SettlementReport/PaymentReport/ReportFormat、共享总入口和三种渲染，新增 21 项测试及示例/验证脚本。
+所有分账与格式化逻辑在 shared MoonBit；Python/浏览器脚本只作独立验证，不参与产品业务计算。
+JSON 按固定 schema 直接写 Int64 十进制数字，未经过 Double 或 JS Number；所有用户字符串正确转义。
+Native 与 JS 的 121 项测试通过，Markdown 晚餐和 JSON 混合案例使用事先写定的完整预期逐字比较。
+Python json 独立回读 Int64.MAX_VALUE 和 JS 安全整数外金额，全部控制字符、中文和 emoji 回读通过。
+examples/report 的 Native/JS 全部输出字符串逐字一致；它没有实现正式 CLI 的参数和文件 IO。
+
+问题与修复：
+- 初版 JSON 转义调用 UInt16.to_char 返回 Char?，补充固定十六进制 ASCII 数字范围内的 unwrap 后编译通过。
+- 目视检查发现手机表格姓名逐字换行，调整最小姓名列宽和数字列换行规则，再次运行输出及浏览器验证。
+- 未填写日期在 HTML 中显示“未填写”，JSON/报告仍保留空字符串，不编造日期。
+
+真实 Chrome for Testing 133 无头引擎完成 12 组离线 HTML 文档检查，以及三种尺寸下的安全错误片段检查。
+覆盖注入字符串不会生成 script/img 元素、无弹窗、无外部网络请求、页面不横向溢出，应收/应付颜色正确。
+截图只用于内部视觉检查，没有把模拟截图当作手机实测证据或保存为交付附件。
+真实手机、用户 Windows、业务网页、完整 CLI、AI、CI 和部署仍待后续完成。
+最终实际命令输出见 docs/stage5-verification.json，独立验证数据见 docs/generated。
+未删除旧测试或使用 --update 修改正确预期，未实际提交 Git 或推送。

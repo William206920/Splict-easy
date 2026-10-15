@@ -87,3 +87,39 @@ pub(all) struct Settlement {
 
 ///|
 pub extend Settlement with @debug.Debug::{to_repr}
+
+///|
+/// Read-only fields; allocated shares follow Ledger.people order.
+pub struct PaymentReport {
+  payer : String
+  amount_cents : Int64
+  split_mode : SplitMode
+  shares : Array[Share]
+  description : String
+  date : String
+} derive(Debug)
+
+///|
+pub extend PaymentReport with @debug.Debug::{to_repr}
+
+///|
+/// Created from validated input. No source arrays are reused.
+pub struct SettlementReport {
+  total_cents : Int64
+  payments : Array[PaymentReport]
+  balances : Array[PersonBalance]
+  transfers : Array[Transfer]
+} derive(Debug)
+
+///|
+pub extend SettlementReport with @debug.Debug::{to_repr}
+
+///|
+pub(all) enum ReportFormat {
+  Markdown
+  Html
+  Json
+} derive(Debug)
+
+///|
+pub extend ReportFormat with @debug.Debug::{to_repr}

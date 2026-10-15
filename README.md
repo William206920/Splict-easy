@@ -1,6 +1,6 @@
 # SplitEasy · AA 分账器
 
-MoonBit 黑客松项目，产品规范 V3.1。当前已完成阶段 4：高级文本解析已接通数据校验和混合结算；尚未实现业务网页表单。
+MoonBit 黑客松项目，产品规范 V3.1。当前已完成阶段 5：统一报表及 HTML、Markdown、JSON 输出已接通文本和结构化账单；尚未实现业务网页表单。
 内部交付截止：2026-10-24 23:59（Asia/Shanghai）。
 
 ## 环境
@@ -48,7 +48,7 @@ Native 输出和网页状态应为 `SplitEasy: MoonBit shared core ready.`。
 - fixtures、examples、.github/workflows：保留后续阶段目录。
 - docs：实际验证日志及阶段交付记录。
 
-只创建当前阶段所需文件；格式渲染、业务网页、CLI 文件与参数 IO、AI、CI、部署在后续阶段完成。
+只创建当前阶段所需文件；业务网页、CLI 文件与参数 IO、AI、CI、部署在后续阶段完成。
 `web/spliteasy.js` 是编译产物，不手写、不提交 Git；运行 `make build-web` 重新生成。
 仓库地址、在线演示、手机体验、赛事要求均待验证，不提供虚构链接。
 
@@ -174,7 +174,49 @@ A 分由 n 人分：前 n-rem 人承担 base 分，最后 rem 人承担 base+1 �
 日期字段当前设为空字符串；本语法没有日期、注释、引号分组、转义和逗号列表简写。
 普通用户后续仍优先使用表单，不需要学习此语法。
 
-执行 `make test`，Native 和 JS 各应显示 100 项通过。文本输入两个黄金案例均已接通结算验证。
+阶段 4 当时 Native 和 JS 各 100 项通过；当前阶段测试总数见下文。文本输入两个黄金案例均已接通结算验证。
 完整语法见 docs/text-format.md；示例见 fixtures/bills_dinner.txt、fixtures/bills_mixed.txt、examples/text_modes.txt。
 实际命令记录见 docs/stage4-verification.json，阶段交付见 docs/STAGE4_REPORT.md。
 当前 CLI 仍是工程启动入口；文件读取和 split/check 命令将在阶段 7 实现。
+
+## 阶段 5：统一报表和三种输出
+
+`build_report` 生成统一 `SettlementReport`，包含总消费、逐笔说明/日期/实际份额、每人已付/应付/净额及转账清单。
+报告与原账单数组分离；请通过核心入口生成报告，不要修改报告数组后继续把它当成原结算结果。
+
+| API | 用途 |
+|---|---|
+| `report_from_text(text)` | 文本 → 已校验结算报告 |
+| `solve_ledger(ledger, format)` | 结构化账单 → 指定格式 |
+| `solve_text(text, format)` | 文本 → 指定格式 |
+| `render_report(report, format)` | 已生成报告 → 指定格式 |
+| `render_html(report)` | 可嵌入 DOM 的安全 HTML 片段 |
+| `render_html_document(report)` | 可离线打开的完整 HTML 文档 |
+| `render_text_html(text)` | 安全 HTML 片段或带行号的错误提示 |
+
+`ReportFormat` 支持 `Markdown`、`Html`、`Json`。
+solve/report 构建函数返回 `Result[..., String]`，失败保留中文错误；HTML 错误提示通过 `render_error_html` 转义。
+HTML 对所有姓名、说明、日期和转账姓名转义，应收绿、应付红，附有文字标识。
+Markdown 处理管道符、反斜杠、换行、HTML 和其他 Markdown 特殊符号。
+JSON 固定 schema_version=1、固定字段顺序和数组顺序，金额为十进制整数分数字，不用浮点数转换。
+JSON 消费者必须无损读取 64 位整数；普通 JS JSON.parse 会将数字转为 Number，不能直接用于读取大额金额。
+当前只实现报表 JSON 输出，账单 JSON 输入另在后续阶段接入，两个 schema 不等同。
+结算完成提示表示计算完成，不表示实际付款已经完成。
+
+当前 `make test` 在 Native/JS 各 121 项通过。
+执行 `make verify-reports` 可独立核对完整黄金文件、64 位 JSON 精度、全部控制字符回读和 Native/JS 输出逐字一致性。
+该命令需要 Python 3，先运行 Native 再运行 JS，报告样例生成在 docs/generated。
+固定演示包 examples/report 只输出预设案例，不是阶段 7 的正式 CLI。
+
+可直接打开 docs/generated/dinner_html.html 或 mixed_html.html 查看真实生成的结算单。
+示例含总消费、逐笔消费与份额、余额、转账及无转账提示；HTML 无脚本或外部资源。
+生成报告已在 Linux Chrome for Testing 133 的桌面、390px 和 320px 手机尺寸下离线检查，12 组页面通过。
+真实手机仍未验证；此处离线验证针对已生成的静态报表，不代表业务网页断网记账已完成。
+
+详细契约见 docs/output-format.md，实际最终验证见 docs/stage5-verification.json。
+
+## GitHub 仓库
+
+https://github.com/William206920/Splict-easy
+
+阶段 1—5 按五次独立提交同步，后续约定与历史报告状态说明见 docs/GITHUB_SYNC.md。
