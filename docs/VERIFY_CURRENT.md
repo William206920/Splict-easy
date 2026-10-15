@@ -20,7 +20,7 @@ Windows 为 Server 2025 x64 的实际原生环境。每阶段的完整源码以�
 ## 已执行的验证
 
 - 固定 MoonBit v0.10.15+943464bfa；Native 检查和 release 构建。
-- 当前本地 Native 19 组、JS 18 组测试，含 400 组守恒、确定性和回放案例。
+- 当前本地 Native 21 组、JS 19 组测试，含 400 组守恒、确定性和回放案例。
 - 四人晚餐和五人混合黄金金额、转账顺序。
 - Int64 上限、0.29、零份额、非法金额、总额溢出和日期。
 - 原始行号、BOM/CRLF、严格账单 JSON 和大整数无损往返。
@@ -55,3 +55,17 @@ Windows 为 Server 2025 x64 的实际原生环境。每阶段的完整源码以�
 运行 38725626002 在超时模拟断言失败，其余核心、桌面、CLI 已通过。原因是仅依赖系统网络超时不能保证固定总等待时间。修复增加应用层 30 秒总超时，晚到响应不会应用，旧后台请求结束前不能启动新请求；原超时断言保留不放宽。将重新验证后记录最终结果。
 
 截图复核发现 String.replace 仅替换首个匹配，导致原生报表后续换行丢失。修正为 replace_all，并补原生 CRLF 回读、重复换行归一化和重复 Markdown 特殊字符断言。金额和转账黄金不变，继续重跑 Windows 回归。
+
+## 最终通过记录
+
+最终源码：3c084c4b10fcb605d5124a357add2edbead63ff0。
+[Windows 运行 38726605287](https://github.com/William206920/Splict-easy/actions/runs/38726605287) 已成功，Native 21 组、CLI 黄金、原生完整操作与 CRLF 回读、HTTP 模拟/超时/取消、异步 GUI 预览、安装/卸载和示例截图生成均通过。JS 当前本地 19 组通过。
+
+[下载已验证预览包](https://github.com/William206920/Splict-easy/actions/runs/38726605287/artifacts/11967903629)（需登录 GitHub）。ZIP 包含 Setup.exe、Portable.zip、SHA256SUMS.txt、preview.png 和系统 DLL 依赖清单。程序为 Windows x64 PE，GUI 子系统为 2、CLI 为 3；前一轮产物已下载检查过哈希、格式与随包许可，最终产物以本次 CI 的校验清单为准。
+
+- Artifact ID：11967903629
+- Artifact ZIP SHA256：sha256:87a18a977bffdf7f41e70535f684d575806be8b49cf164fa3c8e6a5a18f0f4d3
+- 安装包、便携包、截图已生成，未发布 GitHub Release。
+- 新截图由真实原生程序生成；CRLF 多行回读已通过。用户桌面视觉、DPI、输入法及真实模型仍待验收。
+
+自动审批拒绝了长期仓库写权限和自动 Release 发布配置，认为未获明确发布授权。该配置已移除，工作流保持 contents:read；当前通过 Actions 提供产物。Release 需用户明确授权后另行处理。

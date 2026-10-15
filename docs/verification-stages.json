@@ -59,8 +59,8 @@
     }
   ],
   "local_tests": {
-    "native_groups": 19,
-    "js_groups": 18,
+    "native_groups": 21,
+    "js_groups": 19,
     "generated_ledger_cases": 400,
     "cli_process_golden": true
   },
@@ -81,5 +81,43 @@
   },
   "real_model_demo": "not_verified_no_configuration",
   "user_desktop": "not_verified",
-  "final_preview_build": "run after this report is committed"
+  "final_preview_build": {
+    "conclusion": "success",
+    "source_commit": "3c084c4b10fcb605d5124a357add2edbead63ff0",
+    "run_id": 38726605287,
+    "job_id": 116393898862,
+    "url": "https://github.com/William206920/Splict-easy/actions/runs/38726605287",
+    "artifact": {
+      "id": 11967903629,
+      "name": "SplitEasy-Windows",
+      "size_in_bytes": 2200933,
+      "url": "https://api.github.com/repos/William206920/Splict-easy/actions/artifacts/11967903629",
+      "archive_download_url": "https://api.github.com/repos/William206920/Splict-easy/actions/artifacts/11967903629/zip",
+      "expired": false,
+      "created_at": "2026-10-15T11:21:59Z",
+      "expires_at": "2027-01-13T11:20:16Z",
+      "updated_at": "2026-10-15T11:21:59Z",
+      "digest": "sha256:87a18a977bffdf7f41e70535f684d575806be8b49cf164fa3c8e6a5a18f0f4d3",
+      "workflow_run": {
+        "id": 38726605287,
+        "repository_id": 1420225003,
+        "head_repository_id": 1420225003,
+        "head_branch": "main",
+        "head_sha": "3c084c4b10fcb605d5124a357add2edbead63ff0"
+      }
+    },
+    "download_url": "https://github.com/William206920/Splict-easy/actions/runs/38726605287/artifacts/11967903629",
+    "log_excerpt": [
+      "2026-10-15T11:21:04.7142606Z Total tests: 21, passed: 21, failed: 0.",
+      "2026-10-15T11:21:14.2214824Z PASS: desktop people + equal/exact + edit/delete + import + settlement + clipboard",
+      "2026-10-15T11:21:14.2215671Z PASS: Win32 Unicode + MoonBit event + shared core + close",
+      "2026-10-15T11:21:15.3777564Z PASS: CLI golden JSON/Markdown + UTF8 files + exit codes + Int64 maximum",
+      "2026-10-15T11:21:47.4708300Z PASS: loopback AI fixture HTTP + two confirmations + cancellation + errors + GUI async preview",
+      "2026-10-15T11:21:47.4709175Z This is a deterministic local fixture, NOT a real model demonstration.",
+      "2026-10-15T11:21:49.9965431Z PASS: installer + portable ZIP + SHA256 (0.8.0)",
+      "2026-10-15T11:21:54.0026935Z PASS: silent install + reinstall + installed GUI/CLI + uninstall + user data retention",
+      "2026-10-15T11:21:57.9104594Z PASS: native demo screenshot (synthetic ledger, no API key)"
+    ],
+    "github_release": "not_published_auto_review_required_explicit_authorization"
+  }
 }

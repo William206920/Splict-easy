@@ -8,7 +8,8 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 - [完整方案与自动推进约定](docs/PROJECT_PLAN.md)
 - [各阶段源码与提交](../../commits/main)
 - [Windows CI 与构建产物](../../actions/workflows/native-windows.yml)
-- GitHub Release 待明确发布授权；当前下载最近成功的 Actions 构建产物。
+- [下载 Windows 0.8.0 已验证预览包](https://github.com/William206920/Splict-easy/actions/runs/38726605287/artifacts/11967903629)（需登录 GitHub，含安装器、便携包、校验和与真实程序截图）
+- GitHub Release 尚未发布。
 - 原生程序截图由 Windows CI 的 --demo 示例模式生成，随预览发行提供；不包含真实账单或 Key。
 - [操作演示](docs/demo.md) · [AI 验证说明](docs/AI_DEMO.md) · [一页项目说明](docs/PROJECT_ONE_PAGE.md)
 
@@ -88,7 +89,7 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 
 CLI 仅在 `--ai` 时读取 `MOONBIT_BASE_URL`、`MOONBIT_API_KEY`、`MOONBIT_MODEL`。提示和预览到 stderr，stdout/输出文件只包含最终报告。输入 `yes` 才确认，无输入默认取消。密钥请在本机配置，不要提交仓库或发到聊天中。
 
-AI 只负责解析；全部金额、尾差、净额和转账由 MoonBit 核心计算。结构校验无法发现所有语义误解，必须人工核对。当前已有模拟测试，真实服务和模型信息尚未配置验收，见 [AI_DEMO](docs/AI_DEMO.md)。
+AI 只负责解析；全部金额、尾差、净额和转账由 MoonBit 核心计算。结构校验无法发现所有语义误解，必须人工核对。当前 AI 请求的总超时为 30 秒；已有模拟测试，真实服务和模型信息尚未配置验收，见 [AI_DEMO](docs/AI_DEMO.md)。
 
 ## 算法与数据
 
