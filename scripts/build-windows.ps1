@@ -17,6 +17,8 @@ $env:MOONBIT_NEW_NATIVE = '0'
 if ($LASTEXITCODE -ne 0) { throw 'MoonBit is not ready.' }
 & moon check --target native
 if ($LASTEXITCODE -ne 0) { throw 'Native check failed.' }
+& moon test --target native
+if ($LASTEXITCODE -ne 0) { throw 'Native tests failed.' }
 & moon build --target native --release
 if ($LASTEXITCODE -ne 0) { throw 'Native build failed.' }
 if ($Smoke) {
