@@ -3,6 +3,7 @@
 本项目自有 MoonBit/C/脚本/文档代码采用 MIT。
 
 - MoonBit core 与 Native runtime：International Digital Economy Academy，Apache License 2.0。随包保留 third_party/MoonBit-Apache-2.0.txt 及 MoonBit-NOTICE.txt（包含 core 自身记录的参考来源和许可）。本项目不修改或重新发布 MoonBit 编译器。
+- simdutf：MoonBit 工具链记录的可选 UTF 编解码组件，保守随包保留其 MIT 声明，见 third_party/simdutf-MIT.txt。未分发 tcc/Binaryen 等编译工具。
 - Windows 系统 API：使用平台提供的 Win32/WinHTTP，不把 Windows 系统 DLL 当作项目代码分发。MSVC 静态运行库通过合法构建环境链接，依赖清单由 dumpbin 生成。
 - Inno Setup：仅用于生成安装器，来源 https://github.com/jrsoftware/issrc 。不将编译器当作本项目代码发布；保留其许可说明。
 - GitHub Actions checkout/upload-artifact：仅构建基础设施，不作为应用二进制运行组件。

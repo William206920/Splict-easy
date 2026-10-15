@@ -36,6 +36,10 @@ pub fn smoke() -> Unit raise @shared.BillError {
   ui.handle(2000)
   ui.handle(56)
   demand(ui.session.ledger.payments.length() == 2, "添加实际金额消费")
+  demand(
+    ui.session.ledger.payments[1].shares.length() == 2,
+    "表单零份额不产生多余引用",
+  )
   ui.handle(34)
   match ui.session.report {
     Some(r) =>

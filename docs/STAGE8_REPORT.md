@@ -12,3 +12,7 @@
 10. AI 实现/模拟验收与真实模型验收分开，缺少真实配置时不宣称整个 AI 参赛交付已完成。
 11. feat(stage8): add consent-gated AI parsing and delivery documentation。
 12. 自动继续整体回归与发布预览；真实模型和用户桌面仍保留待验收。
+
+## Windows 实际结果补录
+
+[运行 38724606635](https://github.com/William206920/Splict-easy/actions/runs/38724606635) 成功。Windows Native 19 组、本地 WinHTTP 模拟、两次确认/取消/超时/错误、GUI 异步预览、安装后 GUI/CLI 与卸载保留数据均实际通过。真实模型仍待配置。

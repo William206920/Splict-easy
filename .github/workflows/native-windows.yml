@@ -33,6 +33,7 @@ jobs:
         run: |
           ./scripts/package-windows.ps1
           ./scripts/verify-installer.ps1
+          ./scripts/capture-demo.ps1
       - uses: actions/upload-artifact@v4
         with:
           name: SplitEasy-Windows

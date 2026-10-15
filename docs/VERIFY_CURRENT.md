@@ -1,0 +1,51 @@
+# 0.8.0 预览：整体验证与剩余验收
+
+用户已授权连续推进，各阶段均已独立提交，不再等待阶段间确认。旧实现仍只保留在历史中。
+
+## 阶段与 Windows 实际记录
+
+| 阶段 | 独立源码提交 | Windows CI |
+| --- | --- | --- |
+| 1 | [48a17f4](https://github.com/William206920/Splict-easy/commit/48a17f45b81b54df95dc6aeeaabfe4d181ca6f1d) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38719888097) |
+| 2 | [797a555](https://github.com/William206920/Splict-easy/commit/797a5553dbc8e1cf765526a28ab8fc1632de826d) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38720762654) |
+| 3 | [341c37c](https://github.com/William206920/Splict-easy/commit/341c37ce5dd1cd72fdd0f118adf885e5bd5ac0a2) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38720925482) |
+| 4 | [0db2a49](https://github.com/William206920/Splict-easy/commit/0db2a4937191bb4bd46a7981c9bc9116aee7e34e) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38721336321) |
+| 5 | [edc2052](https://github.com/William206920/Splict-easy/commit/edc2052b33079aa6ea9d0b918df1d8434f6a75a3) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38721534925) |
+| 6 | [5cb05ee](https://github.com/William206920/Splict-easy/commit/5cb05ee973ca2e00875ce5373da29d4f7299a304) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38722487735) |
+| 7 | [dcfd19d](https://github.com/William206920/Splict-easy/commit/dcfd19d1de166921aa5d35e4916640014ea9a115) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38723034006) |
+| 8 | [7488aa3](https://github.com/William206920/Splict-easy/commit/7488aa304b2399f36ab003341c410206578f123f) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38724606635) |
+
+Windows 为 Server 2025 x64 的实际原生环境。每阶段的完整源码以对应提交为准，后续修复保留正常提交，不改写历史。
+
+## 已执行的验证
+
+- 固定 MoonBit v0.10.15+943464bfa；Native 检查和 release 构建。
+- 当前本地 Native 19 组、JS 18 组测试，含 400 组守恒、确定性和回放案例。
+- 四人晚餐和五人混合黄金金额、转账顺序。
+- Int64 上限、0.29、零份额、非法金额、总额溢出和日期。
+- 原始行号、BOM/CRLF、严格账单 JSON 和大整数无损往返。
+- Session 原子修改、关联删除阻断、改名及旧结果失效。
+- Windows 原生控件、两种消费、编辑删除、混合结算、JSON 导入、剪贴板。
+- UTF-8 文件、原子保存、保存失败保留原文件。
+- CLI 进程的完整 JSON/Markdown 黄金、输出文件、stderr、退出码和最大整数。
+- Windows WinHTTP 的本地模拟：真实 HTTP 传输、两次确认、取消、EOF、歧义、错误金额、无效 JSON、认证失败、超时。
+- GUI 后台请求、遮盖密钥、逐笔预览、取消不修改旧账单、确认后黄金结算。
+- Windows 安装器、便携包、SHA256；安装、重复安装、安装后 GUI/CLI、关闭、卸载及用户数据保留。
+- 第三方许可随包保留。CI 可能有行尾转换和 Actions Node 版本提示，未隐瞒为应用错误。
+
+源码提交后运行最终构建和截图流程，下载产物在成功的 Actions 运行中。GitHub Release 尚未发布；自动审批拒绝了长期 contents:write 与自动发布配置，已移除这部分，保留只读 CI。
+
+## 剩余验收，不能冒称通过
+
+1. **真实模型演示**：尚无可用真实服务配置，本地 fixture 不是模型。按 AI_DEMO.md 在用户本机配置，记录服务、模型、日期和实际结果，不发送 Key 到聊天。
+2. **用户桌面**：Windows 10/11、中文输入法、100/125/150/200% DPI、视觉布局和真实打开/保存对话框人工体验。
+3. **参赛手续**：队伍、报名、交流群与最终正式提交由用户核对。不能声称赛事已接受或官方审核已通过。
+
+## 版本边界
+
+当前为开发预览，完整实现与自动验证不等于真实模型和人工桌面验收。支持 Windows x64；单币种、单笔一个付款人；桌面最多 200 人、5000 笔。未签名，不承诺商店或其他平台。
+
+最后检查中还调整了 GUI 零金额：填写 0 视为未参与，不写入多余的份额引用；核心继续接受显式零份额。该调整不改变金额或黄金结果，并在原生集成中加入断言。最终 CI 将重新执行。
+
+内部完成目标仍为 2026-10-24 23:59 Asia/Shanghai。
+

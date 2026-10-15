@@ -19,7 +19,7 @@ pub(all) struct Desktop {
   mut path : String
   mut saved_revision : Int32
   mut status : String
-  draft : String
+  mut draft : String
   mut autosave : Bool
   testing : Bool
   mut ai_config : @ai.Config
@@ -119,12 +119,11 @@ fn Desktop::payment(self : Desktop) -> @shared.Payment raise @shared.BillError {
   let shares : Array[@shared.Share] = []
   for i = 0; i < people.length(); i = i + 1 {
     if self.form.exact {
-      shares.push({
-        person: people[i],
-        amount_cents: @shared.parse_money(
-          self.form.amounts[i].trim().to_owned(),
-        ),
-      })
+      let amount = @shared.parse_money(self.form.amounts[i].trim().to_owned())
+      // A zero means non-participation in the form; core still accepts explicit zero shares.
+      if amount > 0L {
+        shares.push({ person: people[i], amount_cents: amount, })
+      }
     } else if self.form.selected[i] {
       participants.push(people[i])
     }
@@ -752,12 +751,24 @@ pub fn Desktop::handle(
 }
 
 ///|
-pub fn run() -> Unit {
+pub fn run(demo~ : Bool = false) -> Unit {
   if !@win32.supported() || !@win32.create(@shared.app_title(), true) {
     @win32.exit(1)
   }
   let ui = Desktop::new(false)
-  if !ui.draft.is_empty() && @sys.exists(ui.draft) {
+  if demo {
+    try {
+      ui.session.replace(@shared.sample_mixed())
+      ignore(ui.session.solve())
+    } catch {
+      _ => @win32.exit(1)
+    }
+    ui.draft = ""
+    ui.autosave = false
+    ui.saved_revision = ui.session.revision
+    ui.status = "演示模式：不恢复或自动写入草稿。正式账单请手动保存。"
+  }
+  if !demo && !ui.draft.is_empty() && @sys.exists(ui.draft) {
     try {
       ui.session.replace(
         @shared.decode_ledger(@sys.read_file(ui.draft), allow_empty=true),

@@ -1,0 +1,85 @@
+{
+  "version": "0.8.0-preview",
+  "stages": [
+    {
+      "stage": 1,
+      "sha": "48a17f45b81b54df95dc6aeeaabfe4d181ca6f1d",
+      "run": 38719888097,
+      "conclusion": "success",
+      "url": "https://github.com/William206920/Splict-easy/actions/runs/38719888097"
+    },
+    {
+      "stage": 2,
+      "sha": "797a5553dbc8e1cf765526a28ab8fc1632de826d",
+      "run": 38720762654,
+      "conclusion": "success",
+      "url": "https://github.com/William206920/Splict-easy/actions/runs/38720762654"
+    },
+    {
+      "stage": 3,
+      "sha": "341c37ce5dd1cd72fdd0f118adf885e5bd5ac0a2",
+      "run": 38720925482,
+      "conclusion": "success",
+      "url": "https://github.com/William206920/Splict-easy/actions/runs/38720925482"
+    },
+    {
+      "stage": 4,
+      "sha": "0db2a4937191bb4bd46a7981c9bc9116aee7e34e",
+      "run": 38721336321,
+      "conclusion": "success",
+      "url": "https://github.com/William206920/Splict-easy/actions/runs/38721336321"
+    },
+    {
+      "stage": 5,
+      "sha": "edc2052b33079aa6ea9d0b918df1d8434f6a75a3",
+      "run": 38721534925,
+      "conclusion": "success",
+      "url": "https://github.com/William206920/Splict-easy/actions/runs/38721534925"
+    },
+    {
+      "stage": 6,
+      "sha": "5cb05ee973ca2e00875ce5373da29d4f7299a304",
+      "run": 38722487735,
+      "conclusion": "success",
+      "url": "https://github.com/William206920/Splict-easy/actions/runs/38722487735"
+    },
+    {
+      "stage": 7,
+      "sha": "dcfd19d1de166921aa5d35e4916640014ea9a115",
+      "run": 38723034006,
+      "conclusion": "success",
+      "url": "https://github.com/William206920/Splict-easy/actions/runs/38723034006"
+    },
+    {
+      "stage": 8,
+      "sha": "7488aa304b2399f36ab003341c410206578f123f",
+      "run": 38724606635,
+      "conclusion": "success",
+      "url": "https://github.com/William206920/Splict-easy/actions/runs/38724606635"
+    }
+  ],
+  "local_tests": {
+    "native_groups": 19,
+    "js_groups": 18,
+    "generated_ledger_cases": 400,
+    "cli_process_golden": true
+  },
+  "windows": {
+    "os": "Windows Server 2025 x64",
+    "compiler": "moonc v0.10.15+943464bfa",
+    "stage8_log_excerpt": [
+      "2026-10-15T11:03:49.8496552Z moonc v0.10.15+943464bfa (2026-10-12) ~\\.moon\\bin\\moonc.exe",
+      "2026-10-15T11:04:04.7421863Z Total tests: 19, passed: 19, failed: 0.",
+      "2026-10-15T11:04:14.0932618Z PASS: desktop people + equal/exact + edit/delete + import + settlement + clipboard",
+      "2026-10-15T11:04:14.0933522Z PASS: Win32 Unicode + MoonBit event + shared core + close",
+      "2026-10-15T11:04:15.5011458Z PASS: CLI golden JSON/Markdown + UTF8 files + exit codes + Int64 maximum",
+      "2026-10-15T11:04:49.7938799Z PASS: loopback AI fixture HTTP + two confirmations + cancellation + errors + GUI async preview",
+      "2026-10-15T11:04:49.7939522Z This is a deterministic local fixture, NOT a real model demonstration.",
+      "2026-10-15T11:04:52.6003250Z PASS: installer + portable ZIP + SHA256 (0.8.0)",
+      "2026-10-15T11:05:05.3004064Z PASS: silent install + reinstall + installed GUI/CLI + uninstall + user data retention"
+    ]
+  },
+  "real_model_demo": "not_verified_no_configuration",
+  "user_desktop": "not_verified",
+  "final_preview_build": "run after this report is committed"
+}

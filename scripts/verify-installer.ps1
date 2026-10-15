@@ -1,6 +1,7 @@
 $ErrorActionPreference = 'Stop'
 Set-Location (Split-Path $PSScriptRoot -Parent)
-$setup = Get-ChildItem dist/package/*-Setup.exe | Select-Object -First 1
+$version = [regex]::Match((Get-Content moon.mod -Raw), '(?m)^version = "([^"]+)"').Groups[1].Value
+$setup = Get-Item "dist/package/SplitEasy-$version-Windows-x64-Setup.exe"
 if (-not $setup) { throw 'Installer missing.' }
 $destination = Join-Path $env:TEMP ('SplitEasy-install-' + [guid]::NewGuid().ToString('N'))
 $dataDir = Join-Path $env:LOCALAPPDATA 'SplitEasy'
