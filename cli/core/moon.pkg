@@ -1,5 +1,0 @@
-import {
-  "spliteasy/spliteasy/shared",
-}
-
-supported_targets = "native"

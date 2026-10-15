@@ -1,9 +1,0 @@
-{
-  "target": "native",
-  "golden_markdown_exact": true,
-  "golden_json_exact": true,
-  "int64_json_python_roundtrip": true,
-  "all_control_characters_roundtrip": true,
-  "special_text_roundtrip": true,
-  "passed": true
-}

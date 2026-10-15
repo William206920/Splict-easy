@@ -1,7 +1,0 @@
-import {
-  "spliteasy/spliteasy/cli/core",
-}
-
-pkgtype(kind: "executable")
-
-supported_targets = "native"
