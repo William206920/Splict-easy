@@ -10,6 +10,7 @@ public static class SplitEasyCapture {
  [DllImport("user32.dll")] public static extern bool PrintWindow(IntPtr window,IntPtr dc,uint flags);
  [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr window,int show);
  [DllImport("user32.dll")] public static extern bool RedrawWindow(IntPtr window,IntPtr rect,IntPtr region,uint flags);
+ [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr window,IntPtr after,int x,int y,int width,int height,uint flags);
  [DllImport("user32.dll")] private static extern bool EnumWindows(EnumWindow callback,IntPtr data);
  [DllImport("user32.dll")] private static extern uint GetWindowThreadProcessId(IntPtr window,out uint process);
  [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr window,uint message,IntPtr w,IntPtr l);
@@ -37,6 +38,9 @@ try {
     # A hidden native window has no painted surface. Show without activation only
     # for this CI capture, then force all standard controls to finish painting.
     $null = [SplitEasyCapture]::ShowWindow($window,4)
+    # Capture a consistent desktop canvas even on the CI runner's small display.
+    $null = [SplitEasyCapture]::SetWindowPos($window,[IntPtr]::Zero,0,0,1320,960,0x0016)
+    Start-Sleep -Milliseconds 400
     $null = [SplitEasyCapture]::RedrawWindow($window,[IntPtr]::Zero,[IntPtr]::Zero,0x0185)
     $rect = New-Object SplitEasyCapture+RECT
     if (-not [SplitEasyCapture]::GetWindowRect($window,[ref]$rect)) { throw 'Window rectangle unavailable.' }

@@ -194,7 +194,7 @@ fn Desktop::transfers_view(
 
 ///|
 fn Desktop::overview_view(self : Desktop, x : Int32, w : Int32) -> Unit {
-  let wide = w >= 900
+  let wide = w >= 700
   let main = if wide { w - 338 } else { w }
   let bottom = if wide { 898 } else { 1220 }
   self.shell(
