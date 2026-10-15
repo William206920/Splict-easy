@@ -1,4 +1,4 @@
-name: Native Windows stage 1
+name: Native Windows application
 
 on:
   push:
@@ -28,8 +28,15 @@ jobs:
           moon fmt --check
           if ($LASTEXITCODE -ne 0) { throw 'Format check failed.' }
           ./scripts/build-windows.ps1 -Smoke
+      - name: Package and verify installer
+        shell: pwsh
+        run: |
+          ./scripts/package-windows.ps1
+          ./scripts/verify-installer.ps1
       - uses: actions/upload-artifact@v4
         with:
-          name: SplitEasy-Windows-stage1
-          path: dist/SplitEasy.exe
+          name: SplitEasy-Windows
+          path: |
+            dist/package/*
+            dist/dependencies.txt
           if-no-files-found: error

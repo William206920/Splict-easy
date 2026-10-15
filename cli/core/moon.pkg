@@ -1,0 +1,5 @@
+import {
+  "spliteasy/desktop/shared",
+}
+
+supported_targets = "+native+js"

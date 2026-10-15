@@ -12,3 +12,7 @@
 10. 自动检查增加真实控件下人员、两种消费、混合结算、改名、引用阻断、编辑删除、导入和剪贴板；磁盘测试覆盖 UTF-8 和失败保留旧文件。
 11. feat(stage6): build native desktop workflow and local persistence。
 12. 自动继续阶段 7。
+
+## Windows 实际验证补录
+
+[运行 38722487735](https://github.com/William206920/Splict-easy/actions/runs/38722487735) 已成功，源码 5cb05ee973ca2e00875ce5373da29d4f7299a304。原生窗口集成、文件测试、完整桌面人员/消费/导入/结算/剪贴板路径实际通过。仍不等于用户桌面 DPI/输入法人工测试。

@@ -55,3 +55,20 @@ pub fn temp_directory() -> String {
     None => "/tmp"
   }
 }
+
+///|
+#borrow(data)
+extern "C" fn output_ffi(data : Bytes, error : Bool) -> Unit = "se_console_output"
+
+///|
+pub extern "C" fn exit(code : Int32) -> Unit = "se_sys_exit"
+
+///|
+pub fn stdout(text : String) -> Unit {
+  output_ffi(@utf8.encode(text), false)
+}
+
+///|
+pub fn stderr(text : String) -> Unit {
+  output_ffi(@utf8.encode(text), true)
+}

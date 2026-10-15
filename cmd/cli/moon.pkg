@@ -1,0 +1,10 @@
+import {
+  "spliteasy/desktop/cli/core",
+  "spliteasy/desktop/shared",
+  "spliteasy/desktop/platform/system" @sys,
+  "moonbitlang/core/env",
+}
+
+supported_targets = "native"
+
+pkgtype(kind: "executable")

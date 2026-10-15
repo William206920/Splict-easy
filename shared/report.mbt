@@ -35,8 +35,15 @@ pub fn render_markdown(report : Report) -> String {
       md_cell(p.date) +
       " |",
     )
+  }
+  for p in report.ledger.payments {
     rows.push("")
-    rows.push("承担明细：" + shares_for_render(report.ledger.people, p))
+    rows.push(
+      "承担明细（" +
+      md_cell(p.description) +
+      "）：" +
+      shares_for_render(report.ledger.people, p),
+    )
   }
   rows.push("")
   rows.push("## 人员汇总")

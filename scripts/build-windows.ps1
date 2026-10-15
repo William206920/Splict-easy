@@ -13,6 +13,7 @@ if (-not (Get-Command cl.exe -ErrorAction SilentlyContinue)) {
 }
 
 $env:MOONBIT_NEW_NATIVE = '0'
+$env:_CL_ = "$env:_CL_ /MT"
 & moon version --all
 if ($LASTEXITCODE -ne 0) { throw 'MoonBit is not ready.' }
 & moon check --target native
@@ -27,4 +28,8 @@ if ($Smoke) {
 }
 New-Item -ItemType Directory -Force dist | Out-Null
 Copy-Item '_build/native/release/build/cmd/desktop/desktop.exe' 'dist/SplitEasy.exe' -Force
-Write-Host 'Built dist/SplitEasy.exe (stage 1 startup window only)'
+Copy-Item '_build/native/release/build/cmd/cli/cli.exe' 'dist/spliteasy-cli.exe' -Force
+& dumpbin /DEPENDENTS dist/SplitEasy.exe | Set-Content dist/dependencies.txt
+& python scripts/verify_cli.py dist/spliteasy-cli.exe
+if ($LASTEXITCODE -ne 0) { throw 'CLI process integration failed.' }
+Write-Host 'Built native GUI + CLI; Windows integration complete'

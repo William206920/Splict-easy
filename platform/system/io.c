@@ -96,3 +96,16 @@ int32_t se_io_exists(moonbit_bytes_t path){
 #endif
  free(name);return exists;
 }
+
+void se_console_output(moonbit_bytes_t data,int32_t error){
+#ifdef _WIN32
+ HANDLE handle=GetStdHandle(error?STD_ERROR_HANDLE:STD_OUTPUT_HANDLE);DWORD mode;
+ if(GetConsoleMode(handle,&mode)){
+  int n=MultiByteToWideChar(CP_UTF8,0,(char*)data,Moonbit_array_length(data),NULL,0);
+  WCHAR *text=malloc(((size_t)n+1)*sizeof(WCHAR));if(!text)return;
+  MultiByteToWideChar(CP_UTF8,0,(char*)data,Moonbit_array_length(data),text,n);DWORD written;WriteConsoleW(handle,text,n,&written,NULL);free(text);return;
+ }
+#endif
+ FILE *stream=error?stderr:stdout;fwrite(data,1,(size_t)Moonbit_array_length(data),stream);fflush(stream);
+}
+void se_sys_exit(int32_t code){exit(code);}

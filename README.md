@@ -2,19 +2,20 @@
 
 使用 MoonBit Native 与 Windows 原生控件开发的 MIT 开源应用。目标是混合记录平均与实际金额消费，统一生成结算清单。
 
-**当前仅新阶段 1：启动窗口、中文文本及按钮事件。Windows 原生构建和隐藏窗口集成检查已通过；账单、分账、保存和 AI 尚未实现。**
+**当前已实现阶段 1—7：原生桌面分账、本地文件和配套 CLI。阶段 2—6 的 Windows CI 已通过；安装器检查随阶段 7 CI 执行。AI 正在阶段 8 接入，未声称真实模型演示已完成。**
 
 - [完整方案 V4.0](docs/PROJECT_PLAN.md)
-- [阶段 1 报告和实际验证](docs/STAGE1_REPORT.md)
+- [桌面阶段 6 验证](docs/STAGE6_REPORT.md)
+- [CLI 和安装器阶段 7](docs/STAGE7_REPORT.md)
 - [Windows 自动构建](../../actions/workflows/native-windows.yml)
 
 旧网页代码已应用户要求移除，历史仍可追溯。旧版测试不适用于当前实现。
 
-[下载阶段 1 Windows 可执行文件 ZIP](https://github.com/William206920/Splict-easy/actions/runs/38719888097/artifacts/11964670982)（GitHub Actions artifact，需登录 GitHub；当前只有启动窗口）。
+新版构建产物见最近成功的 Windows Actions 运行；旧阶段 1 产物只包含启动窗口，不用于完整体验。
 
 ## 构建与启动
 
-运行正式程序时不需要安装 MoonBit；当前尚不是最终安装包。成功的 Actions 运行会附带阶段 1 可执行文件。
+运行程序无需安装 MoonBit。成功的 Actions 运行附带便携 ZIP、安装包和 SHA256 清单。当前是开发预览版。
 
 从源码构建需要 Windows x64、MoonBit stable（见 toolchain.version）、Visual Studio Build Tools 的 C++ 桌面工具及 Windows SDK。在仓库根目录用 PowerShell 运行：
 
@@ -32,7 +33,7 @@ $env:PATH = "$env:USERPROFILE\.moon\bin;$env:PATH"
 PASS: Win32 Unicode + MoonBit event + shared core + close
 ```
 
-双击程序后应出现“SplitEasy · AA 分账器”，显示中文启动信息。点击“验证共享核心”，消息应改变。关闭窗口应退出。需要在用户桌面另测显示缩放、键盘和后续中文输入；自动检查不能替代这些项目。
+双击程序后可添加人员和消费，或载入混合示例；点击统一结算后复制或导出。人员改名更新引用，有关联消费时删除会阻止。当前账单变更后旧结果失效。需要在用户桌面另测缩放、键盘和中文输入；自动检查不能替代这些项目。
 
 ## 当前架构
 
