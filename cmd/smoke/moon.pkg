@@ -1,0 +1,8 @@
+import {
+  "spliteasy/desktop/shared",
+  "spliteasy/desktop/platform/win32",
+}
+
+pkgtype(kind: "executable")
+
+supported_targets = "native"

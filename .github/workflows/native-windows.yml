@@ -1,0 +1,35 @@
+name: Native Windows stage 1
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['docs/**', '*.md']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install pinned MoonBit stable
+        shell: pwsh
+        run: |
+          $env:MOONBIT_INSTALL_VERSION = (Get-Content toolchain.version -Raw).Trim()
+          Invoke-RestMethod https://cli.moonbitlang.com/install/powershell.ps1 | Invoke-Expression
+          "$env:USERPROFILE\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Format, native build and Windows integration
+        shell: pwsh
+        run: |
+          moon fmt --check
+          if ($LASTEXITCODE -ne 0) { throw 'Format check failed.' }
+          ./scripts/build-windows.ps1 -Smoke
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SplitEasy-Windows-stage1
+          path: dist/SplitEasy.exe
+          if-no-files-found: error

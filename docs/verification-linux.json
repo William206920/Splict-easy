@@ -1,0 +1,59 @@
+{
+  "platform": "Linux x86_64",
+  "toolchain": "moonc v0.10.15+943464bfa",
+  "commands": [
+    {
+      "command": "moon fmt --check",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "Finished. moon: ran 9 tasks, now up to date\n"
+    },
+    {
+      "command": "moon check --target native",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "Finished. moon: ran 6 tasks, now up to date\n"
+    },
+    {
+      "command": "moon build --target native",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "Finished. moon: ran 7 tasks, now up to date\n"
+    },
+    {
+      "command": "moon build --target native --release",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "Finished. moon: ran 7 tasks, now up to date\n"
+    },
+    {
+      "command": "moon check --target js",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "Finished. moon: no work to do\n"
+    },
+    {
+      "command": "moon test --target native",
+      "exit_code": 0,
+      "stdout": "Total tests: 0, passed: 0, failed: 0.\n",
+      "stderr": "Warning: no test entry found.\n"
+    },
+    {
+      "command": "_build/native/release/build/cmd/desktop/desktop.exe",
+      "exit_code": 1,
+      "stdout": "此原生界面仅支持 Windows，当前系统不能运行窗口。\n",
+      "stderr": "",
+      "expected_exit_code": 1
+    },
+    {
+      "command": "_build/native/release/build/cmd/smoke/smoke.exe",
+      "exit_code": 1,
+      "stdout": "FAIL: Windows required; no simulated GUI pass\n",
+      "stderr": "",
+      "expected_exit_code": 1
+    }
+  ],
+  "windows_verified": false,
+  "unit_tests": 0,
+  "note": "Linux binaries do not validate the Windows code path."
+}
