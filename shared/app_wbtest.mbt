@@ -51,3 +51,8 @@ test "desktop limits reject atomically" {
   )
   assert_true(session.ledger == sample_mixed())
 }
+
+///|
+test "markdown escapes repeated cells and all linebreaks" {
+  assert_eq(md_cell("<a>|<b>|x\ny\nz"), "&lt;a&gt;\\|&lt;b&gt;\\|x y z")
+}

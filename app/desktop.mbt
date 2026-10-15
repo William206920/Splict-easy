@@ -70,7 +70,7 @@ pub fn Desktop::new(testing : Bool) -> Desktop {
 
 ///|
 fn crlf(text : String) -> String {
-  text.replace(old="\r\n", new="\n").replace(old="\n", new="\r\n")
+  text.replace_all(old="\r\n", new="\n").replace_all(old="\n", new="\r\n")
 }
 
 ///|

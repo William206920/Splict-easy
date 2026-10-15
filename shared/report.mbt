@@ -1,12 +1,12 @@
 ///|
 fn md_cell(text : String) -> String {
   text
-  .replace(old="\\", new="\\\\")
-  .replace(old="|", new="\\|")
-  .replace(old="\r", new=" ")
-  .replace(old="\n", new=" ")
-  .replace(old="<", new="&lt;")
-  .replace(old=">", new="&gt;")
+  .replace_all(old="\\", new="\\\\")
+  .replace_all(old="|", new="\\|")
+  .replace_all(old="\r", new=" ")
+  .replace_all(old="\n", new=" ")
+  .replace_all(old="<", new="&lt;")
+  .replace_all(old=">", new="&gt;")
 }
 
 ///|

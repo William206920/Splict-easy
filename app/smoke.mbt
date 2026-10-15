@@ -82,6 +82,10 @@ pub fn smoke() -> Unit raise @shared.BillError {
       demand(r.transfers[3].amount_cents == 2000L, "JSON 导入和黄金结算")
     None => demand(false, "导入报告")
   }
+  demand(
+    @win32.get_text(40).contains("总消费：275.00 元\r\n\r\n晚餐"),
+    "原生结算保留全部换行",
+  )
   @win32.close()
   demand(@win32.next_event() == 0, "应用窗口关闭")
   println(
