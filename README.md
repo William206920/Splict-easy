@@ -2,7 +2,9 @@
 
 MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消费可以混合记账，最终统一生成结算清单。界面不使用 HTML、WebView 或浏览器。
 
-**当前为 0.8.0 开发预览：核心、桌面、CLI、文件和 AI 接口已实现。真实模型演示和用户 Windows 桌面实测仍待验收；本地模拟不代表真实 AI 验收。**
+**当前为 0.9.0 开发预览：重新设计原生桌面布局与主题，核心、CLI、文件和 AI 接口继续保留。真实模型演示和用户 Windows 桌面实测仍待验收；本地模拟不代表真实 AI 验收。**
+
+- [界面优化、同类产品参考与验证](docs/UI_REDESIGN.md)
 
 - [整体验证与剩余验收](docs/VERIFY_CURRENT.md)
 - [完整方案与自动推进约定](docs/PROJECT_PLAN.md)

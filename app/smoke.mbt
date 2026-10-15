@@ -86,6 +86,47 @@ pub fn smoke() -> Unit raise @shared.BillError {
     @win32.get_text(40).contains("总消费：275.00 元\r\n\r\n晚餐"),
     "原生结算保留全部换行",
   )
+  // These exercise real native rectangles and resizing, not just view constants.
+  for width in [800, 1040, 1320] {
+    @win32.resize(width, 900)
+    ui.handle(9000)
+    for id in [10, 11, 12, 13, 14, 20, 21, 32, 34, 40, 41, 552] {
+      demand(
+        @win32.flag(id, 9, 0) == 1,
+        "缩放后控件保持在横向可视区域",
+      )
+    }
+    demand(@win32.flag(35, 5, 0) == 1, "有效结算可以复制")
+  }
+  ignore(@win32.set_text(11, "待添加成员"))
+  ui.handle(9000)
+  demand(@win32.get_text(11) == "待添加成员", "缩放保留成员输入")
+  ui.handle(21)
+  ignore(@win32.set_text(52, "缩放中的消费"))
+  ignore(@win32.set_text(53, "12.34"))
+  ui.handle(9000)
+  demand(
+    @win32.get_text(52) == "缩放中的消费",
+    "缩放保留消费表单",
+  )
+  ui.handle(57)
+  ui.handle(38)
+  ignore(@win32.set_text(80, "https://example.invalid/v1"))
+  ignore(@win32.set_text(83, "preview-model"))
+  ignore(@win32.set_text(82, "未发送的账单输入"))
+  ui.handle(9000)
+  demand(
+    @win32.get_text(82) == "未发送的账单输入",
+    "缩放保留 AI 输入",
+  )
+  demand(
+    @win32.get_text(80) == "https://example.invalid/v1",
+    "缩放保留模型配置",
+  )
+  ui.handle(85)
+  ui.session.add_person("新成员")
+  ui.render()
+  demand(@win32.flag(35, 5, 0) == 0, "账单变更后禁用旧结果操作")
   @win32.close()
   demand(@win32.next_event() == 0, "应用窗口关闭")
   println(

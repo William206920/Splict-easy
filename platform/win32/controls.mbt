@@ -17,6 +17,12 @@ pub extern "C" fn clear() -> Unit = "se_win_clear"
 pub extern "C" fn width() -> Int32 = "se_win_width"
 
 ///|
+pub extern "C" fn height() -> Int32 = "se_win_height"
+
+///|
+pub extern "C" fn resize(width : Int32, height : Int32) -> Unit = "se_win_resize"
+
+///|
 pub extern "C" fn content(height : Int32) -> Unit = "se_win_content"
 
 ///|

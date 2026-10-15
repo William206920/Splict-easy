@@ -4,5 +4,20 @@ extern "C" fn gui_subsystem() -> Unit = "se_use_gui_subsystem"
 ///|
 fn main {
   gui_subsystem()
-  @app.run(demo=@env.args().contains("--demo"))
+  let args = @env.args()
+  @app.run(
+    demo=args.contains("--demo") ||
+      args.contains("--demo-editor") ||
+      args.contains("--demo-ai") ||
+      args.contains("--demo-import"),
+    demo_page=if args.contains("--demo-editor") {
+      1
+    } else if args.contains("--demo-ai") {
+      3
+    } else if args.contains("--demo-import") {
+      2
+    } else {
+      0
+    },
+  )
 }
