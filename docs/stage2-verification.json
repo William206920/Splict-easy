@@ -1,0 +1,50 @@
+[
+  {
+    "command": "moon version",
+    "exit_code": 0,
+    "stdout": "moon 0.1.20261012 (748b63c 2026-10-12)\n\nFeature flags enabled: rr_moon_mod,rr_moon_pkg\n",
+    "stderr": ""
+  },
+  {
+    "command": "moonc -v",
+    "exit_code": 0,
+    "stdout": "v0.10.15+943464bfa (2026-10-12)\n",
+    "stderr": ""
+  },
+  {
+    "command": "moon fmt",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "Finished. moon: ran 2 tasks, now up to date\n"
+  },
+  {
+    "command": "make check",
+    "exit_code": 0,
+    "stdout": "moon check --target native\nmoon check --target js\n",
+    "stderr": "Finished. moon: no work to do\nFinished. moon: no work to do\n"
+  },
+  {
+    "command": "make test",
+    "exit_code": 0,
+    "stdout": "moon test --target native\nTotal tests: 41, passed: 41, failed: 0.\nmoon test --target js\nTotal tests: 41, passed: 41, failed: 0.\n",
+    "stderr": ""
+  },
+  {
+    "command": "make build-native",
+    "exit_code": 0,
+    "stdout": "moon build --target native\n",
+    "stderr": "Finished. moon: ran 5 tasks, now up to date\n"
+  },
+  {
+    "command": "make run-cli",
+    "exit_code": 0,
+    "stdout": "moon run cli/main --target native\nSplitEasy: MoonBit shared core ready.\n",
+    "stderr": ""
+  },
+  {
+    "command": "make build-web",
+    "exit_code": 0,
+    "stdout": "bash web/build.sh\n已生成 web/spliteasy.js\n",
+    "stderr": "Typescript declaration file is only supported for ESM format for now\nFinished. moon: ran 3 tasks, now up to date\n"
+  }
+]
