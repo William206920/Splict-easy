@@ -13,6 +13,7 @@ static int32_t se_length;
 #include <wchar.h>
 #pragma comment(lib,"winhttp.lib")
 static volatile LONG se_state,se_cancelled;
+static ULONGLONG se_started;
 typedef struct {char *url,*key,*body;} Request;
 static char *copy_bytes(moonbit_bytes_t b){size_t n=Moonbit_array_length(b);char *s=malloc(n+1);if(s){memcpy(s,b,n);s[n]=0;}return s;}
 static WCHAR *wide(const char *s){int n=MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,s,-1,NULL,0);if(!n)return NULL;WCHAR *w=malloc((size_t)n*sizeof(WCHAR));if(w)MultiByteToWideChar(CP_UTF8,MB_ERR_INVALID_CHARS,s,-1,w,n);return w;}
@@ -22,7 +23,7 @@ static DWORD WINAPI worker(LPVOID data){
  WCHAR *url=wide(input->url),*headers=NULL;
  HINTERNET session=NULL,connection=NULL,request=NULL;
  char *result=NULL;size_t length=0;int success=0;char error[160]="Network request failed";
- ULONGLONG started=GetTickCount64();
+ ULONGLONG started=se_started;
  if(InterlockedCompareExchange(&se_cancelled,0,0)){strcpy_s(error,sizeof(error),"Cancelled");goto done;}
  if(!url){strcpy_s(error,sizeof(error),"Invalid service URL");goto done;}
  URL_COMPONENTS parts={0};parts.dwStructSize=sizeof(parts);parts.dwHostNameLength=(DWORD)-1;parts.dwUrlPathLength=(DWORD)-1;parts.dwExtraInfoLength=(DWORD)-1;
@@ -46,7 +47,7 @@ static DWORD WINAPI worker(LPVOID data){
  if(code<200||code>=300){snprintf(error,sizeof(error),"HTTP %lu",(unsigned long)code);goto done;}
  while(1){
   if(InterlockedCompareExchange(&se_cancelled,0,0)){strcpy_s(error,sizeof(error),"Cancelled");goto done;}
-  if(GetTickCount64()-started>90000){strcpy_s(error,sizeof(error),"Request timeout");goto done;}
+  if(GetTickCount64()-started>=30000){strcpy_s(error,sizeof(error),"Request timeout");goto done;}
   char chunk[8192];DWORD received=0;
   if(!WinHttpReadData(request,chunk,sizeof(chunk),&received))goto done;
   if(!received)break;
@@ -60,7 +61,9 @@ done:
  if(request)WinHttpCloseHandle(request);if(connection)WinHttpCloseHandle(connection);if(session)WinHttpCloseHandle(session);
  free(url);if(headers){SecureZeroMemory(headers,wcslen(headers)*sizeof(WCHAR));free(headers);}
  if(input->key){SecureZeroMemory(input->key,strlen(input->key));free(input->key);}free(input->url);free(input->body);free(input);
- if(InterlockedCompareExchange(&se_cancelled,0,0)){free(result);outcome("Cancelled",4);}
+ LONG cancelled=InterlockedCompareExchange(&se_cancelled,0,0);
+ if(GetTickCount64()-started>=30000 && cancelled==0)cancelled=2;
+ if(cancelled){free(result);outcome(cancelled==2?"Request timeout":"Cancelled",cancelled==2?3:4);}
  else if(success){free(se_result);se_result=result;se_length=(int32_t)length;InterlockedExchange(&se_state,2);}
  else {free(result);outcome(error,3);}
  return 0;
@@ -70,13 +73,17 @@ int32_t se_http_start(moonbit_bytes_t url,moonbit_bytes_t key,moonbit_bytes_t bo
  Request *input=calloc(1,sizeof(Request));if(!input)return 0;
  input->url=copy_bytes(url);input->key=copy_bytes(key);input->body=copy_bytes(body);
  if(!input->url||!input->key||!input->body){free(input->url);free(input->key);free(input->body);free(input);return 0;}
- InterlockedExchange(&se_cancelled,0);InterlockedExchange(&se_state,1);
+ se_started=GetTickCount64();InterlockedExchange(&se_cancelled,0);InterlockedExchange(&se_state,1);
  HANDLE thread=CreateThread(NULL,0,worker,input,0,NULL);
  if(!thread){free(input->url);free(input->key);free(input->body);free(input);InterlockedExchange(&se_state,3);return 0;}
  CloseHandle(thread);return 1;
 }
-int32_t se_http_state(void){return (int32_t)InterlockedCompareExchange(&se_state,0,0);}
-void se_http_cancel(void){InterlockedExchange(&se_cancelled,1);}
+int32_t se_http_state(void){
+ LONG state=InterlockedCompareExchange(&se_state,0,0);
+ if(state==1 && GetTickCount64()-se_started>=30000){InterlockedCompareExchange(&se_cancelled,2,0);return 3;}
+ return (int32_t)state;
+}
+void se_http_cancel(void){InterlockedCompareExchange(&se_cancelled,1,0);}
 void se_http_pause(int32_t milliseconds){Sleep((DWORD)milliseconds);}
 #else
 #include <unistd.h>
@@ -85,4 +92,8 @@ int32_t se_http_state(void){return 3;}
 void se_http_cancel(void){}
 void se_http_pause(int32_t ms){usleep((unsigned int)ms*1000);}
 #endif
-moonbit_bytes_t se_http_result(void){moonbit_bytes_t bytes=moonbit_make_bytes(se_length,0);if(se_length&&se_result)memcpy(bytes,se_result,(size_t)se_length);return bytes;}
+moonbit_bytes_t se_http_result(void){
+#ifdef _WIN32
+ if(InterlockedCompareExchange(&se_cancelled,0,0)==2){const char *message="Request timeout";int len=(int)strlen(message);moonbit_bytes_t bytes=moonbit_make_bytes(len,0);memcpy(bytes,message,(size_t)len);return bytes;}
+#endif
+ moonbit_bytes_t bytes=moonbit_make_bytes(se_length,0);if(se_length&&se_result)memcpy(bytes,se_result,(size_t)se_length);return bytes;}
