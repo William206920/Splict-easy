@@ -109,3 +109,25 @@ void se_console_output(moonbit_bytes_t data,int32_t error){
  FILE *stream=error?stderr:stdout;fwrite(data,1,(size_t)Moonbit_array_length(data),stream);fflush(stream);
 }
 void se_sys_exit(int32_t code){exit(code);}
+
+int32_t se_console_terminal(void){
+#ifdef _WIN32
+ return _isatty(_fileno(stdin));
+#else
+ return isatty(fileno(stdin));
+#endif
+}
+moonbit_bytes_t se_console_line(void){
+ char buffer[8192]={0};
+#ifdef _WIN32
+ HANDLE handle=GetStdHandle(STD_INPUT_HANDLE);DWORD mode;
+ if(GetConsoleMode(handle,&mode)){
+  WCHAR widebuf[2048];DWORD count=0;
+  if(ReadConsoleW(handle,widebuf,2047,&count,NULL)){
+   int len=WideCharToMultiByte(CP_UTF8,0,widebuf,count,buffer,8191,NULL,NULL);buffer[len]=0;
+  }
+ }else
+#endif
+ {if(!fgets(buffer,sizeof(buffer),stdin))buffer[0]=0;}
+ int len=(int)strlen(buffer);moonbit_bytes_t result=moonbit_make_bytes(len,0);memcpy(result,buffer,len);return result;
+}

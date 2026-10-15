@@ -9,7 +9,7 @@ if ($compiler) { $compiler = $compiler.Source } else { $compiler = 'C:\Program F
 if (-not (Test-Path $compiler)) { throw 'Install Inno Setup 6.7+ before packaging.' }
 & $compiler "/DAppVersion=$version" packaging/spliteasy.iss
 if ($LASTEXITCODE -ne 0) { throw 'Installer build failed.' }
-Compress-Archive -Path dist/SplitEasy.exe,dist/spliteasy-cli.exe,dist/LICENSE -DestinationPath "dist/package/SplitEasy-$version-Windows-x64-Portable.zip" -Force
+Compress-Archive -Path dist/SplitEasy.exe,dist/spliteasy-cli.exe,dist/LICENSE,third_party -DestinationPath "dist/package/SplitEasy-$version-Windows-x64-Portable.zip" -Force
 $lines = Get-ChildItem dist/package -File | Where-Object { $_.Name -ne 'SHA256SUMS.txt' } | ForEach-Object {
     "$((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant())  $($_.Name)"
 }

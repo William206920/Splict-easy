@@ -74,3 +74,6 @@ pub fn ask(text : String) -> Int32 {
 pub fn clipboard(text : String) -> Bool {
   clipboard_ffi(text)
 }
+
+///|
+pub extern "C" fn timer(enabled : Bool) -> Unit = "se_win_timer"

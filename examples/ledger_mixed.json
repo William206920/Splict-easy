@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "people": [
+    "小明",
+    "小红",
+    "小刚",
+    "小美",
+    "小李"
+  ],
+  "payments": [
+    {
+      "payer": "小明",
+      "amount_cents": 20000,
+      "split_mode": "equal",
+      "participants": [
+        "小明",
+        "小红",
+        "小刚",
+        "小美",
+        "小李"
+      ],
+      "shares": [],
+      "description": "晚餐",
+      "date": ""
+    },
+    {
+      "payer": "小红",
+      "amount_cents": 7500,
+      "split_mode": "exact",
+      "participants": [],
+      "shares": [
+        {
+          "person": "小明",
+          "amount_cents": 1200
+        },
+        {
+          "person": "小红",
+          "amount_cents": 1500
+        },
+        {
+          "person": "小刚",
+          "amount_cents": 1800
+        },
+        {
+          "person": "小美",
+          "amount_cents": 1400
+        },
+        {
+          "person": "小李",
+          "amount_cents": 1600
+        }
+      ],
+      "description": "奶茶",
+      "date": ""
+    }
+  ],
+  "ambiguous": []
+}

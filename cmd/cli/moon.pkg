@@ -1,4 +1,6 @@
 import {
+  "spliteasy/desktop/ai",
+  "spliteasy/desktop/platform/http",
   "spliteasy/desktop/cli/core",
   "spliteasy/desktop/shared",
   "spliteasy/desktop/platform/system" @sys,

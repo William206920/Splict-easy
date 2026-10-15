@@ -22,6 +22,11 @@ pub(all) struct Desktop {
   draft : String
   mut autosave : Bool
   testing : Bool
+  mut ai_config : @ai.Config
+  mut ai_text : String
+  mut ai_preview : String
+  mut flow : @ai.Flow
+  mut waiting : Bool
 }
 
 ///|
@@ -55,6 +60,11 @@ pub fn Desktop::new(testing : Bool) -> Desktop {
     },
     autosave: true,
     testing,
+    ai_config: { base_url: "", api_key: "", model: "", },
+    ai_text: "",
+    ai_preview: "",
+    flow: @ai.Flow::new(),
+    waiting: false,
   }
 }
 
@@ -244,6 +254,60 @@ pub fn Desktop::render(self : Desktop) -> Unit {
     }
     @win32.content(350 + self.session.ledger.people.length() * 44)
     self.preview()
+  } else if self.page == 3 {
+    control(
+      0, 1, "AI 账单解析（主动启用后联网；发送前确认）", 20, 15,
+      w, 34,
+    )
+    control(0, 2, "服务 Base URL", 20, 62, 150, 30)
+    control(2, 80, self.ai_config.base_url, 180, 58, w - 180, 32)
+    control(0, 3, "API Key（不保存）", 20, 108, 150, 30)
+    control(8, 81, self.ai_config.api_key, 180, 104, w - 180, 32)
+    control(0, 4, "模型名称", 20, 154, 150, 30)
+    control(2, 83, self.ai_config.model, 180, 150, w - 180, 32)
+    control(3, 82, self.ai_text, 20, 205, w, 340)
+    control(
+      1,
+      84,
+      if self.waiting {
+        "解析进行中…"
+      } else {
+        "预览发送并解析"
+      },
+      20,
+      565,
+      250,
+      40,
+    )
+    control(
+      1,
+      85,
+      if self.waiting {
+        "取消请求"
+      } else {
+        "返回"
+      },
+      290,
+      565,
+      160,
+      40,
+    )
+    control(0, 89, self.status, 20, 625, w, 65)
+    if self.waiting {
+      for id in [80, 81, 82, 83, 84] {
+        ignore(@win32.flag(id, 4, 0))
+      }
+    }
+    @win32.content(720)
+  } else if self.page == 4 {
+    control(
+      0, 1, "AI 解析预览：请逐笔核对，尚未修改当前账单。", 20,
+      20, w, 40,
+    )
+    control(7, 88, self.ai_preview, 20, 80, w, 470)
+    control(1, 86, "确认替换并结算", 20, 575, 260, 42)
+    control(1, 87, "取消，返回修改", 300, 575, 240, 42)
+    @win32.content(660)
   } else if self.page == 2 {
     control(
       0, 1, "高级输入：粘贴 人： 开头的文本，或 schema_version=1 的账单 JSON。",
@@ -297,6 +361,7 @@ pub fn Desktop::render(self : Desktop) -> Unit {
     control(1, 21, "添加消费", 275, 348, 140, 34)
     control(1, 22, "编辑", 430, 348, 100, 34)
     control(1, 23, "删除", 545, 348, 100, 34)
+    control(1, 38, "AI 解析", 660, 348, w - 660, 34)
     let text = match self.session.report {
       Some(r) => @shared.render_text(r)
       None =>
@@ -399,6 +464,82 @@ pub fn Desktop::handle(
   self : Desktop,
   event : Int32,
 ) -> Unit raise @shared.BillError {
+  if event == 9100 {
+    if @http.state() == 1 {
+      return
+    }
+    @win32.timer(false)
+    if !self.waiting {
+      return
+    }
+    self.waiting = false
+    errdefer {
+      self.status = "AI 请求或解析未完成，请检查错误后重试。"
+      self.page = 3
+      self.render()
+    }
+    let ledger = self.flow.receive(@http.result())
+    self.ai_preview = @ai.preview(ledger)
+    self.page = 4
+    self.render()
+    return
+  }
+  if self.page == 3 && event != 9002 && event != 9000 {
+    self.ai_config = {
+      base_url: @win32.get_text(80),
+      api_key: @win32.get_text(81),
+      model: @win32.get_text(83),
+    }
+    self.ai_text = @win32.get_text(82)
+    if event == 85 {
+      if self.waiting {
+        @http.cancel()
+        self.flow.cancel()
+        self.waiting = false
+        self.status = "已取消；已发出的请求可能仍在服务端处理。"
+      }
+      self.page = 0
+      self.render()
+    } else if event == 84 {
+      let url = @ai.endpoint(self.ai_config)
+      let body = @ai.request_body(self.ai_config, self.ai_text)
+      self.flow = @ai.Flow::new()
+      let consent = confirm(
+        self,
+        "将把上方输入框的完整账单发送到：\n" +
+        url +
+        "\n模型：" +
+        self.ai_config.model +
+        "\n数据将离开设备。确认发送？",
+      )
+      if !self.flow.send(consent) {
+        return
+      }
+      @http.start(url, self.ai_config.api_key, body)
+      self.waiting = true
+      self.status = "请求进行中，完成后展示预览；可取消。"
+      @win32.timer(true)
+      self.render()
+    }
+    return
+  }
+  if self.page == 4 && event != 9002 && event != 9000 {
+    if event == 87 {
+      self.flow.cancel()
+      self.page = 3
+      self.render()
+    } else if event == 86 {
+      let report = self.flow.confirm(true)
+      self.session.replace(report.ledger)
+      self.session.report = Some(report)
+      self.path = ""
+      self.page = 0
+      self.persist()
+      self.status = "已确认 AI 账单，由 MoonBit 完成结算。"
+      self.render()
+    }
+    return
+  }
   if event == 9000 {
     let advanced = if self.page == 2 { @win32.get_text(70) } else { "" }
     self.capture()
@@ -588,6 +729,17 @@ pub fn Desktop::handle(
         }
       }
     }
+  } else if event == 38 {
+    if self.ai_config.base_url.is_empty() {
+      self.ai_config = {
+        base_url: @sys.environment("MOONBIT_BASE_URL"),
+        api_key: @sys.environment("MOONBIT_API_KEY"),
+        model: @sys.environment("MOONBIT_MODEL"),
+      }
+    }
+    self.status = "AI 尚未发送；普通分账无需配置密钥。"
+    self.page = 3
+    self.render()
   } else if event == 37 {
     if self.can_leave() &&
       confirm(self, "载入五人混合示例并替换当前账单？") {

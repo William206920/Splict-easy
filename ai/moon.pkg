@@ -1,0 +1,6 @@
+import {
+  "spliteasy/desktop/shared",
+  "moonbitlang/core/json",
+}
+
+supported_targets = "+native+js"

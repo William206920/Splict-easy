@@ -27,6 +27,8 @@ Source: "..\dist\SplitEasy.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\dist\spliteasy-cli.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 
+Source: "..\third_party\*"; DestDir: "{app}\licenses"; Flags: ignoreversion recursesubdirs createallsubdirs
+
 [Icons]
 Name: "{group}\SplitEasy"; Filename: "{app}\SplitEasy.exe"
 

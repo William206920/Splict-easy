@@ -19,6 +19,9 @@ pub fn Session::replace(
   self : Session,
   ledger : Ledger,
 ) -> Unit raise BillError {
+  if ledger.people.length() > 200 || ledger.payments.length() > 5000 {
+    invalid("桌面账单最多 200 人、5000 笔消费；请拆分账单")
+  }
   if ledger.people.is_empty() &&
     ledger.payments.is_empty() &&
     ledger.ambiguous.is_empty() {

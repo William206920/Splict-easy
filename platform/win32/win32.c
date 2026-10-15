@@ -37,6 +37,7 @@ static LRESULT CALLBACK se_proc(HWND window, UINT message, WPARAM w, LPARAM l) {
         se_event = (int32_t)LOWORD(w);
         return 0;
     }
+    if(message==WM_TIMER){se_event=9100;return 0;}
     if(message==WM_CLOSE){se_event=9002;return 0;}
     if(message==WM_SIZE){se_event=9000;return 0;}
     if(message==WM_GETMINMAXINFO){MINMAXINFO *info=(MINMAXINFO*)l;info->ptMinTrackSize.x=se_scaled(780);info->ptMinTrackSize.y=se_scaled(620);return 0;}
@@ -91,7 +92,7 @@ int32_t se_win_add(int32_t kind, int32_t id, moonbit_string_t text,
     DWORD style=WS_CHILD|WS_VISIBLE;
     const WCHAR *cls=L"STATIC";
     if(kind==1){cls=L"BUTTON";style|=WS_TABSTOP|BS_PUSHBUTTON;}
-    else if(kind==2){cls=L"EDIT";style|=WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL;}
+    else if(kind==2||kind==8){cls=L"EDIT";style|=WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL|(kind==8?ES_PASSWORD:0);}
     else if(kind==3||kind==7){cls=L"EDIT";style|=WS_TABSTOP|WS_BORDER|ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL|(kind==7?ES_READONLY:ES_WANTRETURN);}
     else if(kind==4){cls=L"BUTTON";style|=WS_TABSTOP|BS_AUTOCHECKBOX;}
     else if(kind==5){cls=L"COMBOBOX";style|=WS_TABSTOP|CBS_DROPDOWNLIST|WS_VSCROLL;}
@@ -162,7 +163,8 @@ int32_t se_win_flag(int32_t id,int32_t op,int32_t value){
  if(op==1){SendMessageW(c,BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED,0);return 1;}
  if(op==2)return (int32_t)SendMessageW(c,combo?CB_GETCURSEL:LB_GETCURSEL,0,0);
  if(op==3)return (int32_t)SendMessageW(c,combo?CB_SETCURSEL:LB_SETCURSEL,value,0);
- if(op==4){EnableWindow(c,value);return 1;}return -1;
+ if(op==4){EnableWindow(c,value);return 1;}
+ if(op==6)return (int32_t)SendMessageW(c,EM_GETPASSWORDCHAR,0,0);return -1;
 }
 int32_t se_win_list_add(int32_t id,moonbit_string_t text){
  HWND c=GetDlgItem(se_window,id);WCHAR cls[30];GetClassNameW(c,cls,30);WCHAR *s=se_wide(text);if(!s)return -1;
@@ -188,6 +190,7 @@ int32_t se_win_clipboard(moonbit_string_t text){
  int ok=EmptyClipboard()&&SetClipboardData(CF_UNICODETEXT,mem)!=NULL;CloseClipboard();if(!ok)GlobalFree(mem);return ok;
 }
 
+void se_win_timer(int32_t enabled){if(enabled)SetTimer(se_window,7,200,NULL);else KillTimer(se_window,7);}
 #else
 /* Allows compile/link checks on Linux; it deliberately does not fake a GUI. */
 int32_t se_win_supported(void) { return 0; }
@@ -219,6 +222,7 @@ moonbit_string_t se_win_file_dialog(int32_t save){(void)save;return moonbit_make
 moonbit_string_t se_win_draft_path(void){return moonbit_make_string_raw(0);}
 int32_t se_win_clipboard(moonbit_string_t text){(void)text;return 0;}
 
+void se_win_timer(int32_t enabled){(void)enabled;}
 #endif
 
 void se_process_exit(int32_t code) { exit(code); }

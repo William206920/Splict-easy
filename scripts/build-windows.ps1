@@ -32,4 +32,6 @@ Copy-Item '_build/native/release/build/cmd/cli/cli.exe' 'dist/spliteasy-cli.exe'
 & dumpbin /DEPENDENTS dist/SplitEasy.exe | Set-Content dist/dependencies.txt
 & python scripts/verify_cli.py dist/spliteasy-cli.exe
 if ($LASTEXITCODE -ne 0) { throw 'CLI process integration failed.' }
+& python scripts/verify_ai.py dist/spliteasy-cli.exe _build/native/release/build/cmd/smoke/smoke.exe
+if ($LASTEXITCODE -ne 0) { throw 'AI fixture integration failed.' }
 Write-Host 'Built native GUI + CLI; Windows integration complete'

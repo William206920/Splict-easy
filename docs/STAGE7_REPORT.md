@@ -12,3 +12,7 @@
 10. 新增安装、重复安装、已安装 CLI 运行、卸载和用户数据保留自动检查；MSVC 静态运行库选项与依赖清单。
 11. feat(stage7): add native CLI and Windows installer packaging。
 12. 自动继续阶段 8。
+
+## Windows 实际结果补录
+
+[运行 38723034006](https://github.com/William206920/Splict-easy/actions/runs/38723034006) 已通过。原生 GUI/CLI 构建、独立 CLI 黄金、便携包、Inno 安装器、安装/重复安装/卸载和用户数据保留自动检查全部成功。

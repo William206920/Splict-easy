@@ -45,5 +45,15 @@ fn main {
       @win32.exit(1)
     }
   }
+  let base = @sys.environment("SPLITEASY_AI_TEST_BASE_URL")
+  if !base.is_empty() {
+    @app.network_smoke(base) catch {
+      e => {
+        println(@shared.error_message(e))
+        @win32.close()
+        @win32.exit(1)
+      }
+    }
+  }
   println("PASS: Win32 Unicode + MoonBit event + shared core + close")
 }

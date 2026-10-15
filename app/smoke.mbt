@@ -84,3 +84,58 @@ pub fn smoke() -> Unit raise @shared.BillError {
     "PASS: desktop people + equal/exact + edit/delete + import + settlement + clipboard",
   )
 }
+
+///|
+pub fn network_smoke(base : String) -> Unit raise @shared.BillError {
+  demand(@win32.create("SplitEasy AI fixture integration", false), "AI 窗口")
+  let ui = Desktop::new(true)
+  ui.session.add_person("原账单")
+  ui.ai_config = {
+    base_url: base,
+    api_key: "fixture-key-not-real",
+    model: "fixture-model",
+  }
+  ui.ai_text = "我们是小明、小红、小刚、小美、小李。小明付晚餐200元，五人平摊。小红付奶茶75元，个人分别12、15、18、14、16元。"
+  ui.page = 3
+  ui.render()
+  demand(@win32.flag(81, 6, 0) > 0, "密钥输入被遮盖")
+  ui.handle(84)
+  let mut ticks = 0
+  while ui.waiting && ticks < 500 {
+    let event = @win32.next_event()
+    demand(event > 0, "AI 事件循环")
+    ui.handle(event)
+    ticks = ticks + 1
+  }
+  demand(!ui.waiting && ui.page == 4, "后台完成并预览")
+  demand(
+    ui.session.ledger.people == ["原账单"] && ui.session.report is None,
+    "确认前原账单不变",
+  )
+  ui.handle(87)
+  demand(
+    ui.session.ledger.people == ["原账单"],
+    "取消预览不修改账单",
+  )
+  ui.handle(84)
+  ticks = 0
+  while ui.waiting && ticks < 500 {
+    let event = @win32.next_event()
+    demand(event > 0, "AI 重新解析")
+    ui.handle(event)
+    ticks = ticks + 1
+  }
+  demand(ui.page == 4, "重新预览")
+  ui.handle(86)
+  demand(ui.session.ledger.people.length() == 5, "确认后替换")
+  match ui.session.report {
+    Some(r) =>
+      demand(r.transfers[3].amount_cents == 2000L, "确认后黄金结算")
+    None => demand(false, "AI 结算报告")
+  }
+  @win32.close()
+  demand(@win32.next_event() == 0, "AI 窗口退出")
+  println(
+    "PASS: GUI asynchronous AI fixture + preview cancel + explicit confirmation + shared settlement",
+  )
+}

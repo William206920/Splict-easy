@@ -72,3 +72,19 @@ pub fn stdout(text : String) -> Unit {
 pub fn stderr(text : String) -> Unit {
   output_ffi(@utf8.encode(text), true)
 }
+
+///|
+pub fn environment(name : String) -> String {
+  match @env.get_env_var(name) {
+    Some(value) => value
+    None => ""
+  }
+}
+
+///|
+extern "C" fn line_ffi() -> Bytes = "se_console_line"
+
+///|
+pub fn read_line() -> String {
+  @utf8.decode_lossy(line_ffi()).trim().to_owned()
+}

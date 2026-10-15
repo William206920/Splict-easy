@@ -40,3 +40,14 @@ test "reports exact output stable money and escaped markdown" {
   }
   assert_true(render_text(settle(solo)).contains("无需转账"))
 }
+
+///|
+test "desktop limits reject atomically" {
+  let session = Session::new()
+  session.replace(sample_mixed())
+  let people = Array::makei(201, i => "P" + i.to_string())
+  assert_true(
+    rejected(() => session.replace({ people, payments: [], ambiguous: [], })),
+  )
+  assert_true(session.ledger == sample_mixed())
+}
