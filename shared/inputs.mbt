@@ -223,7 +223,10 @@ fn json_cents(value : RawJson) -> Int64 raise BillError {
 }
 
 ///|
-pub fn decode_ledger(text : String) -> Ledger raise BillError {
+pub fn decode_ledger(
+  text : String,
+  allow_empty~ : Bool = false,
+) -> Ledger raise BillError {
   let value = parse_raw_json(text)
   if json_cents(json_field(value, "schema_version")) != 1L {
     invalid("不支持的账单版本")
@@ -264,7 +267,12 @@ pub fn decode_ledger(text : String) -> Ledger raise BillError {
     })
   }
   let ledger : Ledger = { people, payments, ambiguous, }
-  validate(ledger)
+  if !(allow_empty &&
+    people.is_empty() &&
+    payments.is_empty() &&
+    ambiguous.is_empty()) {
+    validate(ledger)
+  }
   ledger
 }
 

@@ -38,5 +38,12 @@ fn main {
   )
   @win32.close()
   require(@win32.next_event() == 0, "window close exits message loop")
+  @app.smoke() catch {
+    e => {
+      println(@shared.error_message(e))
+      @win32.close()
+      @win32.exit(1)
+    }
+  }
   println("PASS: Win32 Unicode + MoonBit event + shared core + close")
 }

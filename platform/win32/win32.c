@@ -8,14 +8,19 @@
 #define UNICODE
 #define _UNICODE
 #include <windows.h>
+#include <commdlg.h>
+#include <wchar.h>
 #ifdef _MSC_VER
 #pragma comment(lib, "user32.lib")
 #pragma comment(lib, "gdi32.lib")
+#pragma comment(lib, "comdlg32.lib")
 #endif
 
 static HWND se_window;
 static HFONT se_font;
 static int32_t se_event;
+static int se_dpi=96, se_scroll=0;
+static int se_scaled(int n){return MulDiv(n,se_dpi,96);}
 
 /* MoonBit strings have a length, not a guaranteed terminating NUL. */
 static WCHAR *se_wide(moonbit_string_t text) {
@@ -28,9 +33,19 @@ static WCHAR *se_wide(moonbit_string_t text) {
 }
 
 static LRESULT CALLBACK se_proc(HWND window, UINT message, WPARAM w, LPARAM l) {
-    if (message == WM_COMMAND && HIWORD(w) == BN_CLICKED) {
+    if (message == WM_COMMAND && (HIWORD(w) == BN_CLICKED || HIWORD(w)==EN_CHANGE || HIWORD(w)==CBN_SELCHANGE || HIWORD(w)==LBN_SELCHANGE)) {
         se_event = (int32_t)LOWORD(w);
         return 0;
+    }
+    if(message==WM_CLOSE){se_event=9002;return 0;}
+    if(message==WM_SIZE){se_event=9000;return 0;}
+    if(message==WM_GETMINMAXINFO){MINMAXINFO *info=(MINMAXINFO*)l;info->ptMinTrackSize.x=se_scaled(780);info->ptMinTrackSize.y=se_scaled(620);return 0;}
+    if(message==WM_VSCROLL || message==WM_MOUSEWHEEL){
+      SCROLLINFO si={sizeof(si),SIF_ALL};GetScrollInfo(window,SB_VERT,&si);int old=si.nPos;
+      if(message==WM_MOUSEWHEEL)si.nPos-=GET_WHEEL_DELTA_WPARAM(w)/WHEEL_DELTA*se_scaled(60);
+      else switch(LOWORD(w)){case SB_LINEUP:si.nPos-=se_scaled(30);break;case SB_LINEDOWN:si.nPos+=se_scaled(30);break;case SB_PAGEUP:si.nPos-=(int)si.nPage;break;case SB_PAGEDOWN:si.nPos+=(int)si.nPage;break;case SB_THUMBTRACK:si.nPos=si.nTrackPos;break;}
+      si.fMask=SIF_POS;SetScrollInfo(window,SB_VERT,&si,TRUE);GetScrollInfo(window,SB_VERT,&si);
+      ScrollWindowEx(window,0,old-si.nPos,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN|SW_INVALIDATE|SW_ERASE);se_scroll=si.nPos;UpdateWindow(window);return 0;
     }
     if (message == WM_DESTROY) {
         se_window = NULL;
@@ -44,6 +59,8 @@ static LRESULT CALLBACK se_proc(HWND window, UINT message, WPARAM w, LPARAM l) {
 int32_t se_win_supported(void) { return 1; }
 
 int32_t se_win_create(moonbit_string_t title, int32_t visible) {
+    SetProcessDPIAware();
+    HDC screen=GetDC(NULL);se_dpi=GetDeviceCaps(screen,LOGPIXELSX);ReleaseDC(NULL,screen);
     HINSTANCE instance = GetModuleHandleW(NULL);
     WNDCLASSW wc = {0};
     wc.lpfnWndProc = se_proc;
@@ -55,11 +72,11 @@ int32_t se_win_create(moonbit_string_t title, int32_t visible) {
     WCHAR *name = se_wide(title);
     if (!name) return 0;
     se_window = CreateWindowExW(0, wc.lpszClassName, name,
-        WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 760, 360,
+        WS_OVERLAPPEDWINDOW | WS_VSCROLL, CW_USEDEFAULT, CW_USEDEFAULT, se_scaled(1120), se_scaled(820),
         NULL, NULL, instance, NULL);
     free(name);
     if (!se_window) return 0;
-    se_font = CreateFontW(-18, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+    se_font = CreateFontW(-se_scaled(18), 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
         DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
         CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Segoe UI");
     if (visible) { ShowWindow(se_window, SW_SHOW); UpdateWindow(se_window); }
@@ -71,10 +88,16 @@ int32_t se_win_add(int32_t kind, int32_t id, moonbit_string_t text,
     if (!se_window) return 0;
     WCHAR *label = se_wide(text);
     if (!label) return 0;
-    DWORD style = WS_CHILD | WS_VISIBLE | (kind ? WS_TABSTOP | BS_PUSHBUTTON : SS_LEFT);
-    HWND control = CreateWindowExW(0, kind ? L"BUTTON" : L"STATIC", label,
-        style, x, y, width, height, se_window, (HMENU)(INT_PTR)id,
-        GetModuleHandleW(NULL), NULL);
+    DWORD style=WS_CHILD|WS_VISIBLE;
+    const WCHAR *cls=L"STATIC";
+    if(kind==1){cls=L"BUTTON";style|=WS_TABSTOP|BS_PUSHBUTTON;}
+    else if(kind==2){cls=L"EDIT";style|=WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL;}
+    else if(kind==3||kind==7){cls=L"EDIT";style|=WS_TABSTOP|WS_BORDER|ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL|(kind==7?ES_READONLY:ES_WANTRETURN);}
+    else if(kind==4){cls=L"BUTTON";style|=WS_TABSTOP|BS_AUTOCHECKBOX;}
+    else if(kind==5){cls=L"COMBOBOX";style|=WS_TABSTOP|CBS_DROPDOWNLIST|WS_VSCROLL;}
+    else if(kind==6){cls=L"LISTBOX";style|=WS_TABSTOP|WS_BORDER|LBS_NOTIFY|WS_VSCROLL;}
+    HWND control=CreateWindowExW(0,cls,label,style,se_scaled(x),se_scaled(y)-se_scroll,se_scaled(width),se_scaled(height),se_window,(HMENU)(INT_PTR)id,GetModuleHandleW(NULL),NULL);
+    if(control && (kind==2||kind==3))SendMessageW(control,EM_SETLIMITTEXT,2000000,0);
     free(label);
     if (control && se_font) SendMessageW(control, WM_SETFONT, (WPARAM)se_font, TRUE);
     return control != NULL;
@@ -126,6 +149,45 @@ int32_t se_win_post_click(int32_t id) {
 
 void se_win_close(void) { if (se_window) DestroyWindow(se_window); }
 
+static moonbit_string_t se_string(const WCHAR *s){int n=(int)wcslen(s);moonbit_string_t result=moonbit_make_string_raw(n);memcpy(result,s,(size_t)n*sizeof(WCHAR));return result;}
+static BOOL CALLBACK se_destroy_child(HWND child,LPARAM ignored){(void)ignored;DestroyWindow(child);return TRUE;}
+void se_win_clear(void){if(se_window){EnumChildWindows(se_window,se_destroy_child,0);se_scroll=0;SetScrollPos(se_window,SB_VERT,0,TRUE);}}
+int32_t se_win_width(void){RECT r;if(!se_window||!GetClientRect(se_window,&r))return 1000;return MulDiv(r.right,96,se_dpi?se_dpi:96);}
+void se_win_content(int32_t height){RECT r;GetClientRect(se_window,&r);SCROLLINFO si={sizeof(si),SIF_RANGE|SIF_PAGE|SIF_POS,0,se_scaled(height),r.bottom,0,0};SetScrollInfo(se_window,SB_VERT,&si,TRUE);}
+int32_t se_win_add_control(int32_t kind,int32_t id,moonbit_string_t text,int32_t x,int32_t y,int32_t w,int32_t h){return se_win_add(kind,id,text,x,y,w,h);}
+int32_t se_win_flag(int32_t id,int32_t op,int32_t value){
+ HWND c=GetDlgItem(se_window,id);if(!c)return -1;
+ WCHAR cls[30];GetClassNameW(c,cls,30);int combo=wcscmp(cls,L"ComboBox")==0;
+ if(op==0)return (int32_t)SendMessageW(c,BM_GETCHECK,0,0);
+ if(op==1){SendMessageW(c,BM_SETCHECK,value?BST_CHECKED:BST_UNCHECKED,0);return 1;}
+ if(op==2)return (int32_t)SendMessageW(c,combo?CB_GETCURSEL:LB_GETCURSEL,0,0);
+ if(op==3)return (int32_t)SendMessageW(c,combo?CB_SETCURSEL:LB_SETCURSEL,value,0);
+ if(op==4){EnableWindow(c,value);return 1;}return -1;
+}
+int32_t se_win_list_add(int32_t id,moonbit_string_t text){
+ HWND c=GetDlgItem(se_window,id);WCHAR cls[30];GetClassNameW(c,cls,30);WCHAR *s=se_wide(text);if(!s)return -1;
+ LRESULT v=SendMessageW(c,wcscmp(cls,L"ComboBox")==0?CB_ADDSTRING:LB_ADDSTRING,0,(LPARAM)s);free(s);return (int32_t)v;
+}
+int32_t se_win_message(moonbit_string_t text,int32_t kind){WCHAR *s=se_wide(text);if(!s)return 0;int result=MessageBoxW(se_window,s,L"SplitEasy",kind?MB_YESNOCANCEL|MB_ICONQUESTION:MB_OK|MB_ICONINFORMATION);free(s);return result;}
+moonbit_string_t se_win_file_dialog(int32_t save){
+ WCHAR path[32768]=L"";OPENFILENAMEW ofn={0};ofn.lStructSize=sizeof(ofn);ofn.hwndOwner=se_window;ofn.lpstrFile=path;ofn.nMaxFile=32768;
+ ofn.lpstrFilter=L"JSON / Text\0*.json;*.txt;*.md\0All files\0*.*\0";ofn.nFilterIndex=1;
+ ofn.Flags=OFN_EXPLORER|OFN_PATHMUSTEXIST|(save?OFN_OVERWRITEPROMPT:OFN_FILEMUSTEXIST);ofn.lpstrDefExt=L"json";
+ BOOL ok=save?GetSaveFileNameW(&ofn):GetOpenFileNameW(&ofn);if(!ok)path[0]=0;
+ return se_string(path);
+}
+moonbit_string_t se_win_draft_path(void){
+ WCHAR root[32768];DWORD n=GetEnvironmentVariableW(L"LOCALAPPDATA",root,32000);if(n==0||n>=32000)return se_string(L"");
+ wcscat_s(root,32768,L"\\SplitEasy");if(!CreateDirectoryW(root,NULL)&&GetLastError()!=ERROR_ALREADY_EXISTS)return se_string(L"");
+ wcscat_s(root,32768,L"\\draft.json");return se_string(root);
+}
+int32_t se_win_clipboard(moonbit_string_t text){
+ WCHAR *s=se_wide(text);if(!s)return 0;size_t size=(wcslen(s)+1)*sizeof(WCHAR);
+ HGLOBAL mem=GlobalAlloc(GMEM_MOVEABLE,size);if(!mem){free(s);return 0;}void *target=GlobalLock(mem);if(!target){GlobalFree(mem);free(s);return 0;}
+ memcpy(target,s,size);GlobalUnlock(mem);free(s);if(!OpenClipboard(se_window)){GlobalFree(mem);return 0;}
+ int ok=EmptyClipboard()&&SetClipboardData(CF_UNICODETEXT,mem)!=NULL;CloseClipboard();if(!ok)GlobalFree(mem);return ok;
+}
+
 #else
 /* Allows compile/link checks on Linux; it deliberately does not fake a GUI. */
 int32_t se_win_supported(void) { return 0; }
@@ -146,6 +208,17 @@ moonbit_string_t se_win_get_text(int32_t id) {
 int32_t se_win_next_event(void) { return -1; }
 int32_t se_win_post_click(int32_t id) { (void)id; return 0; }
 void se_win_close(void) {}
+void se_win_clear(void){}
+int32_t se_win_width(void){return 1000;}
+void se_win_content(int32_t h){(void)h;}
+int32_t se_win_add_control(int32_t k,int32_t i,moonbit_string_t t,int32_t x,int32_t y,int32_t w,int32_t h){return se_win_add(k,i,t,x,y,w,h);}
+int32_t se_win_flag(int32_t id,int32_t op,int32_t value){(void)id;(void)op;(void)value;return -1;}
+int32_t se_win_list_add(int32_t id,moonbit_string_t text){(void)id;(void)text;return -1;}
+int32_t se_win_message(moonbit_string_t text,int32_t kind){(void)text;(void)kind;return 0;}
+moonbit_string_t se_win_file_dialog(int32_t save){(void)save;return moonbit_make_string_raw(0);}
+moonbit_string_t se_win_draft_path(void){return moonbit_make_string_raw(0);}
+int32_t se_win_clipboard(moonbit_string_t text){(void)text;return 0;}
+
 #endif
 
 void se_process_exit(int32_t code) { exit(code); }

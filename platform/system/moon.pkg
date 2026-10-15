@@ -1,0 +1,11 @@
+import {
+  "spliteasy/desktop/shared",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/env",
+}
+
+supported_targets = "native"
+
+options(
+  "native-stub": [ "io.c" ],
+)

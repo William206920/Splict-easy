@@ -1,4 +1,5 @@
 import {
+  "spliteasy/desktop/app",
   "spliteasy/desktop/shared",
   "spliteasy/desktop/platform/win32",
 }

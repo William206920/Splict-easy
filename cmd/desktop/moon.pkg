@@ -1,6 +1,5 @@
 import {
-  "spliteasy/desktop/shared",
-  "spliteasy/desktop/platform/win32",
+  "spliteasy/desktop/app",
 }
 
 pkgtype(kind: "executable")
