@@ -1,0 +1,11 @@
+import {
+  "spliteasy/spliteasy/shared",
+}
+
+pkgtype(kind: "executable")
+
+supported_targets = "js"
+
+options(
+  link: { "js": { "format": "iife" } },
+)

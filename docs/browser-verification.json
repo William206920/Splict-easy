@@ -1,0 +1,10 @@
+{
+  "node_mock_dom": {
+    "exit_code": 0,
+    "stdout": "SplitEasy: MoonBit shared core ready.\n"
+  },
+  "real_browser_tested": false,
+  "real_phone_tested": false,
+  "offline_browser_tested": false,
+  "reason": "Playwright 缺少 Chromium，下载的浏览器压缩包无效；未完成真实浏览器验证。"
+}
