@@ -80,7 +80,11 @@ fn Desktop::shell(
     56,
   )
   let x = side + 28
-  control(10, 510, title, x, 30, @win32.width() - x - 28, 40)
+  let title_w = @win32.width() -
+    x -
+    28 -
+    (if self.page == 0 || self.page == 1 { 274 } else { 0 })
+  control(10, 510, title, x, 30, title_w, 40)
   control(20, 511, subtitle, x, 80, @win32.width() - x - 28, 42)
   if self.page != 0 {
     // File/navigation actions must never silently discard a partially filled form.
@@ -145,7 +149,9 @@ fn Desktop::transfers_view(
         w - 40,
         24,
       )
-      control(6, 41, "", x + 12, y + 90, w - 24, 194)
+      if !r.transfers.is_empty() {
+        control(6, 41, "", x + 12, y + 90, w - 24, 194)
+      }
       for t in r.transfers {
         @win32.list_add(
           41,
@@ -270,7 +276,9 @@ fn Desktop::overview_view(self : Desktop, x : Int32, w : Int32) -> Unit {
     main - 40,
     24,
   )
-  control(6, 20, "", x + 12, 362, main - 24, 140)
+  if !self.session.ledger.payments.is_empty() {
+    control(6, 20, "", x + 12, 362, main - 24, 140)
+  }
   for p in self.session.ledger.payments {
     @win32.list_add(
       20,

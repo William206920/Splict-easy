@@ -17,6 +17,7 @@
 #endif
 
 static HWND se_window;
+static HWND se_last_control;
 static HFONT se_font;
 static int32_t se_event;
 static int se_dpi=96, se_scroll=0;
@@ -81,6 +82,7 @@ static LRESULT CALLBACK se_proc(HWND window, UINT message, WPARAM w, LPARAM l) {
 int32_t se_win_supported(void) { return 1; }
 
 int32_t se_win_create(moonbit_string_t title, int32_t visible) {
+    se_last_control=NULL;
     SetProcessDPIAware();
     HDC screen=GetDC(NULL);se_dpi=GetDeviceCaps(screen,LOGPIXELSX);ReleaseDC(NULL,screen);
     HINSTANCE instance = GetModuleHandleW(NULL);
@@ -128,7 +130,9 @@ int32_t se_win_add(int32_t kind, int32_t id, moonbit_string_t text,
         SetPropW(control,L"se.kind",(HANDLE)(INT_PTR)kind);
         /* Keep decorative cards behind labels and interactive siblings, also
            when Windows prints or rebuilds the whole control tree. */
-        SetWindowPos(control,(kind==9||kind==15||kind==25)?HWND_BOTTOM:HWND_TOP,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
+        int background=kind==9||kind==15||kind==25;
+        SetWindowPos(control,background?HWND_BOTTOM:se_last_control?se_last_control:HWND_TOP,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
+        if(!background)se_last_control=control;
         SendMessageW(control,WM_SETFONT,(WPARAM)se_fonts[0],TRUE);
         if(kind==1||kind==13||kind==14||kind==17)SetWindowSubclass(control,se_button_proc,1,0);
         if(kind==2||kind==3||kind==7||kind==8){SendMessageW(control,EM_SETMARGINS,EC_LEFTMARGIN|EC_RIGHTMARGIN,MAKELPARAM(se_scaled(10),se_scaled(10)));}
@@ -185,7 +189,7 @@ void se_win_close(void) { if (se_window) DestroyWindow(se_window); }
 
 static moonbit_string_t se_string(const WCHAR *s){int n=(int)wcslen(s);moonbit_string_t result=moonbit_make_string_raw(n);memcpy(result,s,(size_t)n*sizeof(WCHAR));return result;}
 static BOOL CALLBACK se_destroy_child(HWND child,LPARAM ignored){(void)ignored;DestroyWindow(child);return TRUE;}
-void se_win_clear(void){if(se_window){EnumChildWindows(se_window,se_destroy_child,0);se_scroll=0;SetScrollPos(se_window,SB_VERT,0,TRUE);}}
+void se_win_clear(void){if(se_window){EnumChildWindows(se_window,se_destroy_child,0);se_last_control=NULL;se_scroll=0;SetScrollPos(se_window,SB_VERT,0,TRUE);}}
 int32_t se_win_width(void){RECT r;if(!se_window||!GetClientRect(se_window,&r))return 1000;return MulDiv(r.right,96,se_dpi?se_dpi:96);}
 int32_t se_win_height(void){RECT r;if(!se_window||!GetClientRect(se_window,&r))return 800;return MulDiv(r.bottom,96,se_dpi?se_dpi:96);}
 void se_win_resize(int32_t width,int32_t height){if(se_window)SetWindowPos(se_window,NULL,0,0,se_scaled(width),se_scaled(height),SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);}
