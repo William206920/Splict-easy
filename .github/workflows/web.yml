@@ -1,0 +1,38 @@
+name: MoonBit online application
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['docs/**', '*.md']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install pinned MoonBit
+        run: |
+          export MOONBIT_INSTALL_VERSION="$(cat toolchain.version)"
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - name: Check, rebuild MoonBit and verify generated artifact
+        run: |
+          moon fmt --check
+          moon check --target js
+          moon test --target js
+          node scripts/build-web.mjs --compile
+          git diff --exit-code -- web/generated
+      - name: Gateway and browser bridge regression tests
+        run: node --test tests/web.test.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SplitEasy-Online
+          path: .web-dist/
+          include-hidden-files: true
+          if-no-files-found: error
