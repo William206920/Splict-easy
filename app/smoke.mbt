@@ -88,13 +88,15 @@ pub fn smoke() -> Unit raise @shared.BillError {
   )
   // These exercise real native rectangles and resizing, not just view constants.
   for width in [800, 1040, 1320] {
-    @win32.resize(width, 900)
+    @win32.resize(width, 1400)
     ui.handle(9000)
+    demand(@win32.width() >= width - 40, "实际窗口宽度达到测试尺寸")
     for id in [10, 11, 12, 13, 14, 20, 21, 32, 34, 40, 41, 552] {
       demand(
         @win32.flag(id, 9, 0) == 1,
         "缩放后控件保持在横向可视区域",
       )
+      demand(@win32.flag(id, 10, 0) == 1, "卡片或标题没有遮挡控件")
     }
     demand(@win32.flag(35, 5, 0) == 1, "有效结算可以复制")
   }

@@ -60,7 +60,7 @@ static LRESULT CALLBACK se_proc(HWND window, UINT message, WPARAM w, LPARAM l) {
     if(message==WM_TIMER){se_event=9100;return 0;}
     if(message==WM_CLOSE){se_event=9002;return 0;}
     if(message==WM_SIZE){if(w!=SIZE_MINIMIZED)se_event=9000;return 0;}
-    if(message==WM_GETMINMAXINFO){MINMAXINFO *info=(MINMAXINFO*)l;info->ptMinTrackSize.x=se_scaled(780);info->ptMinTrackSize.y=se_scaled(620);return 0;}
+    if(message==WM_GETMINMAXINFO){MINMAXINFO *info=(MINMAXINFO*)l;info->ptMinTrackSize.x=se_scaled(780);info->ptMinTrackSize.y=se_scaled(620);info->ptMaxTrackSize.x=se_scaled(4096);info->ptMaxTrackSize.y=se_scaled(4096);return 0;}
     if(message==WM_VSCROLL || message==WM_MOUSEWHEEL){
       SCROLLINFO si={sizeof(si),SIF_ALL};GetScrollInfo(window,SB_VERT,&si);int old=si.nPos;
       if(message==WM_MOUSEWHEEL)si.nPos-=GET_WHEEL_DELTA_WPARAM(w)/WHEEL_DELTA*se_scaled(60);
@@ -126,6 +126,9 @@ int32_t se_win_add(int32_t kind, int32_t id, moonbit_string_t text,
     free(label);
     if(control){
         SetPropW(control,L"se.kind",(HANDLE)(INT_PTR)kind);
+        /* Keep decorative cards behind labels and interactive siblings, also
+           when Windows prints or rebuilds the whole control tree. */
+        SetWindowPos(control,(kind==9||kind==15||kind==25)?HWND_BOTTOM:HWND_TOP,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
         SendMessageW(control,WM_SETFONT,(WPARAM)se_fonts[0],TRUE);
         if(kind==1||kind==13||kind==14||kind==17)SetWindowSubclass(control,se_button_proc,1,0);
         if(kind==2||kind==3||kind==7||kind==8){SendMessageW(control,EM_SETMARGINS,EC_LEFTMARGIN|EC_RIGHTMARGIN,MAKELPARAM(se_scaled(10),se_scaled(10)));}
@@ -201,6 +204,7 @@ int32_t se_win_flag(int32_t id,int32_t op,int32_t value){
  if(op==7){se_reveal(c);SetFocus(c);return 1;}
  if(op==8){RECT r;GetWindowRect(c,&r);return r.right-r.left>0&&r.bottom-r.top>0;}
  if(op==9){RECT r,client;GetWindowRect(c,&r);MapWindowPoints(NULL,se_window,(POINT*)&r,2);GetClientRect(se_window,&client);return r.left>=0&&r.right<=client.right&&r.right>r.left;}
+ if(op==10){RECT r;GetWindowRect(c,&r);POINT p={(r.left+r.right)/2,(r.top+r.bottom)/2};ScreenToClient(se_window,&p);return ChildWindowFromPointEx(se_window,p,0)==c;}
  return -1;
 }
 int32_t se_win_list_add(int32_t id,moonbit_string_t text){
