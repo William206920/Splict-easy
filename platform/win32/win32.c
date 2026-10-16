@@ -17,10 +17,21 @@
 #endif
 
 static HWND se_window;
+static HWND se_last_control;
 static HFONT se_font;
 static int32_t se_event;
 static int se_dpi=96, se_scroll=0;
 static int se_scaled(int n){return MulDiv(n,se_dpi,96);}
+#include "theme.h"
+
+/* Bring a keyboard-focused control into the scrolled viewport. */
+static void se_reveal(HWND control){
+    if(!control || GetParent(control)!=se_window)return;
+    RECT r,client;GetWindowRect(control,&r);MapWindowPoints(NULL,se_window,(POINT*)&r,2);GetClientRect(se_window,&client);
+    int delta=r.top<0?r.top-se_scaled(20):r.bottom>client.bottom?r.bottom-client.bottom+se_scaled(20):0;
+    if(delta){int old=se_scroll;SetScrollPos(se_window,SB_VERT,old+delta,TRUE);se_scroll=GetScrollPos(se_window,SB_VERT);
+        ScrollWindowEx(se_window,0,old-se_scroll,NULL,NULL,NULL,NULL,SW_SCROLLCHILDREN|SW_INVALIDATE|SW_ERASE);UpdateWindow(se_window);}
+}
 
 /* MoonBit strings have a length, not a guaranteed terminating NUL. */
 static WCHAR *se_wide(moonbit_string_t text) {
@@ -33,14 +44,24 @@ static WCHAR *se_wide(moonbit_string_t text) {
 }
 
 static LRESULT CALLBACK se_proc(HWND window, UINT message, WPARAM w, LPARAM l) {
+    if(message==WM_COMMAND && l){
+        WCHAR cls[32];GetClassNameW((HWND)l,cls,32);int note=HIWORD(w);
+        if((wcscmp(cls,L"Edit")==0&&note==EN_SETFOCUS)||(wcscmp(cls,L"ListBox")==0&&note==LBN_SETFOCUS)||(wcscmp(cls,L"Button")==0&&note==BN_SETFOCUS)||(wcscmp(cls,L"ComboBox")==0&&note==CBN_SETFOCUS))se_reveal((HWND)l);
+    }
+    if(message==WM_DRAWITEM)return se_draw((DRAWITEMSTRUCT*)l);
+    if(message==WM_MEASUREITEM){MEASUREITEMSTRUCT *m=(MEASUREITEMSTRUCT*)l;m->itemHeight=se_scaled(m->CtlID==10?44:m->CtlID==41?48:68);return TRUE;}
+    if(message==WM_ERASEBKGND){RECT r;GetClientRect(window,&r);se_fill((HDC)w,r,SE_CANVAS);return 1;}
+    if(message==WM_CTLCOLORSTATIC || message==WM_CTLCOLOREDIT || message==WM_CTLCOLORLISTBOX || message==WM_CTLCOLORBTN){
+        HDC dc=(HDC)w;SetTextColor(dc,SE_INK);SetBkColor(dc,SE_WHITE);return (LRESULT)se_white_brush;
+    }
     if (message == WM_COMMAND && (HIWORD(w) == BN_CLICKED || HIWORD(w)==EN_CHANGE || HIWORD(w)==CBN_SELCHANGE || HIWORD(w)==LBN_SELCHANGE)) {
         se_event = (int32_t)LOWORD(w);
         return 0;
     }
     if(message==WM_TIMER){se_event=9100;return 0;}
     if(message==WM_CLOSE){se_event=9002;return 0;}
-    if(message==WM_SIZE){se_event=9000;return 0;}
-    if(message==WM_GETMINMAXINFO){MINMAXINFO *info=(MINMAXINFO*)l;info->ptMinTrackSize.x=se_scaled(780);info->ptMinTrackSize.y=se_scaled(620);return 0;}
+    if(message==WM_SIZE){if(w!=SIZE_MINIMIZED)se_event=9000;return 0;}
+    if(message==WM_GETMINMAXINFO){MINMAXINFO *info=(MINMAXINFO*)l;info->ptMinTrackSize.x=se_scaled(780);info->ptMinTrackSize.y=se_scaled(620);info->ptMaxTrackSize.x=se_scaled(4096);info->ptMaxTrackSize.y=se_scaled(4096);return 0;}
     if(message==WM_VSCROLL || message==WM_MOUSEWHEEL){
       SCROLLINFO si={sizeof(si),SIF_ALL};GetScrollInfo(window,SB_VERT,&si);int old=si.nPos;
       if(message==WM_MOUSEWHEEL)si.nPos-=GET_WHEEL_DELTA_WPARAM(w)/WHEEL_DELTA*se_scaled(60);
@@ -51,6 +72,7 @@ static LRESULT CALLBACK se_proc(HWND window, UINT message, WPARAM w, LPARAM l) {
     if (message == WM_DESTROY) {
         se_window = NULL;
         if (se_font) { DeleteObject(se_font); se_font = NULL; }
+        se_theme_free();
         PostQuitMessage(0);
         return 0;
     }
@@ -60,20 +82,23 @@ static LRESULT CALLBACK se_proc(HWND window, UINT message, WPARAM w, LPARAM l) {
 int32_t se_win_supported(void) { return 1; }
 
 int32_t se_win_create(moonbit_string_t title, int32_t visible) {
+    se_last_control=NULL;
     SetProcessDPIAware();
     HDC screen=GetDC(NULL);se_dpi=GetDeviceCaps(screen,LOGPIXELSX);ReleaseDC(NULL,screen);
     HINSTANCE instance = GetModuleHandleW(NULL);
+    INITCOMMONCONTROLSEX common={sizeof(common),ICC_STANDARD_CLASSES};InitCommonControlsEx(&common);
+    se_theme_init();
     WNDCLASSW wc = {0};
     wc.lpfnWndProc = se_proc;
     wc.hInstance = instance;
     wc.lpszClassName = L"SplitEasyNativeStage1";
     wc.hCursor = LoadCursorW(NULL, IDC_ARROW);
-    wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+    wc.hbrBackground = NULL;
     if (!RegisterClassW(&wc) && GetLastError() != ERROR_CLASS_ALREADY_EXISTS) return 0;
     WCHAR *name = se_wide(title);
     if (!name) return 0;
     se_window = CreateWindowExW(0, wc.lpszClassName, name,
-        WS_OVERLAPPEDWINDOW | WS_VSCROLL, CW_USEDEFAULT, CW_USEDEFAULT, se_scaled(1120), se_scaled(820),
+        WS_OVERLAPPEDWINDOW | WS_VSCROLL | WS_CLIPCHILDREN, CW_USEDEFAULT, CW_USEDEFAULT, se_scaled(1320), se_scaled(900),
         NULL, NULL, instance, NULL);
     free(name);
     if (!se_window) return 0;
@@ -89,18 +114,30 @@ int32_t se_win_add(int32_t kind, int32_t id, moonbit_string_t text,
     if (!se_window) return 0;
     WCHAR *label = se_wide(text);
     if (!label) return 0;
-    DWORD style=WS_CHILD|WS_VISIBLE;
+    DWORD style=WS_CHILD|WS_VISIBLE|WS_CLIPSIBLINGS;
     const WCHAR *cls=L"STATIC";
-    if(kind==1){cls=L"BUTTON";style|=WS_TABSTOP|BS_PUSHBUTTON;}
+    if(kind==1||kind==13||kind==14||kind==17){cls=L"BUTTON";style|=WS_TABSTOP|BS_OWNERDRAW|BS_NOTIFY;}
     else if(kind==2||kind==8){cls=L"EDIT";style|=WS_TABSTOP|WS_BORDER|ES_AUTOHSCROLL|(kind==8?ES_PASSWORD:0);}
     else if(kind==3||kind==7){cls=L"EDIT";style|=WS_TABSTOP|WS_BORDER|ES_MULTILINE|ES_AUTOVSCROLL|WS_VSCROLL|(kind==7?ES_READONLY:ES_WANTRETURN);}
     else if(kind==4){cls=L"BUTTON";style|=WS_TABSTOP|BS_AUTOCHECKBOX;}
     else if(kind==5){cls=L"COMBOBOX";style|=WS_TABSTOP|CBS_DROPDOWNLIST|WS_VSCROLL;}
-    else if(kind==6){cls=L"LISTBOX";style|=WS_TABSTOP|WS_BORDER|LBS_NOTIFY|WS_VSCROLL;}
+    else if(kind==6){cls=L"LISTBOX";style|=WS_TABSTOP|LBS_NOTIFY|LBS_HASSTRINGS|LBS_OWNERDRAWFIXED|WS_VSCROLL|LBS_NOINTEGRALHEIGHT;}
+    else if(kind>=9){style|=SS_OWNERDRAW;}
     HWND control=CreateWindowExW(0,cls,label,style,se_scaled(x),se_scaled(y)-se_scroll,se_scaled(width),se_scaled(height),se_window,(HMENU)(INT_PTR)id,GetModuleHandleW(NULL),NULL);
     if(control && (kind==2||kind==3))SendMessageW(control,EM_SETLIMITTEXT,2000000,0);
     free(label);
-    if (control && se_font) SendMessageW(control, WM_SETFONT, (WPARAM)se_font, TRUE);
+    if(control){
+        SetPropW(control,L"se.kind",(HANDLE)(INT_PTR)kind);
+        /* Keep decorative cards behind labels and interactive siblings, also
+           when Windows prints or rebuilds the whole control tree. */
+        int background=kind==9||kind==15||kind==25;
+        SetWindowPos(control,background?HWND_BOTTOM:se_last_control?se_last_control:HWND_TOP,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_NOACTIVATE);
+        if(!background)se_last_control=control;
+        SendMessageW(control,WM_SETFONT,(WPARAM)se_fonts[0],TRUE);
+        if(kind==1||kind==13||kind==14||kind==17)SetWindowSubclass(control,se_button_proc,1,0);
+        if(kind==2||kind==3||kind==7||kind==8){SendMessageW(control,EM_SETMARGINS,EC_LEFTMARGIN|EC_RIGHTMARGIN,MAKELPARAM(se_scaled(10),se_scaled(10)));}
+        if(kind==4||kind==5||kind==6)SetWindowTheme(control,L"Explorer",NULL);
+    }
     return control != NULL;
 }
 
@@ -152,9 +189,11 @@ void se_win_close(void) { if (se_window) DestroyWindow(se_window); }
 
 static moonbit_string_t se_string(const WCHAR *s){int n=(int)wcslen(s);moonbit_string_t result=moonbit_make_string_raw(n);memcpy(result,s,(size_t)n*sizeof(WCHAR));return result;}
 static BOOL CALLBACK se_destroy_child(HWND child,LPARAM ignored){(void)ignored;DestroyWindow(child);return TRUE;}
-void se_win_clear(void){if(se_window){EnumChildWindows(se_window,se_destroy_child,0);se_scroll=0;SetScrollPos(se_window,SB_VERT,0,TRUE);}}
+void se_win_clear(void){if(se_window){EnumChildWindows(se_window,se_destroy_child,0);se_last_control=NULL;se_scroll=0;SetScrollPos(se_window,SB_VERT,0,TRUE);}}
 int32_t se_win_width(void){RECT r;if(!se_window||!GetClientRect(se_window,&r))return 1000;return MulDiv(r.right,96,se_dpi?se_dpi:96);}
-void se_win_content(int32_t height){RECT r;GetClientRect(se_window,&r);SCROLLINFO si={sizeof(si),SIF_RANGE|SIF_PAGE|SIF_POS,0,se_scaled(height),r.bottom,0,0};SetScrollInfo(se_window,SB_VERT,&si,TRUE);}
+int32_t se_win_height(void){RECT r;if(!se_window||!GetClientRect(se_window,&r))return 800;return MulDiv(r.bottom,96,se_dpi?se_dpi:96);}
+void se_win_resize(int32_t width,int32_t height){if(se_window)SetWindowPos(se_window,NULL,0,0,se_scaled(width),se_scaled(height),SWP_NOMOVE|SWP_NOZORDER|SWP_NOACTIVATE);}
+void se_win_content(int32_t height){RECT r;GetClientRect(se_window,&r);SCROLLINFO si={sizeof(si),SIF_RANGE|SIF_PAGE|SIF_POS,0,se_scaled(height)-1,r.bottom,0,0};SetScrollInfo(se_window,SB_VERT,&si,TRUE);}
 int32_t se_win_add_control(int32_t kind,int32_t id,moonbit_string_t text,int32_t x,int32_t y,int32_t w,int32_t h){return se_win_add(kind,id,text,x,y,w,h);}
 int32_t se_win_flag(int32_t id,int32_t op,int32_t value){
  HWND c=GetDlgItem(se_window,id);if(!c)return -1;
@@ -164,7 +203,13 @@ int32_t se_win_flag(int32_t id,int32_t op,int32_t value){
  if(op==2)return (int32_t)SendMessageW(c,combo?CB_GETCURSEL:LB_GETCURSEL,0,0);
  if(op==3)return (int32_t)SendMessageW(c,combo?CB_SETCURSEL:LB_SETCURSEL,value,0);
  if(op==4){EnableWindow(c,value);return 1;}
- if(op==6)return (int32_t)SendMessageW(c,EM_GETPASSWORDCHAR,0,0);return -1;
+ if(op==5)return IsWindowEnabled(c);
+ if(op==6)return (int32_t)SendMessageW(c,EM_GETPASSWORDCHAR,0,0);
+ if(op==7){se_reveal(c);SetFocus(c);return 1;}
+ if(op==8){RECT r;GetWindowRect(c,&r);return r.right-r.left>0&&r.bottom-r.top>0;}
+ if(op==9){RECT r,client;GetWindowRect(c,&r);MapWindowPoints(NULL,se_window,(POINT*)&r,2);GetClientRect(se_window,&client);return r.left>=0&&r.right<=client.right&&r.right>r.left;}
+ if(op==10){RECT r;GetWindowRect(c,&r);POINT p={(r.left+r.right)/2,(r.top+r.bottom)/2};ScreenToClient(se_window,&p);return ChildWindowFromPointEx(se_window,p,0)==c;}
+ return -1;
 }
 int32_t se_win_list_add(int32_t id,moonbit_string_t text){
  HWND c=GetDlgItem(se_window,id);WCHAR cls[30];GetClassNameW(c,cls,30);WCHAR *s=se_wide(text);if(!s)return -1;
@@ -213,6 +258,8 @@ int32_t se_win_post_click(int32_t id) { (void)id; return 0; }
 void se_win_close(void) {}
 void se_win_clear(void){}
 int32_t se_win_width(void){return 1000;}
+int32_t se_win_height(void){return 800;}
+void se_win_resize(int32_t w,int32_t h){(void)w;(void)h;}
 void se_win_content(int32_t h){(void)h;}
 int32_t se_win_add_control(int32_t k,int32_t i,moonbit_string_t t,int32_t x,int32_t y,int32_t w,int32_t h){return se_win_add(k,i,t,x,y,w,h);}
 int32_t se_win_flag(int32_t id,int32_t op,int32_t value){(void)id;(void)op;(void)value;return -1;}

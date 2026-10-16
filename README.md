@@ -2,18 +2,24 @@
 
 MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消费可以混合记账，最终统一生成结算清单。界面不使用 HTML、WebView 或浏览器。
 
-**当前为 0.8.0 开发预览：核心、桌面、CLI、文件和 AI 接口已实现。真实模型演示和用户 Windows 桌面实测仍待验收；本地模拟不代表真实 AI 验收。**
+**当前为 0.9.0 开发预览：重新设计原生桌面布局与主题，核心、CLI、文件和 AI 接口继续保留。真实模型演示和用户 Windows 桌面实测仍待验收；本地模拟不代表真实 AI 验收。**
+
+- [界面优化、同类产品参考与验证](docs/UI_REDESIGN.md)
 
 - [整体验证与剩余验收](docs/VERIFY_CURRENT.md)
 - [完整方案与自动推进约定](docs/PROJECT_PLAN.md)
 - [各阶段源码与提交](../../commits/main)
 - [Windows CI 与构建产物](../../actions/workflows/native-windows.yml)
-- [下载 Windows 0.8.0 已验证预览包](https://github.com/William206920/Splict-easy/actions/runs/38726605287/artifacts/11967903629)（需登录 GitHub，含安装器、便携包、校验和与真实程序截图）
+- [下载 Windows 0.9.0 已验证预览包](https://github.com/William206920/Splict-easy/actions/runs/38853402455/artifacts/12026535125)（需登录 GitHub，含安装器、便携包、校验和与四个页面的真实程序截图）
 - GitHub Release 尚未发布。
 - 原生程序截图由 Windows CI 的 --demo 示例模式生成，随预览发行提供；不包含真实账单或 Key。
 - [操作演示](docs/demo.md) · [AI 验证说明](docs/AI_DEMO.md) · [一页项目说明](docs/PROJECT_ONE_PAGE.md)
 
 旧网页代码已按用户要求移出 main，Git 历史保留。当前版本重新验证，不沿用旧版测试结论。
+
+![0.9.0 原生账单工作台](docs/screenshots/overview.png)
+
+以上为真实原生程序运行截图，使用内置示例账单；[查看消费、AI 和导入页面](docs/UI_REDESIGN.md)。
 
 ## 下载、安装与使用
 

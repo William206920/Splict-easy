@@ -200,176 +200,7 @@ fn Desktop::preview(self : Desktop) -> Unit {
 
 ///|
 pub fn Desktop::render(self : Desktop) -> Unit {
-  @win32.clear()
-  let w = @win32.width() - 40
-  if self.page == 1 {
-    control(
-      0,
-      1,
-      if self.edit_index < 0 {
-        "添加消费"
-      } else {
-        "编辑消费"
-      },
-      20,
-      15,
-      w,
-      30,
-    )
-    control(0, 2, "消费名称", 20, 55, 110, 26)
-    control(2, 52, self.form.description, 140, 52, w - 140, 30)
-    control(0, 3, "付款人", 20, 95, 110, 26)
-    control(5, 51, "", 140, 92, 220, 180)
-    for name in self.session.ledger.people {
-      @win32.list_add(51, name)
-    }
-    ignore(@win32.flag(51, 3, self.form.payer))
-    control(0, 4, "实付总额（元）", 380, 95, 150, 26)
-    control(2, 53, self.form.amount, 540, 92, 180, 30)
-    control(0, 5, "日期（可空）", 20, 135, 115, 26)
-    control(2, 54, self.form.date, 140, 132, 220, 30)
-    control(0, 6, "YYYY-MM-DD", 380, 135, 300, 26)
-    control(0, 7, "分摊方式", 20, 175, 110, 26)
-    control(5, 55, "", 140, 172, 280, 180)
-    @win32.list_add(55, "平均分摊（勾选参与者）")
-    @win32.list_add(55, "按实际金额（逐人填写）")
-    ignore(@win32.flag(55, 3, if self.form.exact { 1 } else { 0 }))
-    control(1, 56, "保存消费", 450, 172, 140, 36)
-    control(1, 57, "取消", 610, 172, 110, 36)
-    control(0, 60, "", 20, 220, w, 60)
-    for i = 0; i < self.session.ledger.people.length(); i = i + 1 {
-      let y = 290 + i * 44
-      let name = self.session.ledger.people[i]
-      if self.form.exact {
-        control(0, 3000 + i, name, 30, y, 240, 30)
-        control(2, 2000 + i, self.form.amounts[i], 300, y, 200, 30)
-        control(0, 4000 + i, "元（不承担请填 0）", 520, y, 230, 30)
-      } else {
-        control(4, 1000 + i, name, 30, y, w - 60, 32)
-        ignore(
-          @win32.flag(1000 + i, 1, if self.form.selected[i] { 1 } else { 0 }),
-        )
-      }
-    }
-    @win32.content(350 + self.session.ledger.people.length() * 44)
-    self.preview()
-  } else if self.page == 3 {
-    control(
-      0, 1, "AI 账单解析（主动启用后联网；发送前确认）", 20, 15,
-      w, 34,
-    )
-    control(0, 2, "服务 Base URL", 20, 62, 150, 30)
-    control(2, 80, self.ai_config.base_url, 180, 58, w - 180, 32)
-    control(0, 3, "API Key（不保存）", 20, 108, 150, 30)
-    control(8, 81, self.ai_config.api_key, 180, 104, w - 180, 32)
-    control(0, 4, "模型名称", 20, 154, 150, 30)
-    control(2, 83, self.ai_config.model, 180, 150, w - 180, 32)
-    control(3, 82, self.ai_text, 20, 205, w, 340)
-    control(
-      1,
-      84,
-      if self.waiting {
-        "解析进行中…"
-      } else {
-        "预览发送并解析"
-      },
-      20,
-      565,
-      250,
-      40,
-    )
-    control(
-      1,
-      85,
-      if self.waiting {
-        "取消请求"
-      } else {
-        "返回"
-      },
-      290,
-      565,
-      160,
-      40,
-    )
-    control(0, 89, self.status, 20, 625, w, 65)
-    if self.waiting {
-      for id in [80, 81, 82, 83, 84] {
-        ignore(@win32.flag(id, 4, 0))
-      }
-    }
-    @win32.content(720)
-  } else if self.page == 4 {
-    control(
-      0, 1, "AI 解析预览：请逐笔核对，尚未修改当前账单。", 20,
-      20, w, 40,
-    )
-    control(7, 88, self.ai_preview, 20, 80, w, 470)
-    control(1, 86, "确认替换并结算", 20, 575, 260, 42)
-    control(1, 87, "取消，返回修改", 300, 575, 240, 42)
-    @win32.content(660)
-  } else if self.page == 2 {
-    control(
-      0, 1, "高级输入：粘贴 人： 开头的文本，或 schema_version=1 的账单 JSON。",
-      20, 20, w, 54,
-    )
-    control(3, 70, "", 20, 85, w, 470)
-    control(1, 71, "解析并预览导入", 20, 575, 240, 40)
-    control(1, 57, "返回", 280, 575, 120, 40)
-    @win32.content(660)
-  } else {
-    let labels = [
-      "新账单", "打开账单", "保存账单", "高级输入", "统一结算",
-      "复制结果", "导出结果", "混合示例",
-    ]
-    for i = 0; i < labels.length(); i = i + 1 {
-      let col = i % 4
-      let row = i / 4
-      control(
-        1,
-        30 + i,
-        labels[i],
-        20 + col * (w / 4),
-        12 + row * 42,
-        w / 4 - 10,
-        34,
-      )
-    }
-    control(0, 1, "人员", 20, 105, 200, 26)
-    control(6, 10, "", 20, 136, 230, 160)
-    for name in self.session.ledger.people {
-      @win32.list_add(10, name)
-    }
-    control(2, 11, "", 20, 307, 230, 30)
-    control(1, 12, "添加", 20, 348, 70, 34)
-    control(1, 13, "改名", 100, 348, 70, 34)
-    control(1, 14, "删除", 180, 348, 70, 34)
-    control(0, 2, "消费记录", 275, 105, w - 275, 26)
-    control(6, 20, "", 275, 136, w - 275, 201)
-    for p in self.session.ledger.payments {
-      @win32.list_add(
-        20,
-        p.description +
-        "  |  " +
-        p.payer +
-        "  |  " +
-        @shared.money(p.amount_cents) +
-        " 元  |  " +
-        (if p.split_mode == @shared.Equal { "平均" } else { "实际金额" }),
-      )
-    }
-    control(1, 21, "添加消费", 275, 348, 140, 34)
-    control(1, 22, "编辑", 430, 348, 100, 34)
-    control(1, 23, "删除", 545, 348, 100, 34)
-    control(1, 38, "AI 解析", 660, 348, w - 660, 34)
-    let text = match self.session.report {
-      Some(r) => @shared.render_text(r)
-      None =>
-        "尚未生成当前结算结果。添加或修改消费后，请点击统一结算。"
-    }
-    control(7, 40, text, 20, 400, w, 265)
-    control(0, 90, self.status, 20, 682, w, 60)
-    @win32.content(760)
-  }
+  self.render_view()
 }
 
 ///|
@@ -463,6 +294,19 @@ pub fn Desktop::handle(
   self : Desktop,
   event : Int32,
 ) -> Unit raise @shared.BillError {
+  if event == 100 {
+    if self.page == 1 {
+      self.handle(57)
+    } else if !self.waiting && self.page != 4 {
+      self.page = 0
+      self.render()
+    }
+    return
+  }
+  if event == 101 && self.page == 0 {
+    ignore(@win32.flag(11, 7, 0))
+    return
+  }
   if event == 9100 {
     if @http.state() == 1 {
       return
@@ -541,10 +385,26 @@ pub fn Desktop::handle(
   }
   if event == 9000 {
     let advanced = if self.page == 2 { @win32.get_text(70) } else { "" }
+    let member_text = if self.page == 0 { @win32.get_text(11) } else { "" }
+    let person = if self.page == 0 { @win32.flag(10, 2, 0) } else { -1 }
+    let payment = if self.page == 0 { @win32.flag(20, 2, 0) } else { -1 }
+    if self.page == 3 {
+      self.ai_config = {
+        base_url: @win32.get_text(80),
+        api_key: @win32.get_text(81),
+        model: @win32.get_text(83),
+      }
+      self.ai_text = @win32.get_text(82)
+    }
     self.capture()
     self.render()
     if self.page == 2 {
       ignore(@win32.set_text(70, advanced))
+    }
+    if self.page == 0 {
+      ignore(@win32.set_text(11, member_text))
+      ignore(@win32.flag(10, 3, person))
+      ignore(@win32.flag(20, 3, payment))
     }
     return
   }
@@ -751,7 +611,7 @@ pub fn Desktop::handle(
 }
 
 ///|
-pub fn run(demo~ : Bool = false) -> Unit {
+pub fn run(demo~ : Bool = false, demo_page~ : Int32 = 0) -> Unit {
   if !@win32.supported() || !@win32.create(@shared.app_title(), true) {
     @win32.exit(1)
   }
@@ -767,6 +627,16 @@ pub fn run(demo~ : Bool = false) -> Unit {
     ui.autosave = false
     ui.saved_revision = ui.session.revision
     ui.status = "演示模式：不恢复或自动写入草稿。正式账单请手动保存。"
+    if demo_page == 1 {
+      ui.editor(1) catch {
+        _ => @win32.exit(1)
+      }
+    } else if demo_page == 3 {
+      ui.ai_text = "我们是小明、小红、小刚、小美、小李。小明付了 200 元晚餐，五人平摊。小红付了 75 元奶茶，个人分别承担 12、15、18、14、16 元。"
+      ui.page = 3
+    } else if demo_page == 2 {
+      ui.page = 2
+    }
   }
   if !demo && !ui.draft.is_empty() && @sys.exists(ui.draft) {
     try {
