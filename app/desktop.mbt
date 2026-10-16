@@ -30,6 +30,7 @@ pub(all) struct Desktop {
   mut advanced_text : String
   mut member_text : String
   mut member_index : Int32
+  mut ai_environment_loaded : Bool
 }
 
 ///|
@@ -71,6 +72,7 @@ pub fn Desktop::new(testing : Bool) -> Desktop {
     advanced_text: "",
     member_text: "",
     member_index: -1,
+    ai_environment_loaded: false,
   }
 }
 
@@ -238,12 +240,25 @@ fn Desktop::navigate(self : Desktop, target : Int32) -> Unit {
     !confirm(self, "放弃尚未保存的消费表单？") {
     return
   }
-  if target == 3 && self.ai_config.base_url.is_empty() {
+  if target == 3 && !self.ai_environment_loaded {
     self.ai_config = {
-      base_url: @sys.environment("MOONBIT_BASE_URL"),
-      api_key: @sys.environment("MOONBIT_API_KEY"),
-      model: @sys.environment("MOONBIT_MODEL"),
+      base_url: if self.ai_config.base_url.is_empty() {
+        @sys.environment("MOONBIT_BASE_URL")
+      } else {
+        self.ai_config.base_url
+      },
+      api_key: if self.ai_config.api_key.is_empty() {
+        @sys.environment("MOONBIT_API_KEY")
+      } else {
+        self.ai_config.api_key
+      },
+      model: if self.ai_config.model.is_empty() {
+        @sys.environment("MOONBIT_MODEL")
+      } else {
+        self.ai_config.model
+      },
     }
+    self.ai_environment_loaded = true
   }
   self.page = target
   self.render()

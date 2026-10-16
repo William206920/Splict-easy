@@ -209,6 +209,15 @@ pub fn smoke() -> Unit raise @shared.BillError {
   )
   ui.handle(57)
   ui.handle(38)
+  ignore(@win32.set_text(80, ""))
+  ignore(@win32.set_text(83, "未填地址的模型"))
+  ui.handle(101)
+  ui.handle(38)
+  demand(
+    @win32.get_text(83) == "未填地址的模型" &&
+    @win32.get_text(80).is_empty(),
+    "AI 配置填写一半时切页不被环境变量覆盖",
+  )
   ignore(@win32.set_text(80, "https://example.invalid/v1"))
   ignore(@win32.set_text(83, "preview-model"))
   ignore(@win32.set_text(82, "未发送的账单输入"))
