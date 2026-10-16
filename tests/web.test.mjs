@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { execute, model_response } from '../web/generated/core.mjs';
 import { createHandler } from '../api/parse.mjs';
+import { normalizeGenerated } from '../scripts/generated-js.mjs';
 
 const empty = '{"schema_version":1,"people":[],"payments":[],"ambiguous":[]}';
 const fixture = readFileSync('examples/ledger_mixed.json', 'utf8');
@@ -10,6 +11,9 @@ const run = (action, ledger = empty, data = {}) => JSON.parse(execute(action, le
 const env = { MOONBIT_BASE_URL: 'https://api.deepseek.com', MOONBIT_API_KEY: 'test-secret-not-a-real-key', MOONBIT_MODEL: 'deepseek-flash', UPSTASH_REDIS_REST_URL: 'https://quota.invalid', UPSTASH_REDIS_REST_TOKEN: 'fake-quota-key' };
 const request = (body = { consent: true, text: 'fixture bill' }, headers = {}) => new Request('https://spliteasy.invalid/api/parse', { method: 'POST', headers: { 'content-type': 'application/json', origin: 'https://spliteasy.invalid', 'x-vercel-forwarded-for': '192.0.2.1', ...headers }, body: JSON.stringify(body) });
 const providerResponse = (content = fixture, finish_reason = 'stop') => new Response(JSON.stringify({ choices: [{ finish_reason, message: { content } }] }));
+test('cross-platform generated number formatting preserves strings and comments', () => {
+  assert.equal(normalizeGenerated('const a = [1e+012, 1e-009]; const s = "1e+012"; // 1e+012\r\n'), 'const a = [1e+12, 1e-9]; const s = "1e+012"; // 1e+012\n');
+});
 function network({ quota = 1, content = fixture, status = 200, finish = 'stop', outage = false } = {}) {
   const calls = [];
   return { calls, fetcher: async (url, options) => {
@@ -66,6 +70,10 @@ test('status does not expose credentials; missing configuration fails closed', a
   assert.equal((await handler(request())).status, 503); assert.equal(n.calls.length, 0);
   const publicStatus = await createHandler(env, n.fetcher)(new Request('https://spliteasy.invalid/api/parse'));
   const body = await publicStatus.text(); assert.ok(!body.includes(env.MOONBIT_API_KEY)); assert.equal(JSON.parse(body).invitationRequired, false);
+});
+test('Vercel Marketplace KV aliases configure persistent quotas', async () => {
+  const aliases = { ...env, UPSTASH_REDIS_REST_URL: undefined, UPSTASH_REDIS_REST_TOKEN: undefined, KV_REST_API_URL: 'https://quota.invalid', KV_REST_API_TOKEN: 'fake-quota-key' };
+  const n = network(); assert.equal((await createHandler(aliases, n.fetcher)(request())).status, 200);
 });
 test('public AI uses server key/fixed model only and returns validated preview, not settlement', async () => {
   const n = network(); const result = await createHandler(env, n.fetcher)(request({ consent: true, text: '三个人聚餐', key: 'attacker', model: 'attacker', base_url: 'https://evil.invalid' }));

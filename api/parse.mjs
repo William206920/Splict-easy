@@ -7,6 +7,7 @@ const allowed = (supplied, expected) => timingSafeEqual(digest(supplied), digest
 const limitNumber = (value, fallback, max) => /^\d+$/.test(value || '') ? Math.max(1, Math.min(Number(value), max)) : fallback;
 
 function config(env) {
+  env = { ...env, UPSTASH_REDIS_REST_URL: env.UPSTASH_REDIS_REST_URL || env.KV_REST_API_URL, UPSTASH_REDIS_REST_TOKEN: env.UPSTASH_REDIS_REST_TOKEN || env.KV_REST_API_TOKEN };
   const required = ['MOONBIT_BASE_URL', 'MOONBIT_API_KEY', 'MOONBIT_MODEL', 'UPSTASH_REDIS_REST_URL', 'UPSTASH_REDIS_REST_TOKEN'];
   if (required.some(key => !env[key]?.trim())) return null;
   if (/[\r\n]/.test(env.MOONBIT_API_KEY)) return null;

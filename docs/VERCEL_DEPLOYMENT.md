@@ -14,7 +14,7 @@
 
 从 `William206920/Splict-easy` 导入项目；根目录为仓库根目录，Framework 选 Other，构建和输出由 `vercel.json` 定义。Node.js 22。Git 分支变更会触发 Vercel 构建。
 
-Vercel 构建使用已检入的 MoonBit 编译产物 `web/generated/core.mjs`，不要求 Vercel 额外安装 MoonBit。构建先检查源文件指纹。GitHub CI 用固定工具链重新编译并检查生成文件一致，防止生成产物与 MoonBit 源码脱节。
+Vercel 构建使用已检入的 MoonBit 编译产物 `web/generated/core.mjs`，不要求 Vercel 额外安装 MoonBit。构建先检查源文件指纹。GitHub CI 用固定工具链重新编译并检查生成文件一致，防止生成产物与 MoonBit 源码脱节。首次 Linux CI 发现 Windows/Linux 编译器对数字指数前导零的打印有差异（`1e+012` 与 `1e+12`）；在生成步骤仅规范数字 token 的指数，保留字符串/注释不变，并增加回归。没有跳过生成产物一致性检查。
 
 在 Vercel 项目 Settings → Environment Variables 中填写：
 
@@ -32,6 +32,8 @@ Vercel 构建使用已检入的 MoonBit 编译产物 `web/generated/core.mjs`，
 DeepSeek 官方文档说明 DeepSeek-V4.1-Flash 使用 API 模型名 `deepseek-flash`。服务端在官方域名下启用 JSON 输出，并关闭思考模式以缩短解析时间。来源：[首次调用](https://api-docs.deepseek.com/)、[JSON 输出](https://api-docs.deepseek.com/guides/json_mode/)、[思考模式](https://api-docs.deepseek.com/guides/thinking_mode/)。这是接口配置核对，不能代替真实调用验证。
 
 额度存储可在 Vercel Marketplace 连接 Upstash Redis；只有在用户确认的免费额度/已有套餐内设置，不能未经授权购买服务。使用原子 Redis Lua 脚本跨实例限制每 IP 每小时与全站每天请求数。只存散列 IP 标识与计数，最长 48 小时失效，不存账单文字。无额度服务或存储故障时不发送模型请求；不以进程内 Map 冒称全局限流。失败/歧义模型请求仍占额度，取消浏览器请求也不保证上游停止计费。更换 Key 或额度命名空间会重置计数。请求数限额不是精确的货币预算，建议同时在模型账户设置可用额度。
+
+额度配置同时接受 Vercel Marketplace 集成常见的 `KV_REST_API_URL` / `KV_REST_API_TOKEN` 别名。
 
 环境变量仅在服务端使用。修改后需重新部署；没有配置完成时，网站普通分账可用，AI 显示未配置并返回 503。不得将用户提供的真实 Key 发到聊天或写进 `.env.example`。
 
@@ -52,7 +54,7 @@ node scripts/serve-web.mjs
 
 ## 验收状态
 
-2026-10-16 本地实际验证：`moon fmt --check`、Native/JS 类型检查、MoonBit JS 20 组测试通过；新增 Node 浏览器桥接/HTTP 网关 11 组测试通过。原有混合黄金、0.29 尾差、大于 JS Number 安全范围的 Int64 金额往返、关联成员删除保护、无效导入、歧义、截断、额度与上游故障均验证。首次新测试发现根地址会产生双斜杠，已修复；新测试里录入错误的黄金期望已对照原有 shared/settle_wbtest.mbt 纠正，原有正确黄金与算法未变。
+2026-10-16 本地实际验证：`moon fmt --check`、Native/JS 类型检查、MoonBit JS 20 组测试通过；新增 Node 浏览器桥接/HTTP 网关 13 组测试通过。原有混合黄金、0.29 尾差、大于 JS Number 安全范围的 Int64 金额往返、关联成员删除保护、无效导入、歧义、截断、额度与上游故障均验证。首次新测试发现根地址会产生双斜杠，已修复；新测试里录入错误的黄金期望已对照原有 shared/settle_wbtest.mbt 纠正，原有正确黄金与算法未变。
 
 实际打开浏览器：独立成员页、添加成员、刷新恢复、实际份额合计不符阻断、正确保存、无效导入不覆盖；1280 与 390 像素视口下页面没有横向整体溢出。截图来自本地真实运行及示例数据，不是生产部署或真实 AI 证据。
 
