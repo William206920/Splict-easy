@@ -1,5 +1,7 @@
 # SplitEasy Windows 桌面应用协作约定
 
+- 2026-10-16 最新用户授权：额外新增 Vercel 在线版，向所有访客提供维护者自己的 DeepSeek API；该网页版允许 HTML/CSS 与浏览器适配，Windows 原生版继续保留。业务、整数金额、分摊和 AI 校验复用 MoonBit，密钥仅在服务端。此前“不使用 HTML/WebView”继续适用于 Windows 桌面程序。
+
 - 按用户确认的 Windows 原生应用方向和 docs/PROJECT_PLAN.md V4.0 工作。
 - MoonBit 为主，Win32 C stub 只提供平台能力；不使用 HTML/WebView 界面。
 - 平均/实际金额混合分摊、Int64 整数分、名单尾差和确定性贪心规则不变。

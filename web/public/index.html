@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#145b49"><meta name="description" content="SplitEasy 在线分账器，支持平均与实际金额混合分摊、AI 账单解析。">
+  <title>SplitEasy · 把账算清，把时间留给相聚</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css">
+  <script type="module" src="/app.mjs"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="#overview"><span class="brand-icon">S</span><span>SplitEasy<small>一起花，轻松分</small></span></a>
+    <span class="nav-label">我的账本</span>
+    <nav aria-label="主导航">
+      <a href="#overview" data-page="overview"><span aria-hidden="true">◫</span>账本总览</a>
+      <a href="#members" data-page="members"><span aria-hidden="true">♧</span>管理成员</a>
+      <a href="#import" data-page="import"><span aria-hidden="true">⇩</span>文本 / JSON 导入</a>
+      <a href="#ai" data-page="ai"><span aria-hidden="true">✧</span>AI 记一笔<span class="badge">AI</span></a>
+    </nav>
+    <div class="sidebar-note"><span class="status-dot"></span>账单保存在当前浏览器<p>普通记账与结算在本地完成。只有确认 AI 解析后，输入的文字才会发送至模型服务。</p></div>
+    <a class="source-link" href="https://github.com/William206920/Splict-easy" target="_blank" rel="noopener noreferrer">GitHub 开源项目 ↗</a>
+  </aside>
+  <main>
+    <header class="topbar"><span>轻松记账 · 清楚结算</span><span class="engine">MoonBit 计算核心</span></header>
+    <div class="content">
+      <section id="page-overview" class="page">
+        <div class="page-heading"><div><p class="eyebrow">GOOD TIMES, CLEAR BALANCES</p><h1>每一次相聚，都算得清楚。</h1><p class="muted">平均分、按实际金额分，放在同一本账里。</p></div><button id="new-expense" class="primary">＋ 添加消费</button></div>
+        <div class="stats"><article><span>总消费</span><strong id="stat-total">¥ 0.00</strong><small>人民币 · 精确到分</small></article><article><span>同行成员</span><strong id="stat-people">0 <em>人</em></strong><small>每个人的份额都清晰</small></article><article><span>消费记录</span><strong id="stat-payments">0 <em>笔</em></strong><small>支持两种分摊方式混合</small></article></div>
+        <div class="overview-grid"><article class="card expenses"><div class="card-heading"><div><h2>消费明细</h2><p>记录共同的开销</p></div><button id="load-sample" class="subtle">载入示例</button></div><div id="expense-list"></div></article>
+        <article class="card settlement"><div class="card-heading"><div><h2>怎么转账</h2><p>已抵扣彼此的付款</p></div><span class="round-icon">⇄</span></div><div id="transfer-list"></div><div class="card-footer"><button id="copy-report" class="secondary">复制结算单</button><button id="export-json" class="subtle">导出账单</button></div><p class="footnote">按确定性贪心生成转账，不保证全局最少笔数。</p></article></div>
+        <article class="card balances"><div class="card-heading"><div><h2>每个人的账</h2><p>正数应收，负数应付</p></div><button id="export-md" class="subtle">导出 Markdown ↗</button></div><div class="table-wrap"><table><thead><tr><th>成员</th><th>已支付</th><th>应承担</th><th>净额</th></tr></thead><tbody id="balance-rows"></tbody></table></div></article>
+      </section>
+      <section id="page-members" class="page" hidden>
+        <div class="page-heading"><div><p class="eyebrow">YOUR PEOPLE</p><h1>一起记账的人</h1><p class="muted">先添加成员，再记录开销。改名会同步更新相关消费。</p></div></div>
+        <article class="card"><form id="member-form" class="inline-form"><label for="member-name">新成员姓名</label><input id="member-name" maxlength="40" placeholder="例如：小明" required><button class="primary">＋ 添加成员</button></form><div id="member-list" class="member-grid"></div><p class="footnote">姓名不含空格或 @ ! = :。已关联消费的成员需先处理消费，再删除。</p></article>
+      </section>
+      <section id="page-import" class="page" hidden>
+        <div class="page-heading"><div><p class="eyebrow">BRING YOUR RECORDS</p><h1>把已有的账带进来</h1><p class="muted">粘贴文本或完整账单 JSON，先预览，再替换。</p></div></div>
+        <div class="two-columns"><article class="card"><div class="card-heading"><h2>账单内容</h2><div class="button-group"><button id="text-sample" class="subtle">文本示例</button><button id="json-sample" class="subtle">JSON 示例</button></div></div><label for="import-text" class="sr-only">待导入账单</label><textarea id="import-text" rows="16" spellcheck="false" placeholder="人：小明 小红 小刚&#10;小明 90 晚餐"></textarea><div class="card-footer"><button id="preview-import" class="primary">解析并预览</button><label class="file-button secondary" for="import-file">选择 JSON 文件</label><input id="import-file" type="file" accept=".json,.txt" hidden></div></article>
+        <article class="card guide"><span class="guide-tag">填写说明</span><h2>几行文字，就能记清</h2><p>第一行列出成员，后面每笔一行。文本金额单位为<strong>元</strong>。</p><pre>人：小明 小红 小刚
+小明 90 晚餐
+小红 30 奶茶 =小明:10 小红:20
+小刚 20 车费 @小明 小刚</pre><dl><dt>全员平摊</dt><dd>付款人 金额 消费名</dd><dt>指定成员平摊</dt><dd>行末加 @小明 小红</dd><dt>排除成员</dt><dd>行末加 !小刚</dd><dt>按实际金额</dt><dd>行末加 =小明:10 小红:20，合计须等于实付。</dd></dl><p>JSON 金额单位为<strong>整数分</strong>，1250 表示 12.50 元。点击「JSON 示例」获取完整模板；保持字段结构，修改人名和金额即可。日期未知填空字符串，ambiguous 填 []。</p></article></div>
+      </section>
+      <section id="page-ai" class="page" hidden>
+        <div class="page-heading"><div><p class="eyebrow">LESS TYPING, MORE LIVING</p><h1>说说这次怎么花的</h1><p class="muted">用日常语言描述开销，AI 整理，你来核对。</p></div><span class="pill">共享 AI 服务</span></div>
+        <div class="two-columns"><article class="card"><div class="card-heading"><h2>自然语言账单</h2><button id="ai-sample" class="subtle">试试示例</button></div><label for="ai-text" class="sr-only">自然语言账单</label><textarea id="ai-text" rows="10" maxlength="8000" placeholder="我们三人小明、小红和小刚一起吃饭，小明付了90元，三人平摊……"></textarea><div id="invite-field" hidden><label for="invite-code">邀请码</label><input id="invite-code" type="password" autocomplete="off" placeholder="向站点维护者获取；无需填写模型 API Key"></div><p id="ai-status" class="footnote" role="status">正在检查服务状态…</p><label class="consent"><input id="ai-consent" type="checkbox"><span>我同意将上方文字发送至本站的共享模型服务，并将在使用前逐笔核对。</span></label><button id="send-ai" class="primary">✧ 发送并解析</button><button id="cancel-ai" class="secondary" hidden>取消请求</button></article>
+        <article class="card guide ai-guide"><span class="guide-tag">两次确认，安心使用</span><h2>它帮你整理，<br>你决定是否记入。</h2><ol><li><strong>把信息说完整</strong><p>说明成员、付款人、金额和谁参与分摊。实际金额分别写明。</p></li><li><strong>同意后发送</strong><p>只发送上方输入的文字，由站点维护者提供模型服务，无需填写 API Key。</p></li><li><strong>逐笔核对再确认</strong><p>缺信息或存在歧义时阻断。确认后由 MoonBit 校验和结算，再替换当前账单。</p></li></ol><p class="footnote">AI 可能理解错误。请避免输入银行卡号等无关信息。</p></article></div>
+      </section>
+      <footer class="page-footer"><span>SplitEasy · 相聚的快乐，不必被算账打断。 <a href="/notices/NOTICE.txt" target="_blank" rel="noopener noreferrer">许可声明 ↗</a></span><button id="clear-ledger" class="subtle">新建空账本</button></footer>
+    </div>
+  </main>
+  <div id="notice" class="toast" role="status" hidden></div>
+  <dialog id="expense-dialog"><form id="expense-form"><div class="dialog-heading"><div><p class="eyebrow">KEEP THE MOMENT</p><h2 id="expense-title">添加消费</h2></div><button type="button" id="close-expense" class="icon-button" aria-label="关闭">×</button></div><label for="expense-description">消费名称</label><input id="expense-description" required maxlength="120" placeholder="例如：周末聚餐"><div class="form-grid"><div><label for="expense-amount">总金额（元）</label><input id="expense-amount" inputmode="decimal" placeholder="0.00" required></div><div><label for="expense-payer">谁付款</label><select id="expense-payer" required></select></div><div><label for="expense-date">日期（可选）</label><input id="expense-date" type="date"></div><div><label for="expense-mode">分摊方式</label><select id="expense-mode"><option value="equal">平均分摊</option><option value="exact">按实际金额</option></select></div></div><fieldset><legend>谁参与分摊</legend><p id="split-hint" class="footnote">选中的成员平摊，尾差按名单顺序给靠后者。</p><div id="participants"></div></fieldset><p id="expense-error" class="form-error" role="alert"></p><div class="dialog-footer"><button type="button" id="cancel-expense" class="secondary">取消</button><button class="primary">保存消费</button></div></form></dialog>
+  <dialog id="preview-dialog"><div class="dialog-heading"><div><p class="eyebrow">CHECK BEFORE APPLYING</p><h2>核对账单预览</h2></div></div><p class="muted">确认后将替换当前账单。请先导出需要保留的记录。</p><pre id="preview-content" class="preview-content"></pre><div class="dialog-footer"><button id="cancel-preview" class="secondary">取消，保留当前账单</button><button id="apply-preview" class="primary">确认并替换</button></div></dialog>
+</body></html>

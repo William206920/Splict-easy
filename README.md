@@ -1,6 +1,8 @@
-# SplitEasy · 原生 Windows AA 分账应用
+# SplitEasy · MoonBit AA 分账应用
 
-MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消费可以混合记账，最终统一生成结算清单。界面不使用 HTML、WebView 或浏览器。
+MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消费可以混合记账，最终统一生成结算清单。Windows 程序不使用 HTML、WebView 或浏览器。
+
+**新增 Vercel 在线版**：2026-10-16 按用户追加授权，保留 Windows 原生程序，额外提供浏览器界面。成员、消费、文本/JSON 导入、金额与结算复用 MoonBit 核心；AI 使用维护者的 DeepSeek 服务端密钥，向所有访客开放并限制额度。[部署与验证说明](docs/VERCEL_DEPLOYMENT.md)。线上地址和真实调用以该文档的实际验收记录为准。
 
 **当前为 0.9.1 开发预览：增加独立成员管理、文本/JSON 导入指南与示例，修复页面切换输入丢失和账单替换保护。真实模型演示和用户 Windows 桌面实测仍待验收；本地模拟不代表真实 AI 验收。**
 
@@ -16,7 +18,7 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 - 原生程序截图由 Windows CI 的 --demo 示例模式生成，随预览发行提供；不包含真实账单或 Key。
 - [操作演示](docs/demo.md) · [AI 验证说明](docs/AI_DEMO.md) · [一页项目说明](docs/PROJECT_ONE_PAGE.md)
 
-旧网页代码已按用户要求移出 main，Git 历史保留。当前版本重新验证，不沿用旧版测试结论。
+旧网页代码已按用户要求移出 main，Git 历史保留。本次在线版是基于当前 MoonBit 核心的新入口，重新验证，不沿用旧网页测试结论。
 
 ![0.9.0 原生账单工作台](docs/screenshots/overview.png)
 
