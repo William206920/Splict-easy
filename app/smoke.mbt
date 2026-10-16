@@ -13,11 +13,40 @@ pub fn smoke() -> Unit raise @shared.BillError {
   )
   let ui = Desktop::new(true)
   ui.render()
+  ui.handle(101)
+  demand(
+    ui.page == 5 && @win32.get_text(510) == "管理成员",
+    "菜单进入独立成员页",
+  )
   for name in ["A", "B", "C"] {
     demand(@win32.set_text(11, name), "姓名输入")
     ui.handle(12)
   }
   demand(ui.session.ledger.people.length() == 3, "添加三人")
+  demand(ui.page == 5, "成员操作保留在成员页")
+  ui.handle(15)
+  ignore(@win32.set_text(11, "临时成员"))
+  ui.handle(12)
+  ignore(@win32.flag(10, 3, 3))
+  ui.handle(10)
+  demand(
+    @win32.get_text(16).contains("关联消费：0"),
+    "成员页展示关联消费",
+  )
+  ignore(@win32.set_text(11, "已改名"))
+  ui.handle(13)
+  demand(ui.session.ledger.people[3] == "已改名", "成员页改名")
+  ui.handle(14)
+  demand(
+    ui.session.ledger.people.length() == 3,
+    "成员页删除无引用成员",
+  )
+  ignore(@win32.set_text(11, "未添加姓名"))
+  ui.handle(100)
+  ui.handle(101)
+  demand(@win32.get_text(11) == "未添加姓名", "切页保留成员输入")
+  ui.handle(15)
+  ui.handle(100)
   ui.handle(21)
   ignore(@win32.set_text(52, "晚餐"))
   ignore(@win32.set_text(53, "100"))
@@ -65,6 +94,25 @@ pub fn smoke() -> Unit raise @shared.BillError {
     _ => true
   }
   demand(blocked, "关联删除阻断")
+  ui.handle(101)
+  ignore(@win32.flag(10, 3, 1))
+  ui.handle(10)
+  demand(
+    @win32.get_text(16).contains("关联消费：2"),
+    "成员页关联消费计数",
+  )
+  let before_delete = ui.session.ledger
+  let deletion_blocked = try {
+    ui.handle(14)
+    false
+  } catch {
+    _ => true
+  }
+  demand(
+    deletion_blocked && ui.session.ledger == before_delete,
+    "成员页拒绝删除关联成员并保留账单",
+  )
+  ui.handle(100)
   ignore(@win32.flag(20, 3, 0))
   ui.handle(22)
   ignore(@win32.set_text(53, "90"))
@@ -74,6 +122,33 @@ pub fn smoke() -> Unit raise @shared.BillError {
   ui.handle(23)
   demand(ui.session.ledger.payments.length() == 1, "删除消费")
   ui.handle(33)
+  demand(
+    @win32.get_text(76).contains("整数分"),
+    "导入页可见填写说明",
+  )
+  let before_examples = ui.session.ledger
+  ui.handle(72)
+  demand(ui.session.ledger == before_examples, "示例不修改当前账单")
+  let text_example = @win32.get_text(70)
+  ui.handle(101)
+  ui.handle(33)
+  demand(@win32.get_text(70) == text_example, "切页保留待导入文本")
+  ui.handle(73)
+  demand(
+    import_ledger(@win32.get_text(70)) == import_ledger(text_example),
+    "两个示例可直接解析且一致",
+  )
+  ignore(@win32.set_text(70, "人：A B\nA 30 奶茶 =A:10 B:10"))
+  let rejected = try {
+    ui.handle(71)
+    false
+  } catch {
+    _ => true
+  }
+  demand(
+    rejected && ui.session.ledger == before_examples && ui.page == 2,
+    "错误导入不替换账单并保留编辑页",
+  )
   ignore(@win32.set_text(70, @shared.encode_ledger(@shared.sample_mixed())))
   ui.handle(71)
   ui.handle(34)
@@ -99,6 +174,27 @@ pub fn smoke() -> Unit raise @shared.BillError {
       demand(@win32.flag(id, 10, 0) == 1, "卡片或标题没有遮挡控件")
     }
     demand(@win32.flag(35, 5, 0) == 1, "有效结算可以复制")
+    ui.handle(101)
+    for id in [10, 11, 12, 15, 16, 32] {
+      demand(
+        @win32.flag(id, 9, 0) == 1 && @win32.flag(id, 10, 0) == 1,
+        "成员页窄窗口无横向越界或遮挡",
+      )
+    }
+    ignore(@win32.set_text(11, "窗口重排输入"))
+    ui.handle(9000)
+    demand(
+      @win32.get_text(11) == "窗口重排输入",
+      "成员页重排保留输入",
+    )
+    ui.handle(33)
+    for id in [70, 71, 72, 73, 74, 76] {
+      demand(
+        @win32.flag(id, 9, 0) == 1,
+        "导入说明与示例按钮没有横向越界",
+      )
+    }
+    ui.handle(100)
   }
   ignore(@win32.set_text(11, "待添加成员"))
   ui.handle(9000)
@@ -113,6 +209,15 @@ pub fn smoke() -> Unit raise @shared.BillError {
   )
   ui.handle(57)
   ui.handle(38)
+  ignore(@win32.set_text(80, ""))
+  ignore(@win32.set_text(83, "未填地址的模型"))
+  ui.handle(101)
+  ui.handle(38)
+  demand(
+    @win32.get_text(83) == "未填地址的模型" &&
+    @win32.get_text(80).is_empty(),
+    "AI 配置填写一半时切页不被环境变量覆盖",
+  )
   ignore(@win32.set_text(80, "https://example.invalid/v1"))
   ignore(@win32.set_text(83, "preview-model"))
   ignore(@win32.set_text(82, "未发送的账单输入"))
@@ -151,6 +256,8 @@ pub fn network_smoke(base : String) -> Unit raise @shared.BillError {
   ui.render()
   demand(@win32.flag(81, 6, 0) > 0, "密钥输入被遮盖")
   ui.handle(84)
+  ui.handle(101)
+  demand(ui.waiting && ui.page == 3, "请求进行中不能通过导航离开")
   let mut ticks = 0
   while ui.waiting && ticks < 500 {
     let event = @win32.next_event()
@@ -159,6 +266,8 @@ pub fn network_smoke(base : String) -> Unit raise @shared.BillError {
     ticks = ticks + 1
   }
   demand(!ui.waiting && ui.page == 4, "后台完成并预览")
+  ui.handle(101)
+  demand(ui.page == 4, "确认预览前不能绕过核对导航")
   demand(
     ui.session.ledger.people == ["原账单"] && ui.session.report is None,
     "确认前原账单不变",

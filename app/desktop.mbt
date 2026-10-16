@@ -27,6 +27,10 @@ pub(all) struct Desktop {
   mut ai_preview : String
   mut flow : @ai.Flow
   mut waiting : Bool
+  mut advanced_text : String
+  mut member_text : String
+  mut member_index : Int32
+  mut ai_environment_loaded : Bool
 }
 
 ///|
@@ -65,6 +69,10 @@ pub fn Desktop::new(testing : Bool) -> Desktop {
     ai_preview: "",
     flow: @ai.Flow::new(),
     waiting: false,
+    advanced_text: "",
+    member_text: "",
+    member_index: -1,
+    ai_environment_loaded: false,
   }
 }
 
@@ -204,6 +212,84 @@ pub fn Desktop::render(self : Desktop) -> Unit {
 }
 
 ///|
+fn Desktop::capture_page(self : Desktop) -> Unit {
+  self.capture()
+  if self.page == 0 || self.page == 5 {
+    self.member_text = @win32.get_text(11)
+    self.member_index = @win32.flag(10, 2, 0)
+  } else if self.page == 2 {
+    self.advanced_text = @win32.get_text(70)
+  } else if self.page == 3 {
+    self.ai_config = {
+      base_url: @win32.get_text(80),
+      api_key: @win32.get_text(81),
+      model: @win32.get_text(83),
+    }
+    self.ai_text = @win32.get_text(82)
+  }
+}
+
+///|
+fn Desktop::navigate(self : Desktop, target : Int32) -> Unit {
+  if self.waiting || self.page == 4 {
+    return
+  }
+  self.capture_page()
+  if self.page == 1 &&
+    self.form.changed &&
+    !confirm(self, "放弃尚未保存的消费表单？") {
+    return
+  }
+  if target == 3 && !self.ai_environment_loaded {
+    self.ai_config = {
+      base_url: if self.ai_config.base_url.is_empty() {
+        @sys.environment("MOONBIT_BASE_URL")
+      } else {
+        self.ai_config.base_url
+      },
+      api_key: if self.ai_config.api_key.is_empty() {
+        @sys.environment("MOONBIT_API_KEY")
+      } else {
+        self.ai_config.api_key
+      },
+      model: if self.ai_config.model.is_empty() {
+        @sys.environment("MOONBIT_MODEL")
+      } else {
+        self.ai_config.model
+      },
+    }
+    self.ai_environment_loaded = true
+  }
+  self.page = target
+  self.render()
+}
+
+///|
+fn Desktop::member_details(self : Desktop, index : Int32) -> String {
+  if index < 0 || index >= self.session.ledger.people.length() {
+    return "新增：输入姓名后点「添加成员」。\n\n修改：先选中左侧成员，再改名或删除。\n\n改名会同步更新付款人和所有分摊引用。\n有关联消费的成员不能直接删除，请先处理消费。"
+  }
+  let name = self.session.ledger.people[index]
+  let mut count = 0
+  for p in self.session.ledger.payments {
+    if p.payer == name ||
+      p.participants.contains(name) ||
+      p.shares.any(s => s.person == name) {
+      count = count + 1
+    }
+  }
+  name +
+  "\n\n关联消费：" +
+  count.to_string() +
+  " 笔\n\n" +
+  (if count == 0 {
+    "没有关联消费，可以删除。"
+  } else {
+    "如需删除，请先编辑或删除关联消费。改名会同步更新所有引用。"
+  })
+}
+
+///|
 fn Desktop::persist(self : Desktop) -> Unit {
   if !self.autosave || self.draft.is_empty() {
     return
@@ -294,17 +380,21 @@ pub fn Desktop::handle(
   self : Desktop,
   event : Int32,
 ) -> Unit raise @shared.BillError {
-  if event == 100 {
-    if self.page == 1 {
-      self.handle(57)
-    } else if !self.waiting && self.page != 4 {
-      self.page = 0
-      self.render()
-    }
-    return
+  if self.page == 0 || self.page == 5 {
+    self.capture_page()
   }
-  if event == 101 && self.page == 0 {
-    ignore(@win32.flag(11, 7, 0))
+  if event == 100 || event == 101 || event == 33 || event == 38 {
+    self.navigate(
+      if event == 100 {
+        0
+      } else if event == 101 {
+        5
+      } else if event == 33 {
+        2
+      } else {
+        3
+      },
+    )
     return
   }
   if event == 9100 {
@@ -372,8 +462,13 @@ pub fn Desktop::handle(
       self.page = 3
       self.render()
     } else if event == 86 {
+      if !self.can_leave() {
+        return
+      }
       let report = self.flow.confirm(true)
       self.session.replace(report.ledger)
+      self.member_text = ""
+      self.member_index = -1
       self.session.report = Some(report)
       self.path = ""
       self.page = 0
@@ -384,26 +479,20 @@ pub fn Desktop::handle(
     return
   }
   if event == 9000 {
-    let advanced = if self.page == 2 { @win32.get_text(70) } else { "" }
-    let member_text = if self.page == 0 { @win32.get_text(11) } else { "" }
-    let person = if self.page == 0 { @win32.flag(10, 2, 0) } else { -1 }
+    let member_page = self.page == 0 || self.page == 5
+    let member_text = if member_page { @win32.get_text(11) } else { "" }
+    let person = if member_page { @win32.flag(10, 2, 0) } else { -1 }
     let payment = if self.page == 0 { @win32.flag(20, 2, 0) } else { -1 }
-    if self.page == 3 {
-      self.ai_config = {
-        base_url: @win32.get_text(80),
-        api_key: @win32.get_text(81),
-        model: @win32.get_text(83),
-      }
-      self.ai_text = @win32.get_text(82)
-    }
-    self.capture()
+    self.capture_page()
     self.render()
-    if self.page == 2 {
-      ignore(@win32.set_text(70, advanced))
-    }
-    if self.page == 0 {
+    if member_page {
       ignore(@win32.set_text(11, member_text))
       ignore(@win32.flag(10, 3, person))
+      if self.page == 5 {
+        ignore(@win32.set_text(16, crlf(self.member_details(person))))
+      }
+    }
+    if self.page == 0 {
       ignore(@win32.flag(20, 3, payment))
     }
     return
@@ -444,22 +533,36 @@ pub fn Desktop::handle(
     return
   }
   if self.page == 2 {
+    self.advanced_text = @win32.get_text(70)
     if event == 57 {
-      self.page = 0
-      self.render()
-    } else if event == 71 {
-      let input = @win32.get_text(70).trim().to_owned()
-      let ledger = if input.has_prefix("{") {
-        @shared.decode_ledger(input)
+      self.navigate(0)
+    } else if event == 72 || event == 73 || event == 74 {
+      let example = if event == 72 {
+        import_text_example()
+      } else if event == 73 {
+        import_json_example()
       } else {
-        @shared.parse_text(input)
+        @shared.encode_ledger(self.session.ledger)
       }
-      let preview = @shared.render_text(@shared.settle(ledger))
-      if confirm(self, preview + "\n确认替换当前账单？") {
+      if self.advanced_text.trim().is_empty() ||
+        confirm(
+          self, "用示例或当前账单替换编辑框内容？当前账单不会改变。",
+        ) {
+        self.advanced_text = example
+        ignore(@win32.set_text(70, crlf(example)))
+      }
+    } else if event == 71 {
+      let ledger = import_ledger(self.advanced_text)
+      let preview = ledger_preview(ledger)
+      if confirm(self, preview + "\n确认替换当前账单？") &&
+        self.can_leave() {
         self.session.replace(ledger)
+        self.member_text = ""
+        self.member_index = -1
         self.path = ""
         self.page = 0
         self.persist()
+        self.status = "已导入账单；可继续编辑或统一结算。"
         self.render()
       }
     }
@@ -468,8 +571,28 @@ pub fn Desktop::handle(
   if event == 10 {
     let i = @win32.flag(10, 2, 0)
     if i >= 0 && i < self.session.ledger.people.length() {
+      self.member_text = self.session.ledger.people[i]
+      self.member_index = i
       ignore(@win32.set_text(11, self.session.ledger.people[i]))
     }
+    if self.page == 5 {
+      ignore(@win32.set_text(16, crlf(self.member_details(i))))
+      for id in [13, 14] {
+        ignore(@win32.flag(id, 4, if i >= 0 { 1 } else { 0 }))
+      }
+    }
+    return
+  }
+  if event == 15 && self.page == 5 {
+    self.member_text = ""
+    self.member_index = -1
+    ignore(@win32.flag(10, 3, -1))
+    ignore(@win32.set_text(11, ""))
+    ignore(@win32.set_text(16, crlf(self.member_details(-1))))
+    for id in [13, 14] {
+      ignore(@win32.flag(id, 4, 0))
+    }
+    ignore(@win32.flag(11, 7, 0))
     return
   }
   if event == 12 || event == 13 || event == 14 {
@@ -477,6 +600,8 @@ pub fn Desktop::handle(
     let name = @win32.get_text(11).trim().to_owned()
     if event == 12 {
       self.session.add_person(name)
+      self.member_index = self.session.ledger.people.length() - 1
+      self.member_text = name
     } else {
       if i < 0 || i >= self.session.ledger.people.length() {
         @shared.invalid("请先选择人员")
@@ -484,11 +609,14 @@ pub fn Desktop::handle(
       let old = self.session.ledger.people[i]
       if event == 13 {
         self.session.rename(old, name)
+        self.member_text = name
       } else {
         if !confirm(self, "删除人员 " + old + "？") {
           return
         }
         self.session.remove_person(old)
+        self.member_index = -1
+        self.member_text = ""
       }
     }
     self.persist()
@@ -511,12 +639,15 @@ pub fn Desktop::handle(
     if confirm(self, "删除选中的消费？") {
       self.session.remove_payment(i)
       self.persist()
+      self.status = "已删除消费，请重新结算。"
       self.render()
     }
   } else if event == 30 {
     if self.can_leave() &&
       confirm(self, "新建空账单？旧草稿将由新账单替换。") {
       self.session.replace({ people: [], payments: [], ambiguous: [], })
+      self.member_text = ""
+      self.member_index = -1
       self.path = ""
       self.saved_revision = self.session.revision
       self.autosave = true
@@ -539,6 +670,8 @@ pub fn Desktop::handle(
     }
     if confirm(self, preview + "\n确认打开？") {
       self.session.replace(ledger)
+      self.member_text = ""
+      self.member_index = -1
       self.path = path
       self.saved_revision = self.session.revision
       self.persist()
@@ -546,9 +679,6 @@ pub fn Desktop::handle(
     }
   } else if event == 32 {
     ignore(self.save())
-    self.render()
-  } else if event == 33 {
-    self.page = 2
     self.render()
   } else if event == 34 {
     ignore(self.session.solve())
@@ -588,21 +718,12 @@ pub fn Desktop::handle(
         }
       }
     }
-  } else if event == 38 {
-    if self.ai_config.base_url.is_empty() {
-      self.ai_config = {
-        base_url: @sys.environment("MOONBIT_BASE_URL"),
-        api_key: @sys.environment("MOONBIT_API_KEY"),
-        model: @sys.environment("MOONBIT_MODEL"),
-      }
-    }
-    self.status = "AI 尚未发送；普通分账无需配置密钥。"
-    self.page = 3
-    self.render()
   } else if event == 37 {
     if self.can_leave() &&
       confirm(self, "载入五人混合示例并替换当前账单？") {
       self.session.replace(@shared.sample_mixed())
+      self.member_text = ""
+      self.member_index = -1
       self.path = ""
       self.persist()
       self.render()
@@ -636,6 +757,9 @@ pub fn run(demo~ : Bool = false, demo_page~ : Int32 = 0) -> Unit {
       ui.page = 3
     } else if demo_page == 2 {
       ui.page = 2
+      ui.advanced_text = import_text_example()
+    } else if demo_page == 5 {
+      ui.page = 5
     }
   }
   if !demo && !ui.draft.is_empty() && @sys.exists(ui.draft) {

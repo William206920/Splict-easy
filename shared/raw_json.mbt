@@ -149,6 +149,9 @@ fn parse_raw_json(text : String) -> RawJson raise BillError {
     invalid("账单文件超过 2MB 字符限制")
   }
   let cursor : JsonCursor = { chars: text.iter().to_array(), pos: 0, }
+  if !cursor.chars.is_empty() && cursor.chars[0] == '\u{FEFF}' {
+    cursor.pos = 1
+  }
   let value = cursor.value(0)
   cursor.skip()
   if cursor.pos != cursor.chars.length() {

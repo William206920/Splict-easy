@@ -39,7 +39,19 @@ fn Desktop::shell(
     side - 24,
     44,
   )
-  control(13, 101, "管理成员", 12, 226, side - 24, 44)
+  control(
+    if self.page == 5 {
+      17
+    } else {
+      13
+    },
+    101,
+    "管理成员",
+    12,
+    226,
+    side - 24,
+    44,
+  )
   control(
     if self.page == 3 || self.page == 4 {
       17
@@ -83,12 +95,22 @@ fn Desktop::shell(
   let title_w = @win32.width() -
     x -
     28 -
-    (if self.page == 0 || self.page == 1 { 274 } else { 0 })
+    (if self.page == 0 || self.page == 1 {
+      274
+    } else if self.page == 5 {
+      140
+    } else {
+      0
+    })
   control(10, 510, title, x, 30, title_w, 40)
   control(20, 511, subtitle, x, 80, @win32.width() - x - 28, 42)
-  if self.page != 0 {
-    // File/navigation actions must never silently discard a partially filled form.
-    for id in [101, 38, 33, 30, 31, 37] {
+  if self.page != 0 && self.page != 5 {
+    for id in [30, 31, 37] {
+      ignore(@win32.flag(id, 4, 0))
+    }
+  }
+  if self.waiting || self.page == 4 {
+    for id in [100, 101, 38, 33] {
       ignore(@win32.flag(id, 4, 0))
     }
   }
@@ -118,11 +140,101 @@ fn Desktop::members_view(
   for name in self.session.ledger.people {
     @win32.list_add(10, name)
   }
-  control(2, 11, "", x + 20, y + 202, w - 40, 32)
+  ignore(@win32.flag(10, 3, self.member_index))
+  control(2, 11, self.member_text, x + 20, y + 202, w - 40, 32)
   let bw = (w - 56) / 3
   control(1, 12, "添加", x + 20, y + 248, bw, 34)
   control(1, 13, "改名", x + 28 + bw, y + 248, bw, 34)
   control(1, 14, "删除", x + 36 + bw * 2, y + 248, bw, 34)
+}
+
+///|
+fn Desktop::members_page(self : Desktop, x : Int32, w : Int32) -> Unit {
+  self.shell(
+    "管理成员", "添加、改名和删除账单成员；改名会同步更新消费中的引用。",
+    920,
+  )
+  panel(620, x, 136, w, 680)
+  control(19, 621, "账单成员", x + 24, 158, w - 48, 30)
+  control(
+    11,
+    622,
+    self.session.ledger.people.length().to_string() +
+    " / 200 位成员 · 选中后可查看关联消费",
+    x + 24,
+    202,
+    w - 48,
+    30,
+  )
+  let half = (w - 72) / 2
+  control(6, 10, "", x + 20, 250, half, 532)
+  for name in self.session.ledger.people {
+    @win32.list_add(10, name)
+  }
+  ignore(@win32.flag(10, 3, self.member_index))
+  let right = x + 48 + half
+  control(
+    11, 623, "成员姓名（不含空格或 @ ! = :）", right, 250, half, 50,
+  )
+  control(2, 11, self.member_text, right, 306, half, 36)
+  control(14, 12, "添加成员", right, 360, half, 38)
+  let bw = (half - 12) / 2
+  control(1, 13, "保存改名", right, 414, bw, 36)
+  control(1, 14, "删除成员", right + bw + 12, 414, bw, 36)
+  control(1, 15, "清空输入，新增成员", right, 466, half, 36)
+  control(7, 16, self.member_details(self.member_index), right, 526, half, 256)
+  for id in [13, 14] {
+    ignore(@win32.flag(id, 4, if self.member_index >= 0 { 1 } else { 0 }))
+  }
+  control(1, 32, "保存账单", x + w - 112, 36, 112, 38)
+  control(28, 90, self.status, x, 840, w, 58)
+}
+
+///|
+fn Desktop::import_view(self : Desktop, x : Int32, w : Int32) -> Unit {
+  let wide = w >= 800
+  let input_w = if wide { (w - 20) / 2 } else { w }
+  let help_x = if wide { x + input_w + 20 } else { x }
+  let help_y = if wide { 136 } else { 860 }
+  let help_w = if wide { w - input_w - 20 } else { w }
+  self.shell(
+    "导入已有账单",
+    "可先载入示例照着修改；解析并核对预览、确认替换后，才修改账单。",
+    if wide {
+      920
+    } else {
+      1530
+    },
+  )
+  panel(610, x, 136, input_w, 660)
+  control(19, 611, "账单内容", x + 24, 158, input_w - 48, 30)
+  let bw = (input_w - 64) / 3
+  control(1, 72, "文本示例", x + 24, 206, bw, 38)
+  control(1, 73, "JSON 示例", x + 32 + bw, 206, bw, 38)
+  control(1, 74, "当前账单", x + 40 + bw * 2, 206, bw, 38)
+  control(
+    11,
+    612,
+    "此处只编辑待导入内容，尚未替换当前账单。",
+    x + 24,
+    260,
+    input_w - 48,
+    40,
+  )
+  control(3, 70, self.advanced_text, x + 24, 310, input_w - 48, 462)
+  panel(625, help_x, help_y, help_w, 660)
+  control(19, 626, "怎么填写？", help_x + 24, help_y + 22, help_w - 48, 30)
+  control(
+    7,
+    76,
+    import_instructions(),
+    help_x + 24,
+    help_y + 76,
+    help_w - 48,
+    560,
+  )
+  control(14, 71, "解析并预览导入", x, 816, 220, 42)
+  control(1, 57, "返回账单", x + 236, 816, 132, 42)
 }
 
 ///|
@@ -467,6 +579,8 @@ pub fn Desktop::render_view(self : Desktop) -> Unit {
     self.overview_view(x, w)
   } else if self.page == 1 {
     self.editor_view(x, w)
+  } else if self.page == 5 {
+    self.members_page(x, w)
   } else if self.page == 3 {
     self.shell(
       "AI 智能录入", "用一段话记录多笔消费，发送前确认，解析后再核对。",
@@ -537,23 +651,6 @@ pub fn Desktop::render_view(self : Desktop) -> Unit {
     control(1, 87, "返回修改", x + 236, 720, 132, 42)
     ignore(@win32.flag(100, 4, 0))
   } else {
-    self.shell(
-      "导入已有账单", "粘贴高级记账文本或账单 JSON，解析并预览后再确认导入。",
-      850,
-    )
-    panel(610, x, 136, w, 560)
-    control(19, 611, "账单内容", x + 24, 158, w - 48, 30)
-    control(
-      11,
-      612,
-      "文本以「人：」声明名单；JSON 使用账单文件格式。",
-      x + 24,
-      202,
-      w - 48,
-      44,
-    )
-    control(3, 70, "", x + 24, 256, w - 48, 414)
-    control(14, 71, "解析并预览导入", x, 720, 220, 42)
-    control(1, 57, "返回账单", x + 236, 720, 132, 42)
+    self.import_view(x, w)
   }
 }

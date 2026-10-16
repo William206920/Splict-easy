@@ -2,7 +2,7 @@
 
 MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消费可以混合记账，最终统一生成结算清单。界面不使用 HTML、WebView 或浏览器。
 
-**当前为 0.9.0 开发预览：重新设计原生桌面布局与主题，核心、CLI、文件和 AI 接口继续保留。真实模型演示和用户 Windows 桌面实测仍待验收；本地模拟不代表真实 AI 验收。**
+**当前为 0.9.1 开发预览：增加独立成员管理、文本/JSON 导入指南与示例，修复页面切换输入丢失和账单替换保护。真实模型演示和用户 Windows 桌面实测仍待验收；本地模拟不代表真实 AI 验收。**
 
 - [界面优化、同类产品参考与验证](docs/UI_REDESIGN.md)
 
@@ -10,7 +10,8 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 - [完整方案与自动推进约定](docs/PROJECT_PLAN.md)
 - [各阶段源码与提交](../../commits/main)
 - [Windows CI 与构建产物](../../actions/workflows/native-windows.yml)
-- [下载 Windows 0.9.0 已验证预览包](https://github.com/William206920/Splict-easy/actions/runs/38853402455/artifacts/12026535125)（需登录 GitHub，含安装器、便携包、校验和与四个页面的真实程序截图）
+- [下载 Windows 0.9.1 已验证预览包](https://github.com/William206920/Splict-easy/actions/runs/38855867925/artifacts/12027202151)（需登录 GitHub，含安装器、便携包、校验和与五个页面的真实程序截图）
+- [成员页、导入填写示例与修复记录](docs/MEMBERS_IMPORT_FIX.md)
 - GitHub Release 尚未发布。
 - 原生程序截图由 Windows CI 的 --demo 示例模式生成，随预览发行提供；不包含真实账单或 Key。
 - [操作演示](docs/demo.md) · [AI 验证说明](docs/AI_DEMO.md) · [一页项目说明](docs/PROJECT_ONE_PAGE.md)
@@ -35,7 +36,7 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 
 手动记账：
 
-1. 在人员区输入姓名并添加。选中人员后可改名或删除；被消费引用的人员必须先处理关联消费。
+1. 点击左侧“管理成员”进入独立页面，输入姓名并添加。选中成员后可改名或删除，并查看关联消费数量；被消费引用的成员必须先处理关联消费。
 2. 添加消费，填写名称、付款人和总额。
 3. 平均模式勾选人员；实际金额模式逐人填金额，不承担者明确填 0；表单保存时零份额按未参与处理，不产生多余人员引用。核心仍兼容导入的显式零份额。
 4. 实际份额合计不符时不能保存。付款人可以不参与。
@@ -69,6 +70,8 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 ```
 
 高级输入界面也接受账单 JSON。示例在 [examples](examples)。错误保留原始行号，支持 BOM 与 Windows 换行。
+
+不熟悉语法时，在“文本与 JSON 导入”中点击“文本示例”或“JSON 示例”后照着修改，右侧有简易说明。“当前账单”可填入当前账单的 JSON 模板；这些按钮只改变编辑框，核对预览并确认替换后才改变账单。文本金额单位是元，JSON 的 `amount_cents` 是整数分，例如 `1250` 表示 12.50 元。
 
 ## CLI
 
