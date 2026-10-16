@@ -62,6 +62,14 @@ node scripts/serve-web.mjs
 
 [查看手机布局截图](screenshots/online-mobile.png)
 
-CI、生产地址及真实模型演示在完成后更新。目前不将本地模拟服务称为真实 DeepSeek 调用，也不将待登录/待配置环境变量称为已部署。
+源码提交 `8864afcc37a6d05fff5d2703f639ec4d39ec69b1` 的远端验证已完成：
+
+- [Linux 网页 CI 38860175878](https://github.com/William206920/Splict-easy/actions/runs/38860175878) 通过：固定 MoonBit、20 组 JS 测试、重新编译后生成产物一致、Node 22 下 13 组网关/桥接测试与静态产物上传。
+- [Windows 原生 CI 38860175899](https://github.com/William206920/Splict-easy/actions/runs/38860175899) 全部通过：原生构建、测试、GUI/CLI/模拟 AI 集成、安装包生成及安装验证。网页新增未破坏桌面交付。
+- 本地代码与 GitHub `codex/vercel-online` 的 Git 树一致。开发变更见 [PR #3](https://github.com/William206920/Splict-easy/pull/3)。
+
+生产部署尚未完成：Vercel 账号登录曾触发手机号尝试次数限制，需用户自行完成账号验证。2026-10-16 用户最终选择继续使用 Vercel；试验性的 Cloudflare 适配未发布，已撤回。不将这些本地测试或本地截图称为生产部署。
+
+真实 DeepSeek Key 尚未配置，真实模型演示与真实额度存储仍待实际验证。不能用模拟上游响应替代真实服务验收。用户应在 Vercel 项目的敏感环境变量中设置密钥，后续重新部署并用示例账单完成端到端核对。
 
 Windows 原生 GUI/CLI 不受该网页入口影响，依旧直接使用用户配置的兼容 API；本次没有宣称桌面端已经自动接入共享站点。
