@@ -1,4 +1,17 @@
 ///|
+test "UTF8 BOM ledger JSON preserves the canonical bill" {
+  let original = sample_mixed()
+  assert_true(decode_ledger("\u{FEFF}" + encode_ledger(original)) == original)
+  let malformed = try {
+    ignore(decode_ledger("\u{FEFF}{\"schema_version\":1.0}"))
+    false
+  } catch {
+    _ => true
+  }
+  assert_true(malformed)
+}
+
+///|
 test "text golden dinner and mixed" {
   assert_true(
     settle(
