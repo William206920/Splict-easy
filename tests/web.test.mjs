@@ -88,6 +88,19 @@ test('unconfirmed, oversized, cross-origin and wrong-method requests do not reac
   for (const req of [request({ text: 'missing consent' }), request({ consent: true, text: 'x'.repeat(8001) }), request(undefined, { origin: 'https://evil.invalid' })]) assert.ok((await handler(req)).status >= 400);
   assert.equal((await handler(new Request('https://spliteasy.invalid/api/parse', { method: 'PUT' }))).status, 405); assert.equal(n.calls.length, 0);
 });
+test('Kimi uses its configured regional endpoint and non-thinking JSON parameters', async () => {
+  for (const host of ['api.moonshot.cn', 'api.moonshot.ai']) {
+    const n = network();
+    const response = await createHandler({ ...env, MOONBIT_BASE_URL: `https://${host}/v1`, MOONBIT_MODEL: 'kimi-k2.6' }, n.fetcher)(request());
+    assert.equal(response.status, 200);
+    const upstream = n.calls[1]; assert.equal(upstream.url, `https://${host}/v1/chat/completions`);
+    const body = JSON.parse(upstream.options.body);
+    assert.equal(body.model, 'kimi-k2.6'); assert.equal(body.temperature, 0.6);
+    assert.equal(body.thinking.type, 'disabled'); assert.equal(body.response_format.type, 'json_object');
+    assert.equal(upstream.options.headers.authorization, `Bearer ${env.MOONBIT_API_KEY}`);
+    const result = await response.json(); assert.equal(result.ok, true); assert.ok(result.preview.includes('确认后'));
+  }
+});
 test('daily/hourly quota denial and quota outage never call the paid model', async () => {
   for (const options of [{ quota: 0 }, { outage: true }]) {
     const n = network(options); const result = await createHandler(env, n.fetcher)(request()); assert.ok([429, 503].includes(result.status)); assert.equal(n.calls.length, 1);
