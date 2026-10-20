@@ -7,17 +7,15 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 **Windows 原生版当前为 0.9.1 开发预览：增加独立成员管理、文本/JSON 导入指南与示例，修复页面切换输入丢失和账单替换保护。原生 GUI/CLI 真实模型演示和用户 Windows 桌面实测仍待验收；网页版真实调用不代表桌面端已验收。**
 
 - [界面优化、同类产品参考与验证](docs/UI_REDESIGN.md)
-- [MoonBit 语言占比、真实迁移与赛事要求核对](docs/LANGUAGE_AUDIT.md)
 
 - [整体验证与剩余验收](docs/VERIFY_CURRENT.md)
-- [完整方案与自动推进约定](docs/PROJECT_PLAN.md)
 - [各阶段源码与提交](../../commits/main)
 - [Windows CI 与构建产物](../../actions/workflows/native-windows.yml)
 - [下载 Windows 0.9.1 已验证预览包](https://github.com/William206920/Splict-easy/actions/runs/38855867925/artifacts/12027202151)（需登录 GitHub，含安装器、便携包、校验和与五个页面的真实程序截图）
 - [成员页、导入填写示例与修复记录](docs/MEMBERS_IMPORT_FIX.md)
 - GitHub Release 尚未发布。
 - 原生程序截图由 Windows CI 的 --demo 示例模式生成，随预览发行提供；不包含真实账单或 Key。
-- [操作演示](docs/demo.md) · [AI 验证说明](docs/AI_DEMO.md) · [一页项目说明](docs/PROJECT_ONE_PAGE.md)
+- [操作演示](docs/demo.md) · [AI 验证说明](docs/AI_DEMO.md)
 
 旧网页代码已按用户要求移出 main，Git 历史保留。本次在线版是基于当前 MoonBit 核心的新入口，重新验证，不沿用旧网页测试结论。
 
@@ -143,7 +141,7 @@ Windows CI 还运行真实控件操作、UTF-8 原子文件、CLI 黄金、HTTP 
 - 单币种人民币、一笔一个付款人；不支持退款负金额、账户同步、支付接口或多设备协作。
 - 桌面账单最多 200 人、5000 笔，超限原子拒绝，便于保持系统控件可用。
 - 当前为预览版，真实模型演示、用户 Windows 10/11、输入法、视觉布局和 DPI 人工验收待完成。
-- 安装器未签名；不宣称上架或官方赛事已验收。
+- 安装器未签名。
 - 项目代码 MIT；MoonBit core/runtime 等第三方许可见 [third_party](third_party) 和 [NOTICE](NOTICE.md)。
 
-[AI_USAGE](AI_USAGE.md) 如实记录 AI 开发参与及验证边界。内部目标仍为 2026-10-24 23:59（Asia/Shanghai）；正式报名和提交材料由用户核对。
+[AI_USAGE](AI_USAGE.md) 如实记录 AI 开发参与及验证边界。
