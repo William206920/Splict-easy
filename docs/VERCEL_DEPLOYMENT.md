@@ -4,11 +4,22 @@
 
 用户已完成 Vercel 登录并授权 GitHub。PR #3 已合并到 `main`（`fcaeeed`），[Linux CI 39370235398](https://github.com/William206920/Splict-easy/actions/runs/39370235398) 与 [Windows CI 39370235388](https://github.com/William206920/Splict-easy/actions/runs/39370235388) 均通过。
 
-正式网站：[https://spliteasy-online.vercel.app](https://spliteasy-online.vercel.app)。Vercel 项目为 `spliteasy1/spliteasy-online`，首次生产部署 `Eq5AqPjAgpJpRFhKd4KTcyfdPtai` 已显示 Ready，来源为 `main` 的 `fcaeeed`。公开首页返回 200，CSP 生效，API 状态接口正常。实际浏览器载入 140 元混合示例、确认预览、进入独立成员页并刷新恢复账单均通过。线上 AI 尚待真实凭据和 Redis 配置，不把网页上线视为 AI 真实演示通过。
+正式网站：[https://spliteasy-online.vercel.app](https://spliteasy-online.vercel.app)。Vercel 项目为 `spliteasy1/spliteasy-online`，首次生产部署 `Eq5AqPjAgpJpRFhKd4KTcyfdPtai` 已显示 Ready，来源为 `main` 的 `fcaeeed`。公开首页返回 200，CSP 生效，API 状态接口正常。实际浏览器载入 140 元混合示例、确认预览、进入独立成员页并刷新恢复账单均通过。
 
 用户随后将服务商改为 **Kimi**。当前建议配置为 `MOONBIT_BASE_URL=https://api.moonshot.cn/v1`、`MOONBIT_MODEL=kimi-k2.6`；`MOONBIT_API_KEY` 填 Kimi 开放平台的 Key，变量名不变。该模型按官方文档关闭思考模式、使用 `temperature=0.6` 和 JSON Mode，结果仍经 MoonBit 校验和用户确认。
 
 官方依据：[快速开始](https://platform.kimi.com/docs/get-api-key)、[Kimi K2.6](https://platform.kimi.com/docs/guide/kimi-k2-6-quickstart)、[JSON 输出格式](https://platform.kimi.com/docs/guide/response_format)。原有 DeepSeek 支持保留为可选兼容，不代表当前生产配置。以下 2026-10-16 内容为历史准备记录；账号登录阻塞已解除。
+
+### 生产 AI 已实际验收
+
+- PR #4 已合并至 `8ee0ffb`，[Linux 网页 CI 39371384502](https://github.com/William206920/Splict-easy/actions/runs/39371384502) 和 [Windows 原生 CI 39371384323](https://github.com/William206920/Splict-easy/actions/runs/39371384323) 均通过；Node 网关/桥接回归增至 14 组。
+- 用户提供的 Kimi Key 已保存为 Production 的服务端 Secret，未写入仓库或日志，交接用本地临时文件已清空。用户授权接受条款后，创建 `spliteasy-quota`，选择 Upstash **Free**（页面列出每月 500000 条命令），区域 `iad1`，未启用付费计划。连接生产/预览环境，使用敏感的 `KV_*` 变量。
+- 重新部署 `DFJDHDSMgdBCCA14LU8anb87BNX8` 显示 Ready。公开 `/api/parse` 返回 `enabled: true`、`provider: api.moonshot.cn`、`model: kimi-k2.6`、`invitationRequired: false`。
+- 真实浏览器用内置自然语言示例请求 Kimi，核对发送目标后确认。返回三人及晚餐 90 元、奶茶 30 元、车费 20 元的逐笔预览；确认替换后总计 140 元，小明应收 40 元，小红/小刚各应付 20 元，两笔转账分别为 20 元。刷新/另一标签页恢复账单仍正确。
+- 真实公开 API 对“二人吃饭 100 元平摊，但忘了谁付钱”的输入返回 HTTP 422：`账单存在歧义：付款人是谁？`，没有可应用的账单。该项通过 HTTP 接口验证；浏览器自动化在后续弹窗处曾失去响应，未把该次浏览器尝试计为通过。
+- 配置限制为每 IP 每小时 10 次、全站每天 100 次（UTC 日期）。这里只验证了真实服务可用；额度耗尽、上游故障等由自动回归覆盖，没有为了验收耗尽生产额度。该请求数限制不等同 Kimi 账户的金额预算。
+
+上述是真实 **网页版** AI 验证；Windows 原生 GUI/CLI 的真实服务演示与用户桌面 DPI/输入法人工验收仍分别待完成。下文旧记录中的“未部署/未配置”仅反映 2026-10-16 状态。
 
 2026-10-16 用户授权：保留 Windows 原生版，同时增加浏览器在线版，所有访客可使用维护者的 DeepSeek API。API Key 不得出现在源码、网页、浏览器存储、构建日志、截图或客户端包中。
 
@@ -17,7 +28,7 @@
 - `web/bridge/*.mbt` 导出 MoonBit 共享核心。所有金额转换、成员/消费增删改、名单规则、Int64 整数分、结算、AI 校验复用 `shared` 和 `ai`，不在 JavaScript 中重写分账算法。
 - `web/public` 仅实现响应式界面、浏览器存储和事件适配。浏览器把账单作为不透明字符串传递给 MoonBit，显示金额由 MoonBit 以字符串返回；不把账单的整数分送入 `JSON.parse` 后再保存，避免超出 JS 安全整数范围的精度损失。
 - `api/parse.mjs` 是 Vercel Node.js Function。模型地址、Key、模型均只读取服务端环境变量，不接受客户端覆盖。默认公开使用，可切换为邀请码模式。
-- 发送前勾选同意并再次确认 → 服务端限制额度 → DeepSeek → MoonBit 严格校验 → 返回逐笔预览 → 用户确认替换 → MoonBit 本地结算。AI 不负责计算净额。
+- 发送前勾选同意并再次确认 → 服务端限制额度 → Kimi → MoonBit 严格校验 → 返回逐笔预览 → 用户确认替换 → MoonBit 本地结算。AI 不负责计算净额。
 - 普通账单保存在当前浏览器 `localStorage`，不会自动跨设备同步。损坏草稿保留备份路径，多标签冲突阻止覆盖。不要把“本地保存”等同永久可靠存储，提供 JSON/Markdown/文本导出。
 
 ## Vercel 项目配置
@@ -62,7 +73,7 @@ node scripts/serve-web.mjs
 
 开发时如果需要环境变量，可使用 Node 的 `--env-file=.env.local`，该文件已忽略。不要把真实密钥放进命令行参数或日志。生成产物随源码提交；修改 MoonBit 后必须重新编译。
 
-## 验收状态
+## 2026-10-16 历史验收状态
 
 2026-10-16 本地实际验证：`moon fmt --check`、Native/JS 类型检查、MoonBit JS 20 组测试通过；新增 Node 浏览器桥接/HTTP 网关 13 组测试通过。原有混合黄金、0.29 尾差、大于 JS Number 安全范围的 Int64 金额往返、关联成员删除保护、无效导入、歧义、截断、额度与上游故障均验证。首次新测试发现根地址会产生双斜杠，已修复；新测试里录入错误的黄金期望已对照原有 shared/settle_wbtest.mbt 纠正，原有正确黄金与算法未变。
 

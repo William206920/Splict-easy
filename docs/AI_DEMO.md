@@ -1,5 +1,9 @@
 # AI 验收：模拟与真实服务分别记录
 
+## 2026-10-20 网页版真实服务记录
+
+[Vercel 网页版](https://spliteasy-online.vercel.app)已用 Kimi K2.6 完成真实调用：内置三人自然语言案例经外发确认后返回逐笔预览，确认后由 MoonBit 得到 140 元及两笔各 20 元转账；缺付款人案例经真实公开 API 返回 422 歧义错误。服务端 Secret、Upstash Free 与生产状态见[部署记录](VERCEL_DEPLOYMENT.md)。这不代替下列原生 GUI/CLI 的真实演示。
+
 ## 已实现的路径
 
 原生 GUI 和 CLI 共用 ai/Flow、结构解码和 shared 计算。Windows WinHTTP 在工作线程请求；跨线程只传 C 拷贝字节，不跨线程使用 MoonBit 管理对象。UI 定时轮询完成状态，取消后不应用响应。
@@ -15,9 +19,9 @@
 
 所有这些都属于**模拟模型场景**，不是对真实模型理解能力的证明。自动测试密钥 `fixture-key-not-real` 不是可用凭据。
 
-## 真实模型演示待验收
+## 原生 GUI/CLI 真实模型演示待验收
 
-本次尚未提供可用真实服务配置，未进行真实模型调用，不能认定 AI 参赛交付全部完成。
+原生 GUI/CLI 尚未进行真实模型调用，不能认定 AI 参赛交付全部完成；网页版真实记录单列于上方。
 
 在用户本机打开 AI 页面，填写自己的 HTTPS Base URL、Key 和模型；不要把 Key 发到聊天或写进仓库。输入 examples/free_mixed.txt，核对外发目标后发送。逐笔预览核对无误再确认，得到黄金 B。
 

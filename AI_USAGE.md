@@ -1,5 +1,7 @@
 # AI 使用记录
 
+2026-10-20 生产验收：Kimi 适配 PR #4 已合并，main `8ee0ffb` 的 Linux CI 39371384502、Windows CI 39371384323 均通过。用户的 Key 已仅保存到 Vercel 服务端 Secret，交接临时文件清空。经用户授权条款后创建 Upstash Free 额度存储并连接，生产部署 DFJDHDSMgdBCCA14LU8anb87BNX8 Ready。浏览器实际完成 Kimi K2.6 示例外发确认、三笔预览和确认后 140 元结算；公开 API 实际对缺付款人返回 422 歧义阻断。后续浏览器弹窗自动化失去响应的尝试不计入通过，使用新标签页恢复确认账单。没有声称耗尽生产额度或完成原生 GUI/CLI 真实演示。详见 docs/VERCEL_DEPLOYMENT.md。
+
 2026-10-20：已将 PR #3 合并到 main 并部署至 Vercel，主分支 Linux/Windows CI 均通过。公开网站首页和状态接口、真实浏览器示例结算/独立成员页/刷新恢复已核对。用户将模型服务商改为 Kimi，依据官方文档增加 Kimi K2.6 非思考模式、0.6 温度及 JSON Mode 适配和回归；MoonBit 分账与双重确认不变。真实模型 Key 与持久化额度配置完成前，不声称 AI 真实调用通过。
 
 2026-10-16 Vercel 在线版：用户授权保留桌面程序并增加公开在线入口、共用维护者的 DeepSeek API。Codex 新增 MoonBit 浏览器/服务端桥接，复用成员、消费、Int64 分账和 AI 解析校验；JavaScript 仅做浏览器、HTTP、服务端凭据和持久化限流适配。增加 JS 精度、原子失败、AI 确认、额度故障、响应截断/歧义与密钥脱敏测试。DeepSeek 文档核实 V4.1 Flash 的模型参数为 deepseek-flash。源码 8864afc 的 Linux CI 38860175878 与 Windows CI 38860175899 全部通过；JS 20 组及 Node 13 组。首次 Linux 生成文件差异保留记录并修复，没有跳过一致性检查。真实 API Key、生产部署与真实调用尚待账号验证与服务配置，未声称完成。
