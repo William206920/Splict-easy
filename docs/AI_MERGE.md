@@ -1,6 +1,6 @@
 # 在线账单追加与预览
 
-适用于 GitHub Pages 与 Vercel 在线版。Windows 0.9.1 已发布程序的 AI 确认流程保持原样；本次共享合并函数由 MoonBit 实现，并进行双目标回归。
+适用于 GitHub Pages 与 Vercel 在线版。Windows 0.9.2 已新增原生追加与核对流程，见 [桌面版说明](DESKTOP_092.md)；旧版 0.9.1 不包含该界面。共享合并函数由 MoonBit 实现，并进行双目标回归。
 
 ## 怎么记入已有账单
 
