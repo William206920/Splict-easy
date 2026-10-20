@@ -199,7 +199,7 @@ fn Desktop::import_view(self : Desktop, x : Int32, w : Int32) -> Unit {
   let help_w = if wide { w - input_w - 20 } else { w }
   self.shell(
     "导入已有账单",
-    "可先载入示例照着修改；解析并核对预览、确认替换后，才修改账单。",
+    "可先载入示例照着修改；解析后选择追加或替换，确认后，才修改账单。",
     if wide {
       920
     } else {
@@ -215,7 +215,7 @@ fn Desktop::import_view(self : Desktop, x : Int32, w : Int32) -> Unit {
   control(
     11,
     612,
-    "此处只编辑待导入内容，尚未替换当前账单。",
+    "此处只编辑待导入内容，尚未修改当前账单。",
     x + 24,
     260,
     input_w - 48,
@@ -588,19 +588,37 @@ pub fn Desktop::render_view(self : Desktop) -> Unit {
     )
     panel(590, x, 136, w, 244)
     control(19, 591, "模型服务", x + 24, 154, w - 48, 30)
-    control(11, 592, "服务地址 · Base URL", x + 24, 198, w - 48, 24)
+    control(
+      11,
+      592,
+      "服务地址 · Kimi 示例：https://api.moonshot.cn/v1",
+      x + 24,
+      198,
+      w - 48,
+      24,
+    )
     control(2, 80, self.ai_config.base_url, x + 24, 228, w - 48, 34)
     let half = (w - 72) / 2
     control(11, 593, "API Key · 仅本次会话使用", x + 24, 282, half, 24)
     control(8, 81, self.ai_config.api_key, x + 24, 312, half, 34)
-    control(11, 594, "模型名称", x + 48 + half, 282, half, 24)
+    control(
+      11,
+      594,
+      "模型名称 · 如 kimi-k2.6",
+      x + 48 + half,
+      282,
+      half,
+      24,
+    )
     control(2, 83, self.ai_config.model, x + 48 + half, 312, half, 34)
     panel(595, x, 402, w, 360)
     control(19, 596, "描述这份账单", x + 24, 422, w - 48, 30)
     control(
       11,
       597,
-      "写清谁付款、消费金额，以及由哪些人分摊。",
+      "仅描述新增消费；默认追加，原记录保留。当前 " +
+      self.session.ledger.payments.length().to_string() +
+      " 笔。",
       x + 24,
       464,
       w - 48,
@@ -640,16 +658,7 @@ pub fn Desktop::render_view(self : Desktop) -> Unit {
       }
     }
   } else if self.page == 4 {
-    self.shell(
-      "核对 AI 解析结果", "请逐笔核对付款人与分摊金额，确认后才替换当前账单。",
-      850,
-    )
-    panel(600, x, 136, w, 560)
-    control(19, 601, "待确认的账单", x + 24, 158, w - 48, 32)
-    control(7, 88, self.ai_preview, x + 24, 214, w - 48, 458)
-    control(14, 86, "确认替换并结算", x, 720, 220, 42)
-    control(1, 87, "返回修改", x + 236, 720, 132, 42)
-    ignore(@win32.flag(100, 4, 0))
+    self.review_view(x, w)
   } else {
     self.import_view(x, w)
   }

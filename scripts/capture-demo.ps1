@@ -27,7 +27,8 @@ foreach ($screen in @(
     @{ Name='preview-editor'; Argument='--demo-editor' },
     @{ Name='preview-ai'; Argument='--demo-ai' },
     @{ Name='preview-members'; Argument='--demo-members' },
-    @{ Name='preview-import'; Argument='--demo-import' }
+    @{ Name='preview-import'; Argument='--demo-import' },
+    @{ Name='preview-review'; Argument='--demo-review' }
 )) {
 $process = Start-Process -FilePath (Resolve-Path dist/SplitEasy.exe) -ArgumentList $screen.Argument -WindowStyle Hidden -PassThru
 try {

@@ -30,6 +30,12 @@ pub(all) struct Desktop {
   mut advanced_text : String
   mut member_text : String
   mut member_index : Int32
+  mut pending : @shared.Ledger?
+  mut review_revision : Int32
+  mut review_ai : Bool
+  mut review_append : Bool
+  mut review_duplicates_ok : Bool
+  mut review_replace_ok : Bool
   mut ai_environment_loaded : Bool
 }
 
@@ -73,6 +79,12 @@ pub fn Desktop::new(testing : Bool) -> Desktop {
     member_text: "",
     member_index: -1,
     ai_environment_loaded: false,
+    pending: None,
+    review_revision: 0,
+    review_ai: false,
+    review_append: true,
+    review_duplicates_ok: false,
+    review_replace_ok: false,
   }
 }
 
@@ -412,8 +424,7 @@ pub fn Desktop::handle(
       self.render()
     }
     let ledger = self.flow.receive(@http.result())
-    self.ai_preview = @ai.preview(ledger)
-    self.page = 4
+    self.begin_review(ledger, true)
     self.render()
     return
   }
@@ -459,21 +470,21 @@ pub fn Desktop::handle(
   if self.page == 4 && event != 9002 && event != 9000 {
     if event == 87 {
       self.flow.cancel()
-      self.page = 3
+      self.pending = None
+      self.page = if self.review_ai { 3 } else { 2 }
       self.render()
+    } else if event == 90 {
+      self.review_append = @win32.flag(90, 0, 0) == 1
+      self.review_duplicates_ok = false
+      self.review_replace_ok = false
+      self.refresh_review()
+      self.render()
+    } else if event == 91 {
+      self.review_replace_ok = @win32.flag(91, 0, 0) == 1
+    } else if event == 92 {
+      self.review_duplicates_ok = @win32.flag(92, 0, 0) == 1
     } else if event == 86 {
-      if !self.can_leave() {
-        return
-      }
-      let report = self.flow.confirm(true)
-      self.session.replace(report.ledger)
-      self.member_text = ""
-      self.member_index = -1
-      self.session.report = Some(report)
-      self.path = ""
-      self.page = 0
-      self.persist()
-      self.status = "已确认 AI 账单，由 MoonBit 完成结算。"
+      self.apply_review()
       self.render()
     }
     return
@@ -553,18 +564,8 @@ pub fn Desktop::handle(
       }
     } else if event == 71 {
       let ledger = import_ledger(self.advanced_text)
-      let preview = ledger_preview(ledger)
-      if confirm(self, preview + "\n确认替换当前账单？") &&
-        self.can_leave() {
-        self.session.replace(ledger)
-        self.member_text = ""
-        self.member_index = -1
-        self.path = ""
-        self.page = 0
-        self.persist()
-        self.status = "已导入账单；可继续编辑或统一结算。"
-        self.render()
-      }
+      self.begin_review(ledger, false)
+      self.render()
     }
     return
   }
@@ -758,6 +759,13 @@ pub fn run(demo~ : Bool = false, demo_page~ : Int32 = 0) -> Unit {
     } else if demo_page == 2 {
       ui.page = 2
       ui.advanced_text = import_text_example()
+    } else if demo_page == 4 {
+      ui.begin_review(
+        @shared.parse_text("人：小明 小红 小刚\n小明 30 早餐"),
+        true,
+      ) catch {
+        _ => @win32.exit(1)
+      }
     } else if demo_page == 5 {
       ui.page = 5
     }

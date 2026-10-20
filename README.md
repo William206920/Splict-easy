@@ -8,14 +8,14 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 
 在线 AI 解析默认**追加到当前账单**，保留原记录，同名成员自动合并。预览会显示当前金额、本次金额和确认后总额；完全相同的记录会提示单独核对。也可主动选择替换，替换已有账本时需要明确确认。文本/JSON 导入同样提供两种记入方式。[使用与合并规则](docs/AI_MERGE.md)。
 
-**Windows 原生版当前为 0.9.1 开发预览：增加独立成员管理、文本/JSON 导入指南与示例，修复页面切换输入丢失和账单替换保护。原生 GUI/CLI 真实模型演示和用户 Windows 桌面实测仍待验收；网页版真实调用不代表桌面端已验收。**
+**Windows 原生版 0.9.2：AI 默认追加账单，预览展示金额变化和逐笔份额；支持重复核对、明确替换确认及文本/JSON 追加。桌面 AI 使用用户自己的服务和 Key，Kimi 示例配置见下文。原生 GUI/CLI 真实模型调用与用户 Windows 桌面实测仍待验收。**
 
 - [界面优化、同类产品参考与验证](docs/UI_REDESIGN.md)
 
 - [整体验证与剩余验收](docs/VERIFY_CURRENT.md)
 - [各阶段源码与提交](../../commits/main)
 - [Windows CI 与构建产物](../../actions/workflows/native-windows.yml)
-- [下载 Windows 0.9.1 首个公开版本](https://github.com/William206920/Splict-easy/releases/tag/v0.9.1)（含安装器、便携包、SHA256 校验和）
+- [下载 Windows 0.9.2](https://github.com/William206920/Splict-easy/releases/tag/v0.9.2)（含安装器、便携包、SHA256 校验和）
 - [成员页、导入填写示例与修复记录](docs/MEMBERS_IMPORT_FIX.md)
 - [版本说明与验证范围](docs/RELEASE_NOTES.md)
 - 原生程序截图由 Windows CI 的 --demo 示例模式生成，随预览发行提供；不包含真实账单或 Key。
@@ -29,7 +29,7 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 
 ## 下载、安装与使用
 
-从 [GitHub Releases](https://github.com/William206920/Splict-easy/releases/tag/v0.9.1) 下载 Windows x64 文件：
+从 [GitHub Releases](https://github.com/William206920/Splict-easy/releases/tag/v0.9.2) 下载 Windows x64 文件：
 
 - `*-Portable.zip`：完整解压后双击 `SplitEasy.exe`。
 - `*-Setup.exe`：按当前用户安装，可从开始菜单启动，也可卸载。
@@ -51,7 +51,7 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 
 ## 保存、草稿与隐私
 
-正式账单是版本化 UTF-8 JSON 文件。打开/导入先校验并预览，确认后替换当前账单。保存采用临时文件同步后替换，失败不损坏旧文件。
+正式账单是版本化 UTF-8 JSON 文件。打开文件先校验并预览，确认后替换；导入可选择追加或替换。保存采用临时文件同步后替换，失败不损坏旧文件。
 
 自动草稿位于 `%LOCALAPPDATA%\SplitEasy\draft.json`。启动恢复有效草稿；损坏或无效 UTF-8 草稿会保留，自动保存暂时关闭，避免覆盖。新建账单会询问并重置草稿。关闭或打开其他账单前提示处理未保存更改。
 
@@ -76,7 +76,9 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 
 高级输入界面也接受账单 JSON。示例在 [examples](examples)。错误保留原始行号，支持 BOM 与 Windows 换行。
 
-不熟悉语法时，在“文本与 JSON 导入”中点击“文本示例”或“JSON 示例”后照着修改，右侧有简易说明。“当前账单”可填入当前账单的 JSON 模板；这些按钮只改变编辑框，核对预览并确认替换后才改变账单。文本金额单位是元，JSON 的 `amount_cents` 是整数分，例如 `1250` 表示 12.50 元。
+不熟悉语法时，在“文本与 JSON 导入”中点击“文本示例”或“JSON 示例”后照着修改，右侧有简易说明。“当前账单”可填入当前账单的 JSON 模板；这些按钮只改变编辑框，核对预览、选择追加或替换并确认后才改变账单。文本金额单位是元，JSON 的 `amount_cents` 是整数分，例如 `1250` 表示 12.50 元。
+
+桌面端 Kimi 示例：Base URL 填 `https://api.moonshot.cn/v1`，模型填 `kimi-k2.6`，API Key 填你自己的 Kimi 开放平台密钥。Key 输入遮盖，仅本次进程使用，不随账单或草稿保存。桌面端不会自动使用在线版的共享 Key。
 
 ## CLI
 
@@ -99,7 +101,7 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 - **第一次确认**：核对目标服务、模型与当前输入后发送。
 - 后台请求，不阻塞窗口。可以取消，已经发送的内容可能仍被服务端处理。
 - MoonBit 严格校验模型结构、金额、份额与歧义。错误或缺信息时要求补充，不结算。
-- **第二次确认**：逐笔核对预览，再确认替换并结算。取消不修改原账单。
+- **第二次确认**：逐笔核对金额变化与份额，再确认追加并结算；也可选择替换，但需明确勾选替换确认。取消不修改原账单。
 
 CLI 仅在 `--ai` 时读取 `MOONBIT_BASE_URL`、`MOONBIT_API_KEY`、`MOONBIT_MODEL`。提示和预览到 stderr，stdout/输出文件只包含最终报告。输入 `yes` 才确认，无输入默认取消。密钥请在本机配置，不要提交仓库或发到聊天中。
 

@@ -151,6 +151,10 @@ pub fn smoke() -> Unit raise @shared.BillError {
   )
   ignore(@win32.set_text(70, @shared.encode_ledger(@shared.sample_mixed())))
   ui.handle(71)
+  demand(ui.page == 4 && !ui.review_append, "导入进入记入方式预览")
+  ignore(@win32.flag(91, 1, 1))
+  ui.handle(91)
+  ui.handle(86)
   ui.handle(34)
   match ui.session.report {
     Some(r) =>
@@ -286,8 +290,23 @@ pub fn network_smoke(base : String) -> Unit raise @shared.BillError {
     ticks = ticks + 1
   }
   demand(ui.page == 4, "重新预览")
+  demand(ui.review_append, "AI 默认追加")
+  for width in [800, 1040, 1320] {
+    @win32.resize(width, 1400)
+    ui.handle(9000)
+    for id in [88, 90, 91, 92, 86, 87] {
+      demand(
+        @win32.flag(id, 9, 0) == 1 && @win32.flag(id, 10, 0) == 1,
+        "核对页窄窗口无横向越界或遮挡",
+      )
+    }
+  }
   ui.handle(86)
-  demand(ui.session.ledger.people.length() == 5, "确认后替换")
+  demand(
+    ui.session.ledger.people.length() == 6 &&
+    ui.session.ledger.people[0] == "原账单",
+    "AI 默认追加并保留原成员",
+  )
   match ui.session.report {
     Some(r) =>
       demand(r.transfers[3].amount_cents == 2000L, "确认后黄金结算")
