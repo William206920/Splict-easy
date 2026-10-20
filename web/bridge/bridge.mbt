@@ -158,11 +158,11 @@ fn view(ledger : @shared.Ledger) -> String raise @shared.BillError {
 }
 
 ///|
-fn run(
+fn mutate(
   action : String,
   source : String,
   data : String,
-) -> String raise @shared.BillError {
+) -> @shared.Ledger raise @shared.BillError {
   if source.length() > 2000000 || data.length() > 2000000 {
     @shared.invalid("账单内容过长，请拆分导入")
   }
@@ -236,7 +236,16 @@ fn run(
     }
     _ => @shared.invalid("未知操作")
   }
-  view(session.ledger)
+  session.ledger
+}
+
+///|
+fn run(
+  action : String,
+  source : String,
+  data : String,
+) -> String raise @shared.BillError {
+  view(mutate(action, source, data))
 }
 
 ///|

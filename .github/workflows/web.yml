@@ -16,6 +16,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Guard MoonBit source share above 65 percent
+        run: node scripts/check-language-share.mjs
       - name: Install pinned MoonBit
         run: |
           export MOONBIT_INSTALL_VERSION="$(cat toolchain.version)"
