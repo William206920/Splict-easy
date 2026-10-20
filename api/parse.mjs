@@ -1,5 +1,5 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { gateway_config, gateway_input, gateway_request, gateway_response } from '../web/generated/core.mjs';
+import { gateway_config, gateway_input, gateway_request, gateway_response, gateway_http_policy } from '../web/generated/core.mjs';
 
 const json = (data, status = 200, extra = {}) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...extra } });
 const digest = value => createHash('sha256').update(value).digest();
@@ -46,31 +46,34 @@ async function readLimited(request, max) {
 
 export function createHandler(env = process.env, fetcher = fetch) {
   return async function handler(request) {
+    const policy = JSON.parse(gateway_http_policy(request.method, request.headers.get('origin') || '', new URL(request.url).origin, request.headers.get('sec-fetch-site') || '', request.headers.get('access-control-request-method') || '', request.headers.get('access-control-request-headers') || ''));
+    const cors = { vary: 'Origin' };
+    if (policy.cors) Object.assign(cors, { 'access-control-allow-origin': policy.cors, 'access-control-allow-methods': 'GET, POST, OPTIONS', 'access-control-allow-headers': 'content-type, authorization', 'access-control-max-age': '600' });
+    const reply = (data, status = 200, extra = {}) => json(data, status, { ...cors, ...extra });
+    if (!policy.allowed) return reply({ error: '请求来源无效' }, 403);
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
     const c = config(env);
-    if (request.method === 'GET') return json({ enabled: !!c, model: c ? c.model : null, provider: c ? new URL(c.endpoint).hostname : null, invitationRequired: c?.invite || false, maxCharacters: 8000 });
-    if (request.method !== 'POST') return json({ error: '只支持 POST 请求' }, 405, { allow: 'GET, POST' });
-    if (!c) return json({ error: '共享 AI 尚未配置完成；普通记账与结算可以正常使用。' }, 503);
-    const origin = request.headers.get('origin');
-    const expectedOrigin = new URL(request.url).origin;
-    if (origin && origin !== expectedOrigin || request.headers.get('sec-fetch-site') === 'cross-site') return json({ error: '请求来源无效' }, 403);
-    if (c.invite && !allowed(request.headers.get('authorization') || '', `Bearer ${c.code}`)) return json({ error: '邀请码不正确或已失效' }, 401);
-    if (!request.headers.get('content-type')?.startsWith('application/json')) return json({ error: '请求格式无效' }, 415);
+    if (request.method === 'GET') return reply({ enabled: !!c, model: c ? c.model : null, provider: c ? new URL(c.endpoint).hostname : null, invitationRequired: c?.invite || false, maxCharacters: 8000 });
+    if (request.method !== 'POST') return reply({ error: '只支持 GET、POST 和 OPTIONS 请求' }, 405, { allow: 'GET, POST, OPTIONS' });
+    if (!c) return reply({ error: '共享 AI 尚未配置完成；普通记账与结算可以正常使用。' }, 503);
+    if (c.invite && !allowed(request.headers.get('authorization') || '', `Bearer ${c.code}`)) return reply({ error: '邀请码不正确或已失效' }, 401);
+    if (!request.headers.get('content-type')?.startsWith('application/json')) return reply({ error: '请求格式无效' }, 415);
     let input;
-    try { input = JSON.parse(gateway_input(await readLimited(request, 40000))); } catch { return json({ error: '请求无效或内容过长' }, 400); }
-    if (!input.ok) return json({ error: input.error }, 400);
+    try { input = JSON.parse(gateway_input(await readLimited(request, 40000))); } catch { return reply({ error: '请求无效或内容过长' }, 400); }
+    if (!input.ok) return reply({ error: input.error }, 400);
     try {
-      if (!await takeQuota(c, request, fetcher)) return json({ error: '已达到调用额度，请稍后再试或联系站点维护者。' }, 429, { 'retry-after': '3600' });
-    } catch { return json({ error: '额度服务暂不可用，尚未发送给模型。' }, 503); }
+      if (!await takeQuota(c, request, fetcher)) return reply({ error: '已达到调用额度，请稍后再试或联系站点维护者。' }, 429, { 'retry-after': '3600' });
+    } catch { return reply({ error: '额度服务暂不可用，尚未发送给模型。' }, 503); }
     try {
       const body = JSON.parse(gateway_request(c.model, c.provider, input.text));
-      if (body.ok === false) return json({ error: body.error }, 400);
+      if (body.ok === false) return reply({ error: body.error }, 400);
       const response = await fetcher(c.endpoint, { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${c.key}` }, body: JSON.stringify(body), signal: AbortSignal.timeout(35000), redirect: 'error' });
-      if (!response.ok) return json({ error: '模型服务请求失败，请稍后重试或联系站点维护者。' }, 502);
+      if (!response.ok) return reply({ error: '模型服务请求失败，请稍后重试或联系站点维护者。' }, 502);
       const raw = await readLimited(response, 1000000);
       const result = JSON.parse(gateway_response(raw));
-      if (!result.ok) return json({ error: result.error }, 422);
-      return json(result);
-    } catch { return json({ error: '模型服务超时或响应无效，请稍后重试。' }, 502); }
+      if (!result.ok) return reply({ error: result.error }, 422);
+      return reply(result);
+    } catch { return reply({ error: '模型服务超时或响应无效，请稍后重试。' }, 502); }
   };
 }
 

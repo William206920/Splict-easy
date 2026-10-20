@@ -114,6 +114,26 @@ test('optional invite mode rejects invalid codes before paid work', async () => 
   assert.equal((await handler(request())).status, 401); assert.equal(n.calls.length, 0);
   assert.equal((await handler(request(undefined, { authorization: 'Bearer demo-invite-code-123456' }))).status, 200);
 });
+
+test('Pages CORS status, preflight and parsing use the existing gateway and quotas', async () => {
+  const n = network(); const handler = createHandler(env, n.fetcher);
+  const headers = { origin: 'https://william206920.github.io', 'sec-fetch-site': 'cross-site' };
+  const status = await handler(new Request('https://spliteasy.invalid/api/parse', { headers }));
+  assert.equal((await status.json()).enabled, true);
+  assert.equal(status.headers.get('access-control-allow-origin'), headers.origin);
+  const preflight = await handler(new Request('https://spliteasy.invalid/api/parse', { method: 'OPTIONS', headers: { ...headers, 'access-control-request-method': 'POST', 'access-control-request-headers': 'content-type,authorization' } }));
+  assert.equal(preflight.status, 204); assert.equal(n.calls.length, 0);
+  assert.equal(preflight.headers.get('access-control-allow-headers'), 'content-type, authorization');
+  const result = await handler(request(undefined, headers));
+  assert.equal(result.status, 200); assert.equal(n.calls.length, 2);
+  assert.equal(result.headers.get('access-control-allow-origin'), headers.origin);
+  assert.equal(result.headers.get('access-control-allow-credentials'), null);
+  const denied = await handler(request(undefined, { ...headers, origin: 'https://william206920.github.io.evil.invalid' }));
+  assert.equal(denied.status, 403); assert.equal(n.calls.length, 2);
+  assert.equal(denied.headers.get('access-control-allow-origin'), null);
+  const unavailable = await createHandler(env, network({ outage: true }).fetcher)(request(undefined, headers));
+  assert.equal(unavailable.status, 503); assert.equal(unavailable.headers.get('access-control-allow-origin'), headers.origin);
+});
 test('provider failures are sanitized; truncated or ambiguous outputs cannot be applied', async () => {
   const n = network({ status: 401 }); const error = await createHandler(env, n.fetcher)(request()); assert.equal(error.status, 502); assert.ok(!(await error.text()).includes(env.MOONBIT_API_KEY));
   const truncated = network({ finish: 'length' }); assert.equal((await createHandler(env, truncated.fetcher)(request())).status, 422);

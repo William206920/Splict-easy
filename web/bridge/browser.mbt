@@ -336,7 +336,10 @@ fn browser_send_ai() -> Unit raise @shared.BillError {
   browser_ai_buttons()
   let body = "{\"consent\":true,\"text\":" + @shared.quote_json(text) + "}"
   browser.request = Some(
-    io_fetch("/api/parse", body, code, fn(status, response) {
+    io_fetch(web_api_endpoint(io_api_config()), body, code, fn(
+      status,
+      response,
+    ) {
       browser_ai_complete(serial, status, response)
     }),
   )
@@ -512,5 +515,5 @@ pub fn browser_start() -> Unit {
   io_on("cancel-ai", "click", browser_cancel_ai)
   io_before_unload(() => browser.state.busy || io_dialog_open("expense-dialog"))
   browser_ai_buttons()
-  ignore(io_fetch("/api/parse", "", "", browser_service))
+  ignore(io_fetch(web_api_endpoint(io_api_config()), "", "", browser_service))
 }

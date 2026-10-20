@@ -157,3 +157,7 @@ extern "js" fn io_fetch(
 ///|
 extern "js" fn io_abort(request : WebRequest) -> Unit =
   #| request => request.abort()
+
+///|
+extern "js" fn io_api_config() -> String =
+  #| () => document.querySelector('meta[name="spliteasy-api"]')?.content ?? ''

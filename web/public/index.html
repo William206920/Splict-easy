@@ -3,9 +3,10 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#145b49"><meta name="description" content="SplitEasy 在线分账器，支持平均与实际金额混合分摊、AI 账单解析。">
+  <meta name="spliteasy-api" content="/api/parse">
   <title>SplitEasy · 把账算清，把时间留给相聚</title>
-  <link rel="icon" href="/icon.svg" type="image/svg+xml"><link rel="stylesheet" href="/style.css">
-  <script type="module" src="/app.mjs"></script>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.mjs"></script>
 </head>
 <body>
   <aside class="sidebar">
@@ -47,7 +48,7 @@
         <div class="two-columns"><article class="card"><div class="card-heading"><h2>自然语言账单</h2><button id="ai-sample" class="subtle">试试示例</button></div><label for="ai-text" class="sr-only">自然语言账单</label><textarea id="ai-text" rows="10" maxlength="8000" placeholder="我们三人小明、小红和小刚一起吃饭，小明付了90元，三人平摊……"></textarea><div id="invite-field" hidden><label for="invite-code">邀请码</label><input id="invite-code" type="password" autocomplete="off" placeholder="向站点维护者获取；无需填写模型 API Key"></div><p id="ai-status" class="footnote" role="status">正在检查服务状态…</p><label class="consent"><input id="ai-consent" type="checkbox"><span>我同意将上方文字发送至本站的共享模型服务，并将在使用前逐笔核对。</span></label><button id="send-ai" class="primary">✧ 发送并解析</button><button id="cancel-ai" class="secondary" hidden>取消请求</button></article>
         <article class="card guide ai-guide"><span class="guide-tag">两次确认，安心使用</span><h2>它帮你整理，<br>你决定是否记入。</h2><ol><li><strong>把信息说完整</strong><p>说明成员、付款人、金额和谁参与分摊。实际金额分别写明。</p></li><li><strong>同意后发送</strong><p>只发送上方输入的文字，由站点维护者提供模型服务，无需填写 API Key。</p></li><li><strong>逐笔核对再确认</strong><p>缺信息或存在歧义时阻断。确认后由 MoonBit 校验和结算，再替换当前账单。</p></li></ol><p class="footnote">AI 可能理解错误。请避免输入银行卡号等无关信息。</p></article></div>
       </section>
-      <footer class="page-footer"><span>SplitEasy · 相聚的快乐，不必被算账打断。 <a href="/notices/NOTICE.txt" target="_blank" rel="noopener noreferrer">许可声明 ↗</a></span><button id="clear-ledger" class="subtle">新建空账本</button></footer>
+      <footer class="page-footer"><span>SplitEasy · 相聚的快乐，不必被算账打断。 <a href="./notices/NOTICE.txt" target="_blank" rel="noopener noreferrer">许可声明 ↗</a></span><button id="clear-ledger" class="subtle">新建空账本</button></footer>
     </div>
   </main>
   <div id="notice" class="toast" role="status" hidden></div>

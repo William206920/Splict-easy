@@ -18,6 +18,8 @@ options(
         "gateway_input",
         "gateway_request",
         "gateway_response",
+        "hosting_config",
+        "gateway_http_policy",
       ],
       "format": "esm",
     },
