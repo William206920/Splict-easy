@@ -6,6 +6,8 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 
 共享 Kimi K2.6 通过 Vercel 服务端提供，密钥不进入 GitHub Pages 或浏览器，访客无需填写 Key；两个入口共用每 IP 每小时 10 次、全站每天 100 次的额度。AI 解析需同意外发并逐笔确认。两个站点的浏览器草稿各自保存，切换入口前可导出 JSON 再导入。[GitHub Pages 部署方式](docs/GITHUB_PAGES.md) · [Vercel 与真实模型验证](docs/VERCEL_DEPLOYMENT.md)。
 
+在线 AI 解析默认**追加到当前账单**，保留原记录，同名成员自动合并。预览会显示当前金额、本次金额和确认后总额；完全相同的记录会提示单独核对。也可主动选择替换，替换已有账本时需要明确确认。文本/JSON 导入同样提供两种记入方式。[使用与合并规则](docs/AI_MERGE.md)。
+
 **Windows 原生版当前为 0.9.1 开发预览：增加独立成员管理、文本/JSON 导入指南与示例，修复页面切换输入丢失和账单替换保护。原生 GUI/CLI 真实模型演示和用户 Windows 桌面实测仍待验收；网页版真实调用不代表桌面端已验收。**
 
 - [界面优化、同类产品参考与验证](docs/UI_REDESIGN.md)
