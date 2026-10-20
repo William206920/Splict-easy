@@ -51,6 +51,7 @@ fn browser_render() -> Unit raise @shared.BillError {
   io_html("transfer-list", page.transfers)
   io_html("balance-rows", page.balances)
   io_html("member-list", page.members)
+  io_text("ai-context", web_bill_context(ledger))
 }
 
 ///|
@@ -190,8 +191,67 @@ fn browser_save_expense() -> Unit {
 fn browser_preview() -> Unit {
   match browser.state.preview {
     Some(preview) => {
-      io_text("preview-content", preview.text)
+      io_set_checked("preview-merge", preview.merge)
+      io_set_checked("preview-replace", !preview.merge)
+      io_set_checked("preview-duplicates", false)
+      io_set_checked("preview-replace-consent", false)
+      io_text("preview-source", preview.text)
+      browser_preview_update()
       io_dialog("preview-dialog", true)
+    }
+    None => ()
+  }
+}
+
+///|
+fn browser_preview_update() -> Unit {
+  match browser.state.preview {
+    Some(p) => {
+      let merge = io_checked("preview-merge")
+      browser.state.preview = Some({ ..p, merge, })
+      io_text("preview-error", "")
+      io_hidden(
+        "replace-consent-row",
+        merge || browser.state.ledger.people.is_empty(),
+      )
+      let duplicates = browser.state.preview_duplicates()
+      io_hidden("duplicate-consent-row", duplicates == 0)
+      io_text(
+        "duplicate-message",
+        "发现 " +
+        duplicates.to_string() +
+        " 笔与已有记录或本次其他记录完全一致。它们不会被自动删除；我已核对，仍要记入。",
+      )
+      io_text(
+        "apply-preview",
+        if merge {
+          "确认追加到账本"
+        } else {
+          "确认替换账单"
+        },
+      )
+      io_class(
+        "apply-preview",
+        if merge {
+          "primary"
+        } else {
+          "primary destructive"
+        },
+      )
+      try {
+        let result = browser.state.preview_result()
+        io_html(
+          "preview-content",
+          web_preview_markup(browser.state.ledger, p.ledger, result, merge),
+        )
+        io_disabled("apply-preview", false)
+      } catch {
+        error => {
+          io_html("preview-content", "")
+          io_text("preview-error", @shared.error_message(error))
+          io_disabled("apply-preview", true)
+        }
+      }
     }
     None => ()
   }
@@ -474,15 +534,34 @@ pub fn browser_start() -> Unit {
     io_dialog("preview-dialog", false)
   })
   io_on("preview-dialog", "cancel", () => browser.state.preview = None)
+  for id in ["preview-merge", "preview-replace"] {
+    io_on(id, "change", () => {
+      io_set_checked("preview-duplicates", false)
+      io_set_checked("preview-replace-consent", false)
+      browser_preview_update()
+    })
+  }
   io_on("apply-preview", "click", () => {
-    web_safe(() => {
+    try {
       browser_writable()
-      browser.state.apply_preview()
+      let merge = io_checked("preview-merge")
+      browser.state.apply_preview(
+        duplicates_confirmed=io_checked("preview-duplicates"),
+        replacement_confirmed=io_checked("preview-replace-consent"),
+      )
       browser_persist()
       io_dialog("preview-dialog", false)
       io_set_hash("overview")
-      web_notice("已确认并载入账单")
-    })
+      web_notice(
+        if merge {
+          "已追加到账本，原有记录已保留"
+        } else {
+          "已确认并替换账单"
+        },
+      )
+    } catch {
+      error => io_text("preview-error", @shared.error_message(error))
+    }
   })
   io_on("clear-ledger", "click", () => {
     web_safe(() => {

@@ -76,6 +76,7 @@ priv struct WebPreview {
   ledger : @shared.Ledger
   text : String
   revision : Int32
+  merge : Bool
 }
 
 ///|
@@ -174,10 +175,16 @@ fn WebState::stage(
   self : WebState,
   ledger : @shared.Ledger,
   text : String,
+  merge~ : Bool = false,
 ) -> Unit raise @shared.BillError {
   let session = @shared.Session::new()
   session.replace(ledger)
-  self.preview = Some({ ledger: session.ledger, text, revision: self.revision, })
+  self.preview = Some({
+    ledger: session.ledger,
+    text,
+    revision: self.revision,
+    merge,
+  })
 }
 
 ///|
@@ -206,17 +213,62 @@ fn WebState::stage_import(
 }
 
 ///|
-fn WebState::apply_preview(self : WebState) -> Unit raise @shared.BillError {
+fn WebState::preview_result(
+  self : WebState,
+) -> @shared.Ledger raise @shared.BillError {
   match self.preview {
     Some(preview) => {
       if preview.revision != self.revision {
         @shared.invalid("账单已改变，请重新预览。")
       }
-      self.replace(preview.ledger)
-      self.preview = None
+      if preview.merge {
+        @shared.merge_ledgers(self.ledger, preview.ledger)
+      } else {
+        preview.ledger
+      }
     }
-    None => @shared.invalid("账单已改变，请重新预览。")
+    None => {
+      @shared.invalid("账单已改变，请重新预览。")
+      self.ledger
+    }
   }
+}
+
+///|
+fn WebState::preview_duplicates(self : WebState) -> Int32 {
+  match self.preview {
+    Some(p) =>
+      @shared.duplicate_payments(
+        if p.merge {
+          self.ledger
+        } else {
+          { people: [], payments: [], ambiguous: [], }
+        },
+        p.ledger,
+      )
+    None => 0
+  }
+}
+
+///|
+fn WebState::apply_preview(
+  self : WebState,
+  duplicates_confirmed~ : Bool = false,
+  replacement_confirmed~ : Bool = false,
+) -> Unit raise @shared.BillError {
+  let result = self.preview_result()
+  if self.preview_duplicates() > 0 && !duplicates_confirmed {
+    @shared.invalid("请核对疑似重复记录，并确认仍要记入。")
+  }
+  match self.preview {
+    Some(p) =>
+      if !p.merge && !self.ledger.people.is_empty() && !replacement_confirmed {
+        @shared.invalid("请确认替换当前账单，或选择追加。")
+      }
+    None => ()
+  }
+  self.replace(result)
+  self.preview = None
 }
 
 ///|
@@ -299,7 +351,7 @@ fn WebState::finish_request(
   }
   // Revalidate the opaque ledger in MoonBit even after server validation.
   let ledger = mutate("view", field(result, "ledger"), "{}")
-  self.stage(ledger, field(result, "preview"))
+  self.stage(ledger, field(result, "preview"), merge=true)
   true
 }
 
