@@ -699,25 +699,10 @@ pub fn Desktop::handle(
         }
     }
   } else if event == 36 {
-    match self.session.report {
-      None => @shared.invalid("请先统一结算")
-      Some(r) => {
-        let path = @win32.file_dialog(true)
-        if !path.is_empty() {
-          @sys.write_file(
-            path,
-            if path.has_suffix(".json") {
-              @shared.render_report_json(r)
-            } else if path.has_suffix(".md") {
-              @shared.render_markdown(r)
-            } else {
-              @shared.render_text(r)
-            },
-          )
-          self.status = "报表已导出：" + path
-          self.render()
-        }
-      }
+    let path = @win32.export_dialog()
+    if !path.is_empty() {
+      self.export_report(path)
+      self.render()
     }
   } else if event == 37 {
     if self.can_leave() &&

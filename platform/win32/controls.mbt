@@ -40,6 +40,9 @@ extern "C" fn message_ffi(text : String, kind : Int32) -> Int32 = "se_win_messag
 pub extern "C" fn file_dialog(save : Bool) -> String = "se_win_file_dialog"
 
 ///|
+pub extern "C" fn export_dialog() -> String = "se_win_export_dialog"
+
+///|
 pub extern "C" fn draft_path() -> String = "se_win_draft_path"
 
 ///|

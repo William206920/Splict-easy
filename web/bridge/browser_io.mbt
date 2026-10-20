@@ -161,3 +161,11 @@ extern "js" fn io_abort(request : WebRequest) -> Unit =
 ///|
 extern "js" fn io_api_config() -> String =
   #| () => document.querySelector('meta[name="spliteasy-api"]')?.content ?? ''
+
+///|
+extern "js" fn io_download_binary(
+  name : String,
+  encoded : String,
+  type_ : String,
+) -> Unit =
+  #| (name, encoded, type) => { const data = Uint8Array.from(atob(encoded), c => c.charCodeAt(0)); const url = URL.createObjectURL(new Blob([data], {type})); const a = document.createElement('a'); a.href = url; a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(url), 2000); }

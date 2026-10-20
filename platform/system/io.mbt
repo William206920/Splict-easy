@@ -35,6 +35,13 @@ pub fn write_file(path : String, text : String) -> Unit raise @shared.BillError 
 }
 
 ///|
+pub fn write_bytes(path : String, data : Bytes) -> Unit raise @shared.BillError {
+  if !write_ffi(@utf8.encode(path), data) {
+    @shared.invalid("文件保存失败，原文件未替换：" + path)
+  }
+}
+
+///|
 pub fn remove_file(path : String) -> Bool {
   remove_ffi(@utf8.encode(path))
 }

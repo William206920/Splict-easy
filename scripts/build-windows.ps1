@@ -23,8 +23,12 @@ if ($LASTEXITCODE -ne 0) { throw 'Native tests failed.' }
 & moon build --target native --release
 if ($LASTEXITCODE -ne 0) { throw 'Native build failed.' }
 if ($Smoke) {
+    New-Item -ItemType Directory -Force dist/export-fixtures/native | Out-Null
+    $env:SPLITEASY_EXPORT_TEST_DIR = (Resolve-Path dist/export-fixtures/native).Path
     & moon run cmd/smoke --target native --release
     if ($LASTEXITCODE -ne 0) { throw 'Win32 integration smoke failed.' }
+    & python scripts/verify_exports.py dist/export-fixtures/native
+    if ($LASTEXITCODE -ne 0) { throw 'Native export integration failed.' }
 }
 New-Item -ItemType Directory -Force dist | Out-Null
 Copy-Item '_build/native/release/build/cmd/desktop/desktop.exe' 'dist/SplitEasy.exe' -Force

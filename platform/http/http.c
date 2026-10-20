@@ -34,7 +34,7 @@ static DWORD WINAPI worker(LPVOID data){
  wcsncpy_s(path,8192,parts.lpszUrlPath,parts.dwUrlPathLength);
  if(parts.dwExtraInfoLength)wcsncat_s(path,8192,parts.lpszExtraInfo,parts.dwExtraInfoLength);
  if(!path[0])wcscpy_s(path,8192,L"/");
- session=WinHttpOpen(L"SplitEasy/0.9.2",WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,WINHTTP_NO_PROXY_NAME,WINHTTP_NO_PROXY_BYPASS,0);
+ session=WinHttpOpen(L"SplitEasy/0.9.3",WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,WINHTTP_NO_PROXY_NAME,WINHTTP_NO_PROXY_BYPASS,0);
  if(!session)goto done;
  WinHttpSetTimeouts(session,30000,30000,30000,30000);
  connection=WinHttpConnect(session,host,parts.nPort,0);if(!connection)goto done;
