@@ -1,0 +1,16 @@
+import {
+  "spliteasy/desktop/shared",
+  "spliteasy/desktop/ai",
+  "moonbitlang/core/json",
+}
+
+supported_targets = "js"
+
+options(
+  link: {
+    "js": {
+      "exports": [ "execute", "model_request", "model_response" ],
+      "format": "esm",
+    },
+  },
+)

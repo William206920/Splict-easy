@@ -1,0 +1,12 @@
+{
+  "name": "spliteasy-online",
+  "private": true,
+  "type": "module",
+  "version": "0.10.0",
+  "engines": { "node": "22.x" },
+  "scripts": {
+    "build": "node scripts/build-web.mjs",
+    "test": "node --test tests/web.test.mjs",
+    "dev": "node scripts/serve-web.mjs"
+  }
+}

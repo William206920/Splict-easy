@@ -7,3 +7,9 @@ dist/
 *.obj
 *.pdb
 .tools/
+.vercel/
+.env
+.env.*
+!.env.example
+.web-dist/
+node_modules/
