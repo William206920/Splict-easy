@@ -1,3 +1,15 @@
+# SplitEasy v0.9.3 · 分享结算单与两表 Excel
+
+[下载新版](https://github.com/William206920/Splict-easy/releases/tag/v0.9.3)。默认导出自包含 HTML 结算单，适合离线核对和打印。在浏览器打印窗口选择保存为 PDF；本版没有直接 PDF 编码器。
+
+Excel 可选，严格只有成员转账明细、消费明细两张表，支持筛选、冻结表头、两位小数和超大金额精度保护。保留无需转出的成员；每行一笔转账，消费列出每人的承担额。CSV、Markdown、JSON 及纯文本也可使用。[使用说明](EXPORTS.md)。
+
+标签对应源码 `276f990f380b6ecb3e5b3870542c317449719e9c`。[Windows PR 检查](https://github.com/William206920/Splict-easy/actions/runs/39410822398)通过 40 项 Native 测试、原生 HTML/XLSX/CSV 实际写入后的独立读取校验、GUI/CLI、模拟 AI、安装卸载及截图检查；[网页检查](https://github.com/William206920/Splict-easy/actions/runs/39410822565)通过 65 项 MoonBit JS、17 项 Node 和 ZIP/XML/CSV 校验。[发行构建](https://github.com/William206920/Splict-easy/actions/runs/39411126931)从标签重建后上传附件。
+
+程序未签名。真实模型、用户 Excel/WPS 手工打开、打印窗口保存 PDF 和 Windows 10/11 DPI/输入法验收仍单列待完成，不能由结构检查替代。
+
+---
+
 # SplitEasy v0.9.2 · AI 追加账单与核对预览
 
 [下载新版](https://github.com/William206920/Splict-easy/releases/tag/v0.9.2)。支持安装包和便携包，普通记账离线可用。
