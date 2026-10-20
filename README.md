@@ -11,9 +11,9 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 - [整体验证与剩余验收](docs/VERIFY_CURRENT.md)
 - [各阶段源码与提交](../../commits/main)
 - [Windows CI 与构建产物](../../actions/workflows/native-windows.yml)
-- [下载 Windows 0.9.1 已验证预览包](https://github.com/William206920/Splict-easy/actions/runs/38855867925/artifacts/12027202151)（需登录 GitHub，含安装器、便携包、校验和与五个页面的真实程序截图）
+- [下载 Windows 0.9.1 首个公开版本](https://github.com/William206920/Splict-easy/releases/tag/v0.9.1)（含安装器、便携包、SHA256 校验和）
 - [成员页、导入填写示例与修复记录](docs/MEMBERS_IMPORT_FIX.md)
-- GitHub Release 尚未发布。
+- [版本说明与验证范围](docs/RELEASE_NOTES.md)
 - 原生程序截图由 Windows CI 的 --demo 示例模式生成，随预览发行提供；不包含真实账单或 Key。
 - [操作演示](docs/demo.md) · [AI 验证说明](docs/AI_DEMO.md)
 
@@ -25,7 +25,7 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 
 ## 下载、安装与使用
 
-使用最近成功构建或 Release 的 Windows x64 文件：
+从 [GitHub Releases](https://github.com/William206920/Splict-easy/releases/tag/v0.9.1) 下载 Windows x64 文件：
 
 - `*-Portable.zip`：完整解压后双击 `SplitEasy.exe`。
 - `*-Setup.exe`：按当前用户安装，可从开始菜单启动，也可卸载。
