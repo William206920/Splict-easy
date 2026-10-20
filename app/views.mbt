@@ -53,7 +53,7 @@ fn Desktop::shell(
     44,
   )
   control(
-    if self.page == 3 || self.page == 4 {
+    if self.page == 3 || (self.page == 4 && self.review_ai) {
       17
     } else {
       13
@@ -66,7 +66,7 @@ fn Desktop::shell(
     44,
   )
   control(
-    if self.page == 2 {
+    if self.page == 2 || (self.page == 4 && !self.review_ai) {
       17
     } else {
       13
@@ -199,7 +199,7 @@ fn Desktop::import_view(self : Desktop, x : Int32, w : Int32) -> Unit {
   let help_w = if wide { w - input_w - 20 } else { w }
   self.shell(
     "导入已有账单",
-    "可先载入示例照着修改；解析后选择追加或替换，确认后，才修改账单。",
+    "可先载入示例照着修改；解析后选择追加或替换，确认后才修改账单。",
     if wide {
       920
     } else {
