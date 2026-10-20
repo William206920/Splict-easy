@@ -4,10 +4,10 @@ test "native review preserves old bills, path and final member tail order" {
   ui.session.replace(@shared.parse_text("人：B A\nB 10 晚餐"))
   ui.path = "existing.json"
   let old = ui.session.ledger.payments[0]
-  ui.begin_review(@shared.parse_text("人：A B C\nA 0.01 早餐"), true)
+  ui.begin_review(@shared.parse_text("人：A B C\nA 0.01 早餐 @A B"), true)
   assert_true(ui.review_append)
-  assert_true(ui.ai_preview.contains("A：0.00"))
-  assert_true(ui.ai_preview.contains("B：0.01"))
+  assert_true(ui.ai_preview.contains("A：0.01"))
+  assert_true(ui.ai_preview.contains("B：0.00"))
   assert_eq(ui.session.ledger.payments.length(), 1)
   ui.apply_review()
   assert_eq(ui.path, "existing.json")
