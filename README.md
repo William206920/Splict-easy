@@ -134,7 +134,7 @@ moon build --target native --release
 python scripts/verify_cli.py <CLI 路径>
 ```
 
-Linux 可编译核心和配套 CLI，UI 明确拒绝运行；AI 网络传输目前针对 Windows。JS 仅作纯核心一致性测试，不交付网页。
+Linux 可编译核心和配套 CLI，原生 UI 明确拒绝运行；原生 AI 网络传输目前针对 Windows。JS 目标同时用于核心一致性测试与 Vercel 在线版，浏览器控制和服务端策略也由 MoonBit 实现。
 
 Windows CI 还运行真实控件操作、UTF-8 原子文件、CLI 黄金、HTTP 本地模拟、异步 AI 预览、安装/重复安装/卸载和安装后 GUI/CLI 检查。记录见阶段报告及最终验收说明。
 
