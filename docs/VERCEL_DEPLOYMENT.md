@@ -1,5 +1,15 @@
 # Vercel 在线版
 
+## 2026-10-20 实际部署与 Kimi 变更
+
+用户已完成 Vercel 登录并授权 GitHub。PR #3 已合并到 `main`（`fcaeeed`），[Linux CI 39370235398](https://github.com/William206920/Splict-easy/actions/runs/39370235398) 与 [Windows CI 39370235388](https://github.com/William206920/Splict-easy/actions/runs/39370235388) 均通过。
+
+正式网站：[https://spliteasy-online.vercel.app](https://spliteasy-online.vercel.app)。Vercel 项目为 `spliteasy1/spliteasy-online`，首次生产部署 `Eq5AqPjAgpJpRFhKd4KTcyfdPtai` 已显示 Ready，来源为 `main` 的 `fcaeeed`。公开首页返回 200，CSP 生效，API 状态接口正常。实际浏览器载入 140 元混合示例、确认预览、进入独立成员页并刷新恢复账单均通过。线上 AI 尚待真实凭据和 Redis 配置，不把网页上线视为 AI 真实演示通过。
+
+用户随后将服务商改为 **Kimi**。当前建议配置为 `MOONBIT_BASE_URL=https://api.moonshot.cn/v1`、`MOONBIT_MODEL=kimi-k2.6`；`MOONBIT_API_KEY` 填 Kimi 开放平台的 Key，变量名不变。该模型按官方文档关闭思考模式、使用 `temperature=0.6` 和 JSON Mode，结果仍经 MoonBit 校验和用户确认。
+
+官方依据：[快速开始](https://platform.kimi.com/docs/get-api-key)、[Kimi K2.6](https://platform.kimi.com/docs/guide/kimi-k2-6-quickstart)、[JSON 输出格式](https://platform.kimi.com/docs/guide/response_format)。原有 DeepSeek 支持保留为可选兼容，不代表当前生产配置。以下 2026-10-16 内容为历史准备记录；账号登录阻塞已解除。
+
 2026-10-16 用户授权：保留 Windows 原生版，同时增加浏览器在线版，所有访客可使用维护者的 DeepSeek API。API Key 不得出现在源码、网页、浏览器存储、构建日志、截图或客户端包中。
 
 ## 架构
@@ -20,8 +30,8 @@ Vercel 构建使用已检入的 MoonBit 编译产物 `web/generated/core.mjs`，
 
 | 变量 | 内容 |
 | --- | --- |
-| `MOONBIT_BASE_URL` | `https://api.deepseek.com` |
-| `MOONBIT_MODEL` | `deepseek-flash` |
+| `MOONBIT_BASE_URL` | `https://api.moonshot.cn/v1`（2026-10-20 改用 Kimi） |
+| `MOONBIT_MODEL` | `kimi-k2.6` |
 | `MOONBIT_API_KEY` | 维护者自己的 Key，设置为敏感环境变量 |
 | `UPSTASH_REDIS_REST_URL` | 持久化额度存储的 HTTPS REST 地址 |
 | `UPSTASH_REDIS_REST_TOKEN` | 额度存储凭据，设置为敏感环境变量 |

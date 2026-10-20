@@ -79,6 +79,11 @@ export function createHandler(env = process.env, fetcher = fetch) {
         body.response_format = { type: 'json_object' };
         body.thinking = { type: 'disabled' };
       }
+      if (['api.moonshot.cn', 'api.moonshot.ai'].includes(new URL(c.endpoint).hostname) && ['kimi-k2.5', 'kimi-k2.6'].includes(c.model)) {
+        body.response_format = { type: 'json_object' };
+        body.thinking = { type: 'disabled' };
+        body.temperature = 0.6;
+      }
       const response = await fetcher(c.endpoint, { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${c.key}` }, body: JSON.stringify(body), signal: AbortSignal.timeout(35000), redirect: 'error' });
       if (!response.ok) return json({ error: '模型服务请求失败，请稍后重试或联系站点维护者。' }, 502);
       const raw = await readLimited(response, 1000000);
