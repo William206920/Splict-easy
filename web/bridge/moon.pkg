@@ -9,7 +9,16 @@ supported_targets = "js"
 options(
   link: {
     "js": {
-      "exports": [ "execute", "model_request", "model_response" ],
+      "exports": [
+        "execute",
+        "model_request",
+        "model_response",
+        "browser_start",
+        "gateway_config",
+        "gateway_input",
+        "gateway_request",
+        "gateway_response",
+      ],
       "format": "esm",
     },
   },

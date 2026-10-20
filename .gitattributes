@@ -1,2 +1,7 @@
 web/generated/core.mjs text eol=lf
 web/generated/source.sha256 text eol=lf
+# MoonBit compiler output, reproducibly rebuilt and checked in CI.
+# Handwritten JavaScript, C, HTML and tests retain their real languages.
+web/generated/core.mjs linguist-generated=true
+# This is handwritten CSS, despite its compact formatting.
+web/public/style.css linguist-generated=false

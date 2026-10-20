@@ -26,7 +26,7 @@
 ## 架构
 
 - `web/bridge/*.mbt` 导出 MoonBit 共享核心。所有金额转换、成员/消费增删改、名单规则、Int64 整数分、结算、AI 校验复用 `shared` 和 `ai`，不在 JavaScript 中重写分账算法。
-- `web/public` 仅实现响应式界面、浏览器存储和事件适配。浏览器把账单作为不透明字符串传递给 MoonBit，显示金额由 MoonBit 以字符串返回；不把账单的整数分送入 `JSON.parse` 后再保存，避免超出 JS 安全整数范围的精度损失。
+- `web/bridge/browser.mbt`、`web_state.mbt`、`web_render.mbt` 实现浏览器控制、页面展示、成员/消费表单、草稿冲突和 AI 确认状态。`browser_io.mbt` 的短 JS FFI 仅提供 DOM、存储、文件与网络能力；`web/public` 保留 HTML/CSS 和两行启动入口。账单的整数分始终留在 MoonBit 内，不经 JavaScript `Number`，避免大整数精度损失。迁移与语言统计见 [LANGUAGE_AUDIT.md](LANGUAGE_AUDIT.md)。
 - `api/parse.mjs` 是 Vercel Node.js Function。模型地址、Key、模型均只读取服务端环境变量，不接受客户端覆盖。默认公开使用，可切换为邀请码模式。
 - 发送前勾选同意并再次确认 → 服务端限制额度 → Kimi → MoonBit 严格校验 → 返回逐笔预览 → 用户确认替换 → MoonBit 本地结算。AI 不负责计算净额。
 - 普通账单保存在当前浏览器 `localStorage`，不会自动跨设备同步。损坏草稿保留备份路径，多标签冲突阻止覆盖。不要把“本地保存”等同永久可靠存储，提供 JSON/Markdown/文本导出。

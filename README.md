@@ -7,6 +7,7 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 **Windows 原生版当前为 0.9.1 开发预览：增加独立成员管理、文本/JSON 导入指南与示例，修复页面切换输入丢失和账单替换保护。原生 GUI/CLI 真实模型演示和用户 Windows 桌面实测仍待验收；网页版真实调用不代表桌面端已验收。**
 
 - [界面优化、同类产品参考与验证](docs/UI_REDESIGN.md)
+- [MoonBit 语言占比、真实迁移与赛事要求核对](docs/LANGUAGE_AUDIT.md)
 
 - [整体验证与剩余验收](docs/VERIFY_CURRENT.md)
 - [完整方案与自动推进约定](docs/PROJECT_PLAN.md)
