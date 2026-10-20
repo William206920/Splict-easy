@@ -11,7 +11,7 @@ fn import_instructions() -> String {
     "equal：participants 填参与者，shares 为 []。", "exact：participants 为 []，shares 填每个人的 person 与 amount_cents。",
     "日期未知填空字符串；ambiguous 填 []；不要使用报表 JSON。",
     "", "共同规则：姓名不可含空格、冒号或 @ ! =；名单内的人才能参与。",
-    "点击示例只填入编辑框。解析并核对预览、确认替换后，才改变当前账单。",
+    "点击示例只填入编辑框。解析后选择追加或替换，确认后，才改变当前账单。",
   ].join("\n")
 }
 

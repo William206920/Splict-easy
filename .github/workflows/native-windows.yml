@@ -6,6 +6,8 @@ on:
     paths-ignore: ['docs/**', '*.md']
   pull_request:
   workflow_dispatch:
+  release:
+    types: [published]
 
 permissions:
   contents: read
@@ -41,3 +43,29 @@ jobs:
             dist/package/*
             dist/dependencies.txt
           if-no-files-found: error
+
+  publish:
+    if: github.event_name == 'release'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: SplitEasy-Windows
+          path: release-files
+      - name: Verify version and publish tested binaries
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${RELEASE_TAG#v}"
+          cd release-files/package
+          test -f "SplitEasy-$version-Windows-x64-Setup.exe"
+          test -f "SplitEasy-$version-Windows-x64-Portable.zip"
+          sha256sum --check SHA256SUMS.txt
+          gh release upload "$RELEASE_TAG" "SplitEasy-$version-Windows-x64-Setup.exe" "SplitEasy-$version-Windows-x64-Portable.zip" SHA256SUMS.txt preview*.png

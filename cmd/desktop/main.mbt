@@ -10,13 +10,16 @@ fn main {
       args.contains("--demo-editor") ||
       args.contains("--demo-ai") ||
       args.contains("--demo-members") ||
-      args.contains("--demo-import"),
+      args.contains("--demo-import") ||
+      args.contains("--demo-review"),
     demo_page=if args.contains("--demo-editor") {
       1
     } else if args.contains("--demo-ai") {
       3
     } else if args.contains("--demo-import") {
       2
+    } else if args.contains("--demo-review") {
+      4
     } else if args.contains("--demo-members") {
       5
     } else {
