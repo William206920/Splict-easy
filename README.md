@@ -8,14 +8,14 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 
 在线 AI 解析默认**追加到当前账单**，保留原记录，同名成员自动合并。预览会显示当前金额、本次金额和确认后总额；完全相同的记录会提示单独核对。也可主动选择替换，替换已有账本时需要明确确认。文本/JSON 导入同样提供两种记入方式。[使用与合并规则](docs/AI_MERGE.md)。
 
-**Windows 原生版 0.9.2：AI 默认追加账单，预览展示金额变化和逐笔份额；支持重复核对、明确替换确认及文本/JSON 追加。桌面 AI 使用用户自己的服务和 Key，Kimi 示例配置见下文。原生 GUI/CLI 真实模型调用与用户 Windows 桌面实测仍待验收。**
+**Windows 原生版 0.9.3：AI 默认追加账单，预览展示金额变化和逐笔份额；支持重复核对、明确替换确认及文本/JSON 追加。桌面 AI 使用用户自己的服务和 Key，Kimi 示例配置见下文。原生 GUI/CLI 真实模型调用与用户 Windows 桌面实测仍待验收。**
 
 - [界面优化、同类产品参考与验证](docs/UI_REDESIGN.md)
 
 - [整体验证与剩余验收](docs/VERIFY_CURRENT.md)
 - [各阶段源码与提交](../../commits/main)
 - [Windows CI 与构建产物](../../actions/workflows/native-windows.yml)
-- [下载 Windows 0.9.2](https://github.com/William206920/Splict-easy/releases/tag/v0.9.2)（含安装器、便携包、SHA256 校验和）
+- [下载 Windows 0.9.3](https://github.com/William206920/Splict-easy/releases/tag/v0.9.3)（含安装器、便携包、SHA256 校验和）
 - [成员页、导入填写示例与修复记录](docs/MEMBERS_IMPORT_FIX.md)
 - [版本说明与验证范围](docs/RELEASE_NOTES.md)
 - 原生程序截图由 Windows CI 的 --demo 示例模式生成，随预览发行提供；不包含真实账单或 Key。
@@ -29,7 +29,7 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 
 ## 下载、安装与使用
 
-从 [GitHub Releases](https://github.com/William206920/Splict-easy/releases/tag/v0.9.2) 下载 Windows x64 文件：
+从 [GitHub Releases](https://github.com/William206920/Splict-easy/releases/tag/v0.9.3) 下载 Windows x64 文件：
 
 - `*-Portable.zip`：完整解压后双击 `SplitEasy.exe`。
 - `*-Setup.exe`：按当前用户安装，可从开始菜单启动，也可卸载。
@@ -79,6 +79,14 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 不熟悉语法时，在“文本与 JSON 导入”中点击“文本示例”或“JSON 示例”后照着修改，右侧有简易说明。“当前账单”可填入当前账单的 JSON 模板；这些按钮只改变编辑框，核对预览、选择追加或替换并确认后才改变账单。文本金额单位是元，JSON 的 `amount_cents` 是整数分，例如 `1250` 表示 12.50 元。
 
 桌面端 Kimi 示例：Base URL 填 `https://api.moonshot.cn/v1`，模型填 `kimi-k2.6`，API Key 填你自己的 Kimi 开放平台密钥。Key 输入遮盖，仅本次进程使用，不随账单或草稿保存。桌面端不会自动使用在线版的共享 Key。
+
+## 导出与分享
+
+点击「导出结算单」默认保存 HTML，离线打开即可查看，通过页面的「打印 / 保存为 PDF」调用浏览器打印。PDF 需要在打印对话框中选择保存，并非直接生成 PDF 附件。Windows 的导出窗口可选 Excel、CSV、Markdown、结算报表 JSON 和纯文本；网页版的「其他导出格式」提供 Excel、CSV、Markdown 和 JSON 备份。
+
+结算单和 Excel 都只包含两张表：**成员转账明细**（姓名、转账给谁、金额、说明）和**消费明细**（日期、消费、付款人、金额、分摊方式、各成员承担）。无需转出的成员保留，转给两人则分两行。总消费与待转账合计分别标明。Excel 冻结表头、支持筛选，金额显示两位小数；超过数字精度范围时以文本保留，CSV 的超大金额使用文本前缀。导出是当前账单重新结算后的快照，不代表转账已完成。
+
+JSON 备份用于恢复完整账单；结算报表 JSON 和账单 JSON 的格式不同，不能互相代替。导出文件不包含 API Key。[导出说明](docs/EXPORTS.md)。
 
 ## CLI
 

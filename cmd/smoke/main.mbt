@@ -38,6 +38,12 @@ fn main {
   )
   @win32.close()
   require(@win32.next_event() == 0, "window close exits message loop")
+  @app.export_smoke() catch {
+    e => {
+      println(@shared.error_message(e))
+      @win32.exit(1)
+    }
+  }
   @app.smoke() catch {
     e => {
       println(@shared.error_message(e))

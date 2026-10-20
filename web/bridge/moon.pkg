@@ -2,6 +2,7 @@ import {
   "spliteasy/desktop/shared",
   "spliteasy/desktop/ai",
   "moonbitlang/core/json",
+  "moonbitlang/core/encoding/base64",
 }
 
 supported_targets = "js"
@@ -11,6 +12,7 @@ options(
     "js": {
       "exports": [
         "execute",
+        "export_document",
         "model_request",
         "model_response",
         "browser_start",

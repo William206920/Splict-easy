@@ -575,6 +575,33 @@ pub fn browser_start() -> Unit {
       }
     })
   })
+  io_on("export-html", "click", () => {
+    web_safe(() => {
+      io_download(
+        "SplitEasy-结算单.html",
+        @shared.export_html(browser.state.ledger),
+        "text/html",
+      )
+    })
+  })
+  io_on("export-xlsx", "click", () => {
+    web_safe(() => {
+      io_download_binary(
+        "SplitEasy-结算单.xlsx",
+        @base64.encode(@shared.export_xlsx(browser.state.ledger)),
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      )
+    })
+  })
+  io_on("export-csv", "click", () => {
+    web_safe(() => {
+      io_download(
+        "SplitEasy-结算单.csv",
+        @shared.export_csv(browser.state.ledger),
+        "text/csv",
+      )
+    })
+  })
   io_on("export-json", "click", () => {
     io_download(
       "SplitEasy-账单.json",

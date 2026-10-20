@@ -10,7 +10,7 @@ fn main {
     return
   }
   if args == ["--version"] {
-    @sys.stdout("SplitEasy Desktop 0.9.2\n")
+    @sys.stdout("SplitEasy Desktop 0.9.3\n")
     return
   }
   try {

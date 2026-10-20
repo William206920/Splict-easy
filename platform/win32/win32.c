@@ -223,6 +223,23 @@ moonbit_string_t se_win_file_dialog(int32_t save){
  BOOL ok=save?GetSaveFileNameW(&ofn):GetOpenFileNameW(&ofn);if(!ok)path[0]=0;
  return se_string(path);
 }
+static const WCHAR *se_export_exts[]={L"html",L"xlsx",L"csv",L"md",L"json",L"txt"};
+static UINT_PTR CALLBACK se_export_hook(HWND dialog,UINT message,WPARAM w,LPARAM l){
+ (void)w;
+ if(message==WM_NOTIFY){OFNOTIFYW *notice=(OFNOTIFYW*)l;
+  if(notice->hdr.code==CDN_TYPECHANGE && notice->lpOFN->nFilterIndex>=1 && notice->lpOFN->nFilterIndex<=6)
+   SendMessageW(GetParent(dialog),CDM_SETDEFEXT,0,(LPARAM)se_export_exts[notice->lpOFN->nFilterIndex-1]);
+ }
+ return 0;
+}
+moonbit_string_t se_win_export_dialog(void){
+ WCHAR path[32768]=L"SplitEasy-结算单";OPENFILENAMEW ofn={0};ofn.lStructSize=sizeof(ofn);ofn.hwndOwner=se_window;ofn.lpstrFile=path;ofn.nMaxFile=32768;
+ ofn.lpstrFilter=L"结算单（浏览器查看 / 打印为 PDF）\0*.html\0Excel 工作簿（两张表）\0*.xlsx\0CSV 数据\0*.csv\0Markdown 文本\0*.md\0结算报表 JSON\0*.json\0纯文本\0*.txt\0";
+ ofn.nFilterIndex=1;ofn.lpstrDefExt=L"html";ofn.lpfnHook=se_export_hook;
+ ofn.Flags=OFN_EXPLORER|OFN_PATHMUSTEXIST|OFN_OVERWRITEPROMPT|OFN_ENABLEHOOK;
+ if(!GetSaveFileNameW(&ofn))path[0]=0;
+ return se_string(path);
+}
 moonbit_string_t se_win_draft_path(void){
  WCHAR root[32768];DWORD n=GetEnvironmentVariableW(L"LOCALAPPDATA",root,32000);if(n==0||n>=32000)return se_string(L"");
  wcscat_s(root,32768,L"\\SplitEasy");if(!CreateDirectoryW(root,NULL)&&GetLastError()!=ERROR_ALREADY_EXISTS)return se_string(L"");
@@ -266,6 +283,7 @@ int32_t se_win_flag(int32_t id,int32_t op,int32_t value){(void)id;(void)op;(void
 int32_t se_win_list_add(int32_t id,moonbit_string_t text){(void)id;(void)text;return -1;}
 int32_t se_win_message(moonbit_string_t text,int32_t kind){(void)text;(void)kind;return 0;}
 moonbit_string_t se_win_file_dialog(int32_t save){(void)save;return moonbit_make_string_raw(0);}
+moonbit_string_t se_win_export_dialog(void){return moonbit_make_string_raw(0);}
 moonbit_string_t se_win_draft_path(void){return moonbit_make_string_raw(0);}
 int32_t se_win_clipboard(moonbit_string_t text){(void)text;return 0;}
 

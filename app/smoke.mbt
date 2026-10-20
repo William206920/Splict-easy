@@ -318,3 +318,29 @@ pub fn network_smoke(base : String) -> Unit raise @shared.BillError {
     "PASS: GUI asynchronous AI fixture + preview cancel + explicit confirmation + shared settlement",
   )
 }
+
+///|
+pub fn export_smoke() -> Unit raise @shared.BillError {
+  let root = @sys.environment("SPLITEASY_EXPORT_TEST_DIR")
+  if root.is_empty() {
+    return
+  }
+  let ui = Desktop::new(true)
+  ui.session.replace(@shared.sample_mixed())
+  for ext in ["html", "xlsx", "csv"] {
+    ui.export_report(root + "/mixed." + ext)
+  }
+  ui.session.replace(
+    @shared.parse_text(
+      "人：小明 小红\n小明 92233720368547758.07 大额 @小红",
+    ),
+  )
+  for ext in ["html", "xlsx", "csv"] {
+    ui.export_report(root + "/maximum." + ext)
+  }
+  demand(
+    ui.session.report is None,
+    "导出重新结算，不修改当前账本或报告状态",
+  )
+  println("PASS: native HTML + XLSX + CSV export through atomic file writer")
+}

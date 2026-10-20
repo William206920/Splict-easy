@@ -463,11 +463,22 @@ fn Desktop::overview_view(self : Desktop, x : Int32, w : Int32) -> Unit {
     // The shell title is short; smaller action widths leave room for it.
     ignore(@win32.set_text(510, "账单"))
   }
-  for id in [35, 36] {
+  for id in [35] {
     ignore(
       @win32.flag(id, 4, if self.session.report is Some(_) { 1 } else { 0 }),
     )
   }
+  ignore(
+    @win32.flag(
+      36,
+      4,
+      if self.session.ledger.payments.is_empty() {
+        0
+      } else {
+        1
+      },
+    ),
+  )
   for id in [22, 23] {
     ignore(
       @win32.flag(
