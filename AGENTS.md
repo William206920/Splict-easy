@@ -1,5 +1,7 @@
 # SplitEasy Windows 桌面应用协作约定
 
+- 2026-10-20 用户新增 GitHub Pages 在线入口，参考 Kleinrat/Traveling 的静态网页与独立 AI 服务部署方式。Pages 仅发布 .web-dist；共享 Kimi 与额度继续由现有 Vercel 服务端提供，密钥不得进入公开构建产物。
+
 - 2026-10-20 用户要求 GitHub 默认分支的 MoonBit 语言占比必须严格高于 65%。以实质 MoonBit 实现为主，仅对真实编译产物使用 linguist-generated，不改标手写 JavaScript/C/HTML，不靠重复代码充量；运行 scripts/check-language-share.mjs 并核对 GitHub 实际统计。赛事材料、测试、许可证与真实演示要求继续保留。
 
 - 2026-10-20 用户将线上 AI 服务商改为 Kimi，替代此前的 DeepSeek 选择；继续部署在 Vercel，面向所有访客，密钥仅在服务端，额度和双重确认要求不变。

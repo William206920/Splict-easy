@@ -2,7 +2,9 @@
 
 MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消费可以混合记账，最终统一生成结算清单。Windows 程序不使用 HTML、WebView 或浏览器。
 
-**Vercel 在线版已上线**：[打开 SplitEasy](https://spliteasy-online.vercel.app)。保留 Windows 原生程序，成员、消费、文本/JSON 导入、金额与结算复用 MoonBit 核心。共享 Kimi K2.6 已完成真实解析、确认结算和歧义阻断验证；密钥仅在服务端，访客无需填写 Key，每 IP 每小时 10 次、全站每天 100 次。[部署与验收记录](docs/VERCEL_DEPLOYMENT.md)。
+**无需下载，直接在线使用**：[打开 SplitEasy · GitHub Pages](https://william206920.github.io/Splict-easy/) · [Vercel 备用入口](https://spliteasy-online.vercel.app)。成员、消费、文本/JSON 导入、整数金额与结算复用 MoonBit 核心，在浏览器内运行；Windows 原生程序继续提供。
+
+共享 Kimi K2.6 通过 Vercel 服务端提供，密钥不进入 GitHub Pages 或浏览器，访客无需填写 Key；两个入口共用每 IP 每小时 10 次、全站每天 100 次的额度。AI 解析需同意外发并逐笔确认。两个站点的浏览器草稿各自保存，切换入口前可导出 JSON 再导入。[GitHub Pages 部署方式](docs/GITHUB_PAGES.md) · [Vercel 与真实模型验证](docs/VERCEL_DEPLOYMENT.md)。
 
 **Windows 原生版当前为 0.9.1 开发预览：增加独立成员管理、文本/JSON 导入指南与示例，修复页面切换输入丢失和账单替换保护。原生 GUI/CLI 真实模型演示和用户 Windows 桌面实测仍待验收；网页版真实调用不代表桌面端已验收。**
 

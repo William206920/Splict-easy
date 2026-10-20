@@ -19,6 +19,13 @@ if (readFileSync('web/generated/source.sha256', 'utf8').trim() !== fingerprint) 
 mkdirSync('.web-dist', { recursive: true });
 cpSync('web/public', '.web-dist', { recursive: true });
 cpSync('web/generated/core.mjs', '.web-dist/core.mjs');
+if (process.argv.includes('--pages')) {
+  const { hosting_config } = await import('../web/generated/core.mjs');
+  const { api } = JSON.parse(hosting_config(true));
+  const index = readFileSync('.web-dist/index.html', 'utf8').replace('content="/api/parse"', `content="${api}"`);
+  writeFileSync('.web-dist/index.html', index);
+  writeFileSync('.web-dist/.nojekyll', '');
+}
 mkdirSync('.web-dist/notices', { recursive: true });
 for (const file of ['MoonBit-Apache-2.0.txt', 'MoonBit-NOTICE.txt']) cpSync(`third_party/${file}`, `.web-dist/notices/${file}`);
 cpSync('LICENSE', '.web-dist/notices/LICENSE.txt');
