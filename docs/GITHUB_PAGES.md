@@ -25,3 +25,14 @@ node scripts/build-web.mjs --pages
 使用固定的 `toolchain.version`。`--pages` 将公开 AI 网关地址写入构建后的 HTML；原始网页和 Vercel 构建继续使用同源接口。所有静态资源使用相对路径，兼容 `/Splict-easy/` 子路径和哈希导航。Actions 会重新编译并核对已提交的编译产物，防止源码与部署版本不一致。
 
 新增回归覆盖托管地址选择、可信来源与仿冒来源、预检方法及请求头、跨域错误响应、额度故障与同源兼容。公网浏览器实际验收和 CI 结果应单独记录。
+
+## 2026-10-20 上线验证
+
+- [PR #6](https://github.com/William206920/Splict-easy/pull/6) 已合并，部署源码为 `de6dafaf4934d40afe8aa9e1ffb1a18cdeed4c07`。
+- [main 网页构建与 Pages 部署](https://github.com/William206920/Splict-easy/actions/runs/39382886943) 成功；MoonBit JS 49 项、Node 网关/桥接 15 项检查通过，编译产物核对通过。
+- [main Windows 回归](https://github.com/William206920/Splict-easy/actions/runs/39382886951) 成功；这是自动构建与窗口/安装验证，不代表用户 Windows 桌面人工验收。
+- 正式 Pages 页面实际打开，资源与哈希导航正常；浏览器实际检查成员页、文本/JSON 说明和刷新后的草稿恢复。
+- 在正式 Pages 中同意外发内置示例，通过真实 Kimi K2.6 得到三笔消费预览；逐笔确认后总额 140.00 元，小红、小刚分别向小明转 20.00 元。只使用公开示例，无私人账单。
+- 公网网关预检为 HTTP 204，明确返回本站 Pages 来源；其他 GitHub 用户来源被 HTTP 403 拒绝。服务状态不返回密钥。
+- 公开 `core.mjs` SHA256 为 `b02c4de6299e4e8e4d6b15e16d0f966c348694e7103a1a70a8dba8bc0c256c52`，与本地已验证的固定工具链编译结果一致。
+- GitHub 实际语言字节统计：MoonBit 187596 / 总计 287801，约 65.1825%，严格高于 65%。

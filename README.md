@@ -145,5 +145,3 @@ Windows CI 还运行真实控件操作、UTF-8 原子文件、CLI 黄金、HTTP 
 - 当前为预览版，真实模型演示、用户 Windows 10/11、输入法、视觉布局和 DPI 人工验收待完成。
 - 安装器未签名。
 - 项目代码 MIT；MoonBit core/runtime 等第三方许可见 [third_party](third_party) 和 [NOTICE](NOTICE.md)。
-
-[AI_USAGE](AI_USAGE.md) 如实记录 AI 开发参与及验证边界。
