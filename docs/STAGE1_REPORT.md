@@ -65,7 +65,7 @@ $env:PATH = "$env:USERPROFILE\.moon\bin;$env:PATH"
 | Windows CI 编译与隐藏窗口检查 | 已通过，Windows Server 2025 x64，真实 Win32 窗口检查 |
 | 用户 Windows 桌面实测 | 未验证 |
 
-Windows 运行：[38719888097](https://github.com/William206920/split-easy/actions/runs/38719888097)，验证源码提交 48a17f45b81b54df95dc6aeeaabfe4d181ca6f1d。输出 `PASS: Win32 Unicode + MoonBit event + shared core + close`。可执行文件已生成并作为 Actions artifact 上传；这不是最终安装包。完整 Windows 证据见 verification-windows.json。
+Windows 运行：[38719888097](https://github.com/William206920/Split-easy/actions/runs/38719888097)，验证源码提交 48a17f45b81b54df95dc6aeeaabfe4d181ca6f1d。输出 `PASS: Win32 Unicode + MoonBit event + shared core + close`。可执行文件已生成并作为 Actions artifact 上传；这不是最终安装包。完整 Windows 证据见 verification-windows.json。
 
 完整本地记录：verification-linux.json。Linux 的 .exe 后缀来自构建器命名，并不代表生成了 Windows PE 程序。
 
