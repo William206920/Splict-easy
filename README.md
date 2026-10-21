@@ -2,7 +2,7 @@
 
 MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消费可以混合记账，最终统一生成结算清单。Windows 程序不使用 HTML、WebView 或浏览器。
 
-**无需下载，直接在线使用**：[打开 SplitEasy · GitHub Pages](https://william206920.github.io/split-easy/) · [Vercel 备用入口](https://spliteasy-online.vercel.app)。成员、消费、文本/JSON 导入、整数金额与结算复用 MoonBit 核心，在浏览器内运行；Windows 原生程序继续提供。
+**无需下载，直接在线使用**：[打开 SplitEasy · GitHub Pages](https://william206920.github.io/Split-easy/) · [Vercel 备用入口](https://spliteasy-online.vercel.app)。成员、消费、文本/JSON 导入、整数金额与结算复用 MoonBit 核心，在浏览器内运行；Windows 原生程序继续提供。
 
 共享 Kimi K2.6 通过 Vercel 服务端提供，密钥不进入 GitHub Pages 或浏览器，访客无需填写 Key；两个入口共用每 IP 每小时 10 次、全站每天 100 次的额度。AI 解析需同意外发并逐笔确认。两个站点的浏览器草稿各自保存，切换入口前可导出 JSON 再导入。[GitHub Pages 部署方式](docs/GITHUB_PAGES.md) · [Vercel 与真实模型验证](docs/VERCEL_DEPLOYMENT.md)。
 
@@ -15,7 +15,7 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 - [整体验证与剩余验收](docs/VERIFY_CURRENT.md)
 - [各阶段源码与提交](../../commits/main)
 - [Windows CI 与构建产物](../../actions/workflows/native-windows.yml)
-- [下载 Windows 0.9.3](https://github.com/William206920/split-easy/releases/tag/v0.9.3)（含安装器、便携包、SHA256 校验和）
+- [下载 Windows 0.9.3](https://github.com/William206920/Split-easy/releases/tag/v0.9.3)（含安装器、便携包、SHA256 校验和）
 - [成员页、导入填写示例与修复记录](docs/MEMBERS_IMPORT_FIX.md)
 - [版本说明与验证范围](docs/RELEASE_NOTES.md)
 - 原生程序截图由 Windows CI 的 --demo 示例模式生成，随预览发行提供；不包含真实账单或 Key。
@@ -29,7 +29,7 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 
 ## 下载、安装与使用
 
-从 [GitHub Releases](https://github.com/William206920/split-easy/releases/tag/v0.9.3) 下载 Windows x64 文件：
+从 [GitHub Releases](https://github.com/William206920/Split-easy/releases/tag/v0.9.3) 下载 Windows x64 文件：
 
 - `*-Portable.zip`：完整解压后双击 `SplitEasy.exe`。
 - `*-Setup.exe`：按当前用户安装，可从开始菜单启动，也可卸载。
