@@ -4,7 +4,7 @@ MoonBit Native + Windows 原生控件，MIT 开源。平均与按实际金额消
 
 **无需下载，直接在线使用**：[打开 SplitEasy · GitHub Pages](https://william206920.github.io/Split-easy/) · [Vercel 备用入口](https://spliteasy-online.vercel.app)。成员、消费、文本/JSON 导入、整数金额与结算复用 MoonBit 核心，在浏览器内运行；Windows 原生程序继续提供。
 
-共享 Kimi K2.6 通过 Vercel 服务端提供，密钥不进入 GitHub Pages 或浏览器，访客无需填写 Key；两个入口共用每 IP 每小时 10 次、全站每天 100 次的额度。AI 解析需同意外发并逐笔确认。两个站点的浏览器草稿各自保存，切换入口前可导出 JSON 再导入。[GitHub Pages 部署方式](docs/GITHUB_PAGES.md) · [Vercel 与真实模型验证](docs/VERCEL_DEPLOYMENT.md)。
+如遇见AI服务使用故障，请使用VPN连接，共享 Kimi K2.6 通过 Vercel 服务端提供，密钥不进入 GitHub Pages 或浏览器，访客无需填写 Key；两个入口共用每 IP 每小时 10 次、全站每天 100 次的额度。AI 解析需同意外发并逐笔确认。两个站点的浏览器草稿各自保存，切换入口前可导出 JSON 再导入。[GitHub Pages 部署方式](docs/GITHUB_PAGES.md) · [Vercel 与真实模型验证](docs/VERCEL_DEPLOYMENT.md)。
 
 在线 AI 解析默认**追加到当前账单**，保留原记录，同名成员自动合并。预览会显示当前金额、本次金额和确认后总额；完全相同的记录会提示单独核对。也可主动选择替换，替换已有账本时需要明确确认。文本/JSON 导入同样提供两种记入方式。[使用与合并规则](docs/AI_MERGE.md)。
 
