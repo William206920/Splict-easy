@@ -28,7 +28,7 @@
 
 ## 2026-10-20 部署与验证
 
-- [PR #7](https://github.com/William206920/split-easy/pull/7) 已合并；main 源码 `c1c743b6767e3774cc9ae8fbf16169a0082f354d` 的 [网页检查与 Pages 部署](https://github.com/William206920/split-easy/actions/runs/39403672879)、[Windows 构建与回归](https://github.com/William206920/split-easy/actions/runs/39403672569) 均成功。
+- [PR #7](https://github.com/William206920/Split-easy/pull/7) 已合并；main 源码 `c1c743b6767e3774cc9ae8fbf16169a0082f354d` 的 [网页检查与 Pages 部署](https://github.com/William206920/Split-easy/actions/runs/39403672879)、[Windows 构建与回归](https://github.com/William206920/Split-easy/actions/runs/39403672569) 均成功。
 - GitHub Pages 和 Vercel 的公开 `core.mjs` SHA256 均为 `95fe69b22fbcb62acfad42e9380b1b6ce7d188e1aaa389481028ec6c338274a5`，与本地固定工具链编译结果一致。
 - 真实 Kimi 接口解析一笔公开早餐示例，返回 3000 分、付款人小明、三人均摊的有效账单。公网浏览器用该真实响应进行 JSON 导入与追加预览，显示原有 3 笔 140 元、本次 1 笔 30 元、结果 4 笔 170 元；取消后仍为 3 笔 140 元。完整确认写入路径在本地浏览器验证过。
 - 本轮浏览器 AI 发送确认后的控制连接超时，未将该尝试计作整条 AI 页面端到端通过；真实 HTTP 解析、共用合并预览和 AI 默认追加状态测试分别记录，不混为同一测试。
