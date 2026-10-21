@@ -41,7 +41,7 @@ test "Pages requests are allowed while deceptive origin suffixes are rejected" {
     for
       foreign in [
         "null", "http://william206920.github.io", "https://william206920.github.io.evil.invalid",
-        "https://other.github.io", "https://william206920.github.io/Splict-easy/",
+        "https://other.github.io", "https://william206920.github.io/split-easy/",
         "https://william206920.github.io:444", "https://evil.invalid",
       ] {
       let denied = hosting_policy(verb, foreign, "cross-site")
