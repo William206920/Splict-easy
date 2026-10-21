@@ -15,4 +15,4 @@
 
 ## Windows 实际验证补录
 
-[运行 38722487735](https://github.com/William206920/Splict-easy/actions/runs/38722487735) 已成功，源码 5cb05ee973ca2e00875ce5373da29d4f7299a304。原生窗口集成、文件测试、完整桌面人员/消费/导入/结算/剪贴板路径实际通过。仍不等于用户桌面 DPI/输入法人工测试。
+[运行 38722487735](https://github.com/William206920/split-easy/actions/runs/38722487735) 已成功，源码 5cb05ee973ca2e00875ce5373da29d4f7299a304。原生窗口集成、文件测试、完整桌面人员/消费/导入/结算/剪贴板路径实际通过。仍不等于用户桌面 DPI/输入法人工测试。
