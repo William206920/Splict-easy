@@ -2,7 +2,7 @@
 
 ## 2026-10-20 实际部署与 Kimi 变更
 
-用户已完成 Vercel 登录并授权 GitHub。PR #3 已合并到 `main`（`fcaeeed`），[Linux CI 39370235398](https://github.com/William206920/split-easy/actions/runs/39370235398) 与 [Windows CI 39370235388](https://github.com/William206920/split-easy/actions/runs/39370235388) 均通过。
+用户已完成 Vercel 登录并授权 GitHub。PR #3 已合并到 `main`（`fcaeeed`），[Linux CI 39370235398](https://github.com/William206920/Split-easy/actions/runs/39370235398) 与 [Windows CI 39370235388](https://github.com/William206920/Split-easy/actions/runs/39370235388) 均通过。
 
 正式网站：[https://spliteasy-online.vercel.app](https://spliteasy-online.vercel.app)。Vercel 项目为 `spliteasy1/spliteasy-online`，首次生产部署 `Eq5AqPjAgpJpRFhKd4KTcyfdPtai` 已显示 Ready，来源为 `main` 的 `fcaeeed`。公开首页返回 200，CSP 生效，API 状态接口正常。实际浏览器载入 140 元混合示例、确认预览、进入独立成员页并刷新恢复账单均通过。
 
@@ -12,7 +12,7 @@
 
 ### 生产 AI 已实际验收
 
-- PR #4 已合并至 `8ee0ffb`，[Linux 网页 CI 39371384502](https://github.com/William206920/split-easy/actions/runs/39371384502) 和 [Windows 原生 CI 39371384323](https://github.com/William206920/split-easy/actions/runs/39371384323) 均通过；Node 网关/桥接回归增至 14 组。
+- PR #4 已合并至 `8ee0ffb`，[Linux 网页 CI 39371384502](https://github.com/William206920/Split-easy/actions/runs/39371384502) 和 [Windows 原生 CI 39371384323](https://github.com/William206920/Split-easy/actions/runs/39371384323) 均通过；Node 网关/桥接回归增至 14 组。
 - 用户提供的 Kimi Key 已保存为 Production 的服务端 Secret，未写入仓库或日志，交接用本地临时文件已清空。用户授权接受条款后，创建 `spliteasy-quota`，选择 Upstash **Free**（页面列出每月 500000 条命令），区域 `iad1`，未启用付费计划。连接生产/预览环境，使用敏感的 `KV_*` 变量。
 - 重新部署 `DFJDHDSMgdBCCA14LU8anb87BNX8` 显示 Ready。公开 `/api/parse` 返回 `enabled: true`、`provider: api.moonshot.cn`、`model: kimi-k2.6`、`invitationRequired: false`。
 - 真实浏览器用内置自然语言示例请求 Kimi，核对发送目标后确认。返回三人及晚餐 90 元、奶茶 30 元、车费 20 元的逐笔预览；确认替换后总计 140 元，小明应收 40 元，小红/小刚各应付 20 元，两笔转账分别为 20 元。刷新/另一标签页恢复账单仍正确。
@@ -33,7 +33,7 @@
 
 ## Vercel 项目配置
 
-从 `William206920/split-easy` 导入项目；根目录为仓库根目录，Framework 选 Other，构建和输出由 `vercel.json` 定义。Node.js 22。Git 分支变更会触发 Vercel 构建。
+从 `William206920/Split-easy` 导入项目；根目录为仓库根目录，Framework 选 Other，构建和输出由 `vercel.json` 定义。Node.js 22。Git 分支变更会触发 Vercel 构建。
 
 Vercel 构建使用已检入的 MoonBit 编译产物 `web/generated/core.mjs`，不要求 Vercel 额外安装 MoonBit。构建先检查源文件指纹。GitHub CI 用固定工具链重新编译并检查生成文件一致，防止生成产物与 MoonBit 源码脱节。首次 Linux CI 发现 Windows/Linux 编译器对数字指数前导零的打印有差异（`1e+012` 与 `1e+12`）；在生成步骤仅规范数字 token 的指数，保留字符串/注释不变，并增加回归。没有跳过生成产物一致性检查。
 
@@ -85,9 +85,9 @@ node scripts/serve-web.mjs
 
 源码提交 `8864afcc37a6d05fff5d2703f639ec4d39ec69b1` 的远端验证已完成：
 
-- [Linux 网页 CI 38860175878](https://github.com/William206920/split-easy/actions/runs/38860175878) 通过：固定 MoonBit、20 组 JS 测试、重新编译后生成产物一致、Node 22 下 13 组网关/桥接测试与静态产物上传。
-- [Windows 原生 CI 38860175899](https://github.com/William206920/split-easy/actions/runs/38860175899) 全部通过：原生构建、测试、GUI/CLI/模拟 AI 集成、安装包生成及安装验证。网页新增未破坏桌面交付。
-- 本地代码与 GitHub `codex/vercel-online` 的 Git 树一致。开发变更见 [PR #3](https://github.com/William206920/split-easy/pull/3)。
+- [Linux 网页 CI 38860175878](https://github.com/William206920/Split-easy/actions/runs/38860175878) 通过：固定 MoonBit、20 组 JS 测试、重新编译后生成产物一致、Node 22 下 13 组网关/桥接测试与静态产物上传。
+- [Windows 原生 CI 38860175899](https://github.com/William206920/Split-easy/actions/runs/38860175899) 全部通过：原生构建、测试、GUI/CLI/模拟 AI 集成、安装包生成及安装验证。网页新增未破坏桌面交付。
+- 本地代码与 GitHub `codex/vercel-online` 的 Git 树一致。开发变更见 [PR #3](https://github.com/William206920/Split-easy/pull/3)。
 
 生产部署尚未完成：Vercel 账号登录曾触发手机号尝试次数限制，需用户自行完成账号验证。2026-10-16 用户最终选择继续使用 Vercel；试验性的 Cloudflare 适配未发布，已撤回。不将这些本地测试或本地截图称为生产部署。
 
