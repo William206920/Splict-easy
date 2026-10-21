@@ -8,17 +8,17 @@
 
 ## 0.9.1 成员与导入修复（2026-10-16）
 
-独立成员页、导入指南与示例、跨页输入保留和替换账单保护已完成。[修复说明及原生截图](MEMBERS_IMPORT_FIX.md)。[Windows CI 38855867925](https://github.com/William206920/Splict-easy/actions/runs/38855867925) 全部通过，Native 24 组，JS 本地 20 组；C 平台桥接未改动。真实模型和用户桌面等人工验收边界不变。
+独立成员页、导入指南与示例、跨页输入保留和替换账单保护已完成。[修复说明及原生截图](MEMBERS_IMPORT_FIX.md)。[Windows CI 38855867925](https://github.com/William206920/split-easy/actions/runs/38855867925) 全部通过，Native 24 组，JS 本地 20 组；C 平台桥接未改动。真实模型和用户桌面等人工验收边界不变。
 
-[下载 0.9.1 验证包](https://github.com/William206920/Splict-easy/actions/runs/38855867925/artifacts/12027202151)。已下载核对 SHA256 并实际查看成员与导入截图。
+[下载 0.9.1 验证包](https://github.com/William206920/split-easy/actions/runs/38855867925/artifacts/12027202151)。已下载核对 SHA256 并实际查看成员与导入截图。
 
 ## 0.9.0 原生界面优化（2026-10-16）
 
 侧栏导航、账单概览、消费/转账/成员分区及消费、AI、导入表单已重新设计。[本轮说明及四页实际截图](UI_REDESIGN.md)。
 
-[Windows CI 38853402455](https://github.com/William206920/Splict-easy/actions/runs/38853402455) 全部通过，源码 `12ddc99`。Native 21 组、桌面与布局/遮挡检查、CLI、AI 模拟、安装卸载和截图均通过；JS 核心本地 19 组通过。真实模型及用户桌面 DPI/输入法仍待验收。
+[Windows CI 38853402455](https://github.com/William206920/split-easy/actions/runs/38853402455) 全部通过，源码 `12ddc99`。Native 21 组、桌面与布局/遮挡检查、CLI、AI 模拟、安装卸载和截图均通过；JS 核心本地 19 组通过。真实模型及用户桌面 DPI/输入法仍待验收。
 
-[下载 0.9.0 验证包](https://github.com/William206920/Splict-easy/actions/runs/38853402455/artifacts/12026535125)。Artifact ZIP SHA256：`318cd60ad203dfdf5662fe66dd9e20347eb3005f938a271b9534c468bb356f87`。已下载核对哈希，并逐页查看截图；未发布 GitHub Release。
+[下载 0.9.0 验证包](https://github.com/William206920/split-easy/actions/runs/38853402455/artifacts/12026535125)。Artifact ZIP SHA256：`318cd60ad203dfdf5662fe66dd9e20347eb3005f938a271b9534c468bb356f87`。已下载核对哈希，并逐页查看截图；未发布 GitHub Release。
 
 以下保留 0.8.0 的各阶段历史记录。
 
@@ -28,14 +28,14 @@
 
 | 阶段 | 独立源码提交 | Windows CI |
 | --- | --- | --- |
-| 1 | [48a17f4](https://github.com/William206920/Splict-easy/commit/48a17f45b81b54df95dc6aeeaabfe4d181ca6f1d) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38719888097) |
-| 2 | [797a555](https://github.com/William206920/Splict-easy/commit/797a5553dbc8e1cf765526a28ab8fc1632de826d) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38720762654) |
-| 3 | [341c37c](https://github.com/William206920/Splict-easy/commit/341c37ce5dd1cd72fdd0f118adf885e5bd5ac0a2) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38720925482) |
-| 4 | [0db2a49](https://github.com/William206920/Splict-easy/commit/0db2a4937191bb4bd46a7981c9bc9116aee7e34e) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38721336321) |
-| 5 | [edc2052](https://github.com/William206920/Splict-easy/commit/edc2052b33079aa6ea9d0b918df1d8434f6a75a3) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38721534925) |
-| 6 | [5cb05ee](https://github.com/William206920/Splict-easy/commit/5cb05ee973ca2e00875ce5373da29d4f7299a304) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38722487735) |
-| 7 | [dcfd19d](https://github.com/William206920/Splict-easy/commit/dcfd19d1de166921aa5d35e4916640014ea9a115) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38723034006) |
-| 8 | [7488aa3](https://github.com/William206920/Splict-easy/commit/7488aa304b2399f36ab003341c410206578f123f) | [通过](https://github.com/William206920/Splict-easy/actions/runs/38724606635) |
+| 1 | [48a17f4](https://github.com/William206920/split-easy/commit/48a17f45b81b54df95dc6aeeaabfe4d181ca6f1d) | [通过](https://github.com/William206920/split-easy/actions/runs/38719888097) |
+| 2 | [797a555](https://github.com/William206920/split-easy/commit/797a5553dbc8e1cf765526a28ab8fc1632de826d) | [通过](https://github.com/William206920/split-easy/actions/runs/38720762654) |
+| 3 | [341c37c](https://github.com/William206920/split-easy/commit/341c37ce5dd1cd72fdd0f118adf885e5bd5ac0a2) | [通过](https://github.com/William206920/split-easy/actions/runs/38720925482) |
+| 4 | [0db2a49](https://github.com/William206920/split-easy/commit/0db2a4937191bb4bd46a7981c9bc9116aee7e34e) | [通过](https://github.com/William206920/split-easy/actions/runs/38721336321) |
+| 5 | [edc2052](https://github.com/William206920/split-easy/commit/edc2052b33079aa6ea9d0b918df1d8434f6a75a3) | [通过](https://github.com/William206920/split-easy/actions/runs/38721534925) |
+| 6 | [5cb05ee](https://github.com/William206920/split-easy/commit/5cb05ee973ca2e00875ce5373da29d4f7299a304) | [通过](https://github.com/William206920/split-easy/actions/runs/38722487735) |
+| 7 | [dcfd19d](https://github.com/William206920/split-easy/commit/dcfd19d1de166921aa5d35e4916640014ea9a115) | [通过](https://github.com/William206920/split-easy/actions/runs/38723034006) |
+| 8 | [7488aa3](https://github.com/William206920/split-easy/commit/7488aa304b2399f36ab003341c410206578f123f) | [通过](https://github.com/William206920/split-easy/actions/runs/38724606635) |
 
 Windows 为 Server 2025 x64 的实际原生环境。每阶段的完整源码以对应提交为准，后续修复保留正常提交，不改写历史。
 
@@ -81,9 +81,9 @@ Windows 为 Server 2025 x64 的实际原生环境。每阶段的完整源码以�
 ## 最终通过记录
 
 最终源码：3c084c4b10fcb605d5124a357add2edbead63ff0。
-[Windows 运行 38726605287](https://github.com/William206920/Splict-easy/actions/runs/38726605287) 已成功，Native 21 组、CLI 黄金、原生完整操作与 CRLF 回读、HTTP 模拟/超时/取消、异步 GUI 预览、安装/卸载和示例截图生成均通过。JS 当前本地 19 组通过。
+[Windows 运行 38726605287](https://github.com/William206920/split-easy/actions/runs/38726605287) 已成功，Native 21 组、CLI 黄金、原生完整操作与 CRLF 回读、HTTP 模拟/超时/取消、异步 GUI 预览、安装/卸载和示例截图生成均通过。JS 当前本地 19 组通过。
 
-[下载已验证预览包](https://github.com/William206920/Splict-easy/actions/runs/38726605287/artifacts/11967903629)（需登录 GitHub）。ZIP 包含 Setup.exe、Portable.zip、SHA256SUMS.txt、preview.png 和系统 DLL 依赖清单。程序为 Windows x64 PE，GUI 子系统为 2、CLI 为 3；前一轮产物已下载检查过哈希、格式与随包许可，最终产物以本次 CI 的校验清单为准。
+[下载已验证预览包](https://github.com/William206920/split-easy/actions/runs/38726605287/artifacts/11967903629)（需登录 GitHub）。ZIP 包含 Setup.exe、Portable.zip、SHA256SUMS.txt、preview.png 和系统 DLL 依赖清单。程序为 Windows x64 PE，GUI 子系统为 2、CLI 为 3；前一轮产物已下载检查过哈希、格式与随包许可，最终产物以本次 CI 的校验清单为准。
 
 - Artifact ID：11967903629
 - Artifact ZIP SHA256：sha256:87a18a977bffdf7f41e70535f684d575806be8b49cf164fa3c8e6a5a18f0f4d3
