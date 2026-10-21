@@ -39,9 +39,9 @@ JSON 请点击应用中的“JSON 示例”取得完整可编辑模板。`amount
 
 ## 最终结果（2026-10-16）
 
-应用源码 `883583ffdcff52c53f0de715a20ba13a388fdb9c` 的 [Windows CI 38855867925](https://github.com/William206920/Splict-easy/actions/runs/38855867925) 全部通过：Native 24 组、独立成员页与导航、错误导入保护、窗口布局、CLI 黄金、AI 模拟、安装/重复安装/卸载和五页截图。本地 JS 核心 20 组通过。AI 地址未填完时切换页面，不再用环境变量覆盖手动输入；环境配置只在第一次进入时补充。
+应用源码 `883583ffdcff52c53f0de715a20ba13a388fdb9c` 的 [Windows CI 38855867925](https://github.com/William206920/split-easy/actions/runs/38855867925) 全部通过：Native 24 组、独立成员页与导航、错误导入保护、窗口布局、CLI 黄金、AI 模拟、安装/重复安装/卸载和五页截图。本地 JS 核心 20 组通过。AI 地址未填完时切换页面，不再用环境变量覆盖手动输入；环境配置只在第一次进入时补充。
 
-[下载 0.9.1 验证包](https://github.com/William206920/Splict-easy/actions/runs/38855867925/artifacts/12027202151)。ZIP SHA256：`3754fc4154f0cfcd98dacdaca81d4961f0587d9aeb5e6f6d08f06850b7124517`。包已实际下载核对哈希，以下为原生程序示例模式截图，不含真实账单或密钥。
+[下载 0.9.1 验证包](https://github.com/William206920/split-easy/actions/runs/38855867925/artifacts/12027202151)。ZIP SHA256：`3754fc4154f0cfcd98dacdaca81d4961f0587d9aeb5e6f6d08f06850b7124517`。包已实际下载核对哈希，以下为原生程序示例模式截图，不含真实账单或密钥。
 
 ![独立成员页](screenshots/members-0.9.1.png)
 
