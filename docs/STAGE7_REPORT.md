@@ -15,4 +15,4 @@
 
 ## Windows 实际结果补录
 
-[运行 38723034006](https://github.com/William206920/split-easy/actions/runs/38723034006) 已通过。原生 GUI/CLI 构建、独立 CLI 黄金、便携包、Inno 安装器、安装/重复安装/卸载和用户数据保留自动检查全部成功。
+[运行 38723034006](https://github.com/William206920/Split-easy/actions/runs/38723034006) 已通过。原生 GUI/CLI 构建、独立 CLI 黄金、便携包、Inno 安装器、安装/重复安装/卸载和用户数据保留自动检查全部成功。
