@@ -14,5 +14,5 @@ AI：只解析为 Ledger，不能替代计算。外发前确认、结果预览�
 
 验证边界：已有 Windows CI、原生控件、CLI 和安装流程自动记录；用户桌面 DPI/输入法/视觉和真实模型待验证，不宣称赛事已验收。
 
-仓库：https://github.com/William206920/split-easy
+仓库：https://github.com/William206920/Split-easy
 内部交付目标：2026-10-24 23:59 Asia/Shanghai。
