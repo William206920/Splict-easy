@@ -54,8 +54,8 @@ MoonBit：**65.169%**，含真实测试和平台 FFI，与 GitHub 的字节口�
 
 ## 合并后的实际远端结果
 
-PR #5 的源码 `fa6bf76` 已经 [Linux 网页 CI 39374059201](https://github.com/William206920/split-easy/actions/runs/39374059201) 和 [Windows 原生 CI 39374059443](https://github.com/William206920/split-easy/actions/runs/39374059443) 验证通过，包含生成文件一致性、占比门禁、原生构建/集成、打包和安装校验。合并提交为 `9e3110d`。
+PR #5 的源码 `fa6bf76` 已经 [Linux 网页 CI 39374059201](https://github.com/William206920/Split-easy/actions/runs/39374059201) 和 [Windows 原生 CI 39374059443](https://github.com/William206920/Split-easy/actions/runs/39374059443) 验证通过，包含生成文件一致性、占比门禁、原生构建/集成、打包和安装校验。合并提交为 `9e3110d`。
 
-合并后实际请求 GitHub `/repos/William206920/split-easy/languages`，返回的各语言字节与上表逐项相同，MoonBit **65.16910578989334%**。真实仓库页面显示 MoonBit **65.2%**，CSS **4.4%**，确认是远端重算结果。
+合并后实际请求 GitHub `/repos/William206920/Split-easy/languages`，返回的各语言字节与上表逐项相同，MoonBit **65.16910578989334%**。真实仓库页面显示 MoonBit **65.2%**，CSS **4.4%**，确认是远端重算结果。
 
 Vercel 自动部署已生效，公开 `app.mjs` 是两行 MoonBit 启动入口；生产 `core.mjs` SHA256 与该源码的本地编译产物完全相同。公开状态接口返回 Kimi K2.6 启用。再次通过真实生产 HTTP 接口发送虚构三人示例，返回 200 和有效预览；用本轮 MoonBit 产物独立复核，得到 140 元、三人三笔消费以及小红/小刚分别向小明转账 20 元。未覆盖用户账单，也未改动服务端 Key。
