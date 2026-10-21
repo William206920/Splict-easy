@@ -15,6 +15,6 @@
 
 ## Windows 实际结果补录
 
-[运行 38724606635](https://github.com/William206920/split-easy/actions/runs/38724606635) 成功。Windows Native 19 组、本地 WinHTTP 模拟、两次确认/取消/超时/错误、GUI 异步预览、安装后 GUI/CLI 与卸载保留数据均实际通过。真实模型仍待配置。
+[运行 38724606635](https://github.com/William206920/Split-easy/actions/runs/38724606635) 成功。Windows Native 19 组、本地 WinHTTP 模拟、两次确认/取消/超时/错误、GUI 异步预览、安装后 GUI/CLI 与卸载保留数据均实际通过。真实模型仍待配置。
 
 最终预览修复及完整回归见 VERIFY_CURRENT.md；最新 Windows Native 21 组、JS 本地 19 组，示例截图和安装产物已生成。真实模型仍待配置，Release 未发布。
