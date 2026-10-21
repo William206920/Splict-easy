@@ -13,7 +13,7 @@ AI 解析确认后默认追加当前账本，同名成员合并；原记录、�
 ## 本次交付证据
 
 - PR #8 已合并，版本标签 `v0.9.2` 指向 `57104f7c78267d931c43c195f0bebce3346c9cec`。
-- [Windows PR 构建](https://github.com/William206920/split-easy/actions/runs/39407328361)：35 项原生测试、GUI/CLI、模拟 HTTP AI、安装卸载、六张原生截图检查通过。
-- [网页回归](https://github.com/William206920/split-easy/actions/runs/39407328495)：60 项 MoonBit JS 与 15 项 Node 测试通过。
-- [发行工作流](https://github.com/William206920/split-easy/actions/runs/39408109390)从标签重新构建。原生核对页截图显示 2 笔 275 元 + 1 笔 30 元 = 3 笔 305 元；这是内置合成示例，不是真实模型响应。
+- [Windows PR 构建](https://github.com/William206920/Split-easy/actions/runs/39407328361)：35 项原生测试、GUI/CLI、模拟 HTTP AI、安装卸载、六张原生截图检查通过。
+- [网页回归](https://github.com/William206920/Split-easy/actions/runs/39407328495)：60 项 MoonBit JS 与 15 项 Node 测试通过。
+- [发行工作流](https://github.com/William206920/Split-easy/actions/runs/39408109390)从标签重新构建。原生核对页截图显示 2 笔 275 元 + 1 笔 30 元 = 3 笔 305 元；这是内置合成示例，不是真实模型响应。
 - GitHub 实际语言统计 MoonBit 214170 / 322463 字节，约 66.4169%，严格高于 65%。
